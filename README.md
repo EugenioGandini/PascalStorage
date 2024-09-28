@@ -1,4 +1,4 @@
-# Filebrowser
+# FileBrowser
 
 A new Flutter project.
 
