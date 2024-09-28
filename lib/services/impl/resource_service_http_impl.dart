@@ -9,11 +9,15 @@ import 'package:filebrowser/services/impl/http_api.dart';
 
 import 'package:filebrowser/services/base/resource_service.dart';
 
-class ResourceServiceImpl extends ResourceService {
+class ResourceServiceHttpImpl extends ResourceService {
   static const Logger _logger = Logger("ResourceService");
-  static const String baseUrl = 'https://storage.eugenioing.cc:2000';
 
+  String _baseUrl = '';
   late Token _token;
+
+  void setHost(String host) {
+    _baseUrl = host;
+  }
 
   void updateToken(Token newToken) {
     _token = newToken;
@@ -26,7 +30,7 @@ class ResourceServiceImpl extends ResourceService {
   @override
   Future<FolderContent?> openFolder(Folder folder) async {
     try {
-      final url = Uri.parse("$baseUrl${HttpApi.loadResource}${folder.path}");
+      final url = Uri.parse("$_baseUrl${HttpApi.loadResource}${folder.path}");
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Cookie': 'auth=$jwt',
@@ -39,7 +43,7 @@ class ResourceServiceImpl extends ResourceService {
 
       var listItems = mapBody['items'] as List<dynamic>;
 
-      FolderContent content = FolderContent();
+      FolderContent content = FolderContent(currentFolder: folder);
 
       for (var item in listItems) {
         bool isDirectory = item['isDir'] as bool;

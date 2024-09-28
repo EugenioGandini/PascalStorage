@@ -15,10 +15,26 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        width: 300,
-        child: LoginForm(
-          onLoggedIn: () => navigareToMyStorage(context),
+      body: Center(
+        child: SizedBox(
+          width: 350,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  bottom: 24,
+                ),
+                child: Text(
+                  "Sign-in",
+                  style: Theme.of(context).textTheme.headlineLarge,
+                ),
+              ),
+              LoginForm(
+                onLoggedIn: () => navigareToMyStorage(context),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,15 +9,19 @@ import './http_api.dart';
 
 import 'package:filebrowser/services/base/auth_service.dart';
 
-class AuthServiceImpl extends AuthService {
+class AuthServiceHttpImpl extends AuthService {
   static const Logger _logger = Logger("AuthService");
-  static const String baseUrl = 'https://storage.eugenioing.cc:2000';
-  static String jwt = '';
+
+  String _baseUrl = '';
+
+  void setHost(String host) {
+    _baseUrl = host;
+  }
 
   @override
   Future<Token?> login(User user) async {
     try {
-      final url = Uri.parse("$baseUrl${HttpApi.doLogin}");
+      final url = Uri.parse("$_baseUrl${HttpApi.doLogin}");
       final response = await http.post(
         url,
         body: jsonEncode({
@@ -40,8 +44,6 @@ class AuthServiceImpl extends AuthService {
       var body = response.body;
 
       Token loginToken = Token(jwtBase64: body);
-
-      jwt = body;
 
       return loginToken;
     } catch (error) {

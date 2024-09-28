@@ -22,7 +22,11 @@ class FolderContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        childAspectRatio: 3,
+      ),
       itemBuilder: (context, index) {
         if (index < content.folders.length) {
           var folder = content.folders[index];
