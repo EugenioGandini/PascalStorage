@@ -29,7 +29,7 @@ class ResourceProvider with ChangeNotifier {
   }
 
   Future<FolderContent?> loadHomeFolder() async {
-    return openFolder(Folder(
+    return openFolder(RemoteFolder(
       path: '',
       name: 'Home',
       size: 0,
@@ -37,7 +37,9 @@ class ResourceProvider with ChangeNotifier {
     ));
   }
 
-  Future<FolderContent?> openFolder(Folder folder) async {
+  Future<FolderContent?> openFolder(RemoteFolder folder) async {
+    _logger.message('loading folder... ${folder.name}');
+
     FolderContent? content = await _resourceService.openFolder(folder);
 
     if (content == null) {
@@ -46,5 +48,11 @@ class ResourceProvider with ChangeNotifier {
     }
 
     return content;
+  }
+
+  Stream<int> downloadFile(RemoteFile file, String dirOutput) {
+    _logger.message('downloading file... ${file.name} to $dirOutput');
+
+    return _resourceService.downloadFile(file, dirOutput);
   }
 }

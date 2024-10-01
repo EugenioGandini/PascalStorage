@@ -1,23 +1,24 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'file.freezed.dart';
-part 'file.g.dart';
+part 'remote_file.freezed.dart';
+part 'remote_file.g.dart';
 
 @freezed
 @JsonSerializable()
-class File with _$File {
-  const File._();
+class RemoteFile with _$RemoteFile {
+  const RemoteFile._();
 
-  const factory File({
+  const factory RemoteFile({
     required String path,
     required String name,
     required int size,
     required DateTime modified,
     required String type,
     String? content,
-  }) = _File;
+  }) = _RemoteFile;
 
-  factory File.fromJson(Map<String, Object?> json) => _$FileFromJson(json);
+  factory RemoteFile.fromJson(Map<String, Object?> json) =>
+      _$RemoteFileFromJson(json);
 
   String get extension {
     return name.split(".")[1];

@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'file.dart';
+part of 'remote_file.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -14,12 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
-File _$FileFromJson(Map<String, dynamic> json) {
-  return _File.fromJson(json);
+RemoteFile _$RemoteFileFromJson(Map<String, dynamic> json) {
+  return _RemoteFile.fromJson(json);
 }
 
 /// @nodoc
-mixin _$File {
+mixin _$RemoteFile {
   String get path => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
@@ -27,19 +27,21 @@ mixin _$File {
   String get type => throw _privateConstructorUsedError;
   String? get content => throw _privateConstructorUsedError;
 
-  /// Serializes this File to a JSON map.
+  /// Serializes this RemoteFile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
 
-  /// Create a copy of File
+  /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $FileCopyWith<File> get copyWith => throw _privateConstructorUsedError;
+  $RemoteFileCopyWith<RemoteFile> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $FileCopyWith<$Res> {
-  factory $FileCopyWith(File value, $Res Function(File) then) =
-      _$FileCopyWithImpl<$Res, File>;
+abstract class $RemoteFileCopyWith<$Res> {
+  factory $RemoteFileCopyWith(
+          RemoteFile value, $Res Function(RemoteFile) then) =
+      _$RemoteFileCopyWithImpl<$Res, RemoteFile>;
   @useResult
   $Res call(
       {String path,
@@ -51,16 +53,16 @@ abstract class $FileCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$FileCopyWithImpl<$Res, $Val extends File>
-    implements $FileCopyWith<$Res> {
-  _$FileCopyWithImpl(this._value, this._then);
+class _$RemoteFileCopyWithImpl<$Res, $Val extends RemoteFile>
+    implements $RemoteFileCopyWith<$Res> {
+  _$RemoteFileCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of File
+  /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -102,10 +104,11 @@ class _$FileCopyWithImpl<$Res, $Val extends File>
 }
 
 /// @nodoc
-abstract class _$$FileImplCopyWith<$Res> implements $FileCopyWith<$Res> {
-  factory _$$FileImplCopyWith(
-          _$FileImpl value, $Res Function(_$FileImpl) then) =
-      __$$FileImplCopyWithImpl<$Res>;
+abstract class _$$RemoteFileImplCopyWith<$Res>
+    implements $RemoteFileCopyWith<$Res> {
+  factory _$$RemoteFileImplCopyWith(
+          _$RemoteFileImpl value, $Res Function(_$RemoteFileImpl) then) =
+      __$$RemoteFileImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -118,13 +121,14 @@ abstract class _$$FileImplCopyWith<$Res> implements $FileCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$FileImplCopyWithImpl<$Res>
-    extends _$FileCopyWithImpl<$Res, _$FileImpl>
-    implements _$$FileImplCopyWith<$Res> {
-  __$$FileImplCopyWithImpl(_$FileImpl _value, $Res Function(_$FileImpl) _then)
+class __$$RemoteFileImplCopyWithImpl<$Res>
+    extends _$RemoteFileCopyWithImpl<$Res, _$RemoteFileImpl>
+    implements _$$RemoteFileImplCopyWith<$Res> {
+  __$$RemoteFileImplCopyWithImpl(
+      _$RemoteFileImpl _value, $Res Function(_$RemoteFileImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of File
+  /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -136,7 +140,7 @@ class __$$FileImplCopyWithImpl<$Res>
     Object? type = null,
     Object? content = freezed,
   }) {
-    return _then(_$FileImpl(
+    return _then(_$RemoteFileImpl(
       path: null == path
           ? _value.path
           : path // ignore: cast_nullable_to_non_nullable
@@ -167,8 +171,8 @@ class __$$FileImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$FileImpl extends _File {
-  const _$FileImpl(
+class _$RemoteFileImpl extends _RemoteFile {
+  const _$RemoteFileImpl(
       {required this.path,
       required this.name,
       required this.size,
@@ -177,8 +181,8 @@ class _$FileImpl extends _File {
       this.content})
       : super._();
 
-  factory _$FileImpl.fromJson(Map<String, dynamic> json) =>
-      _$$FileImplFromJson(json);
+  factory _$RemoteFileImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RemoteFileImplFromJson(json);
 
   @override
   final String path;
@@ -195,14 +199,14 @@ class _$FileImpl extends _File {
 
   @override
   String toString() {
-    return 'File(path: $path, name: $name, size: $size, modified: $modified, type: $type, content: $content)';
+    return 'RemoteFile(path: $path, name: $name, size: $size, modified: $modified, type: $type, content: $content)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$FileImpl &&
+            other is _$RemoteFileImpl &&
             (identical(other.path, path) || other.path == path) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.size, size) || other.size == size) &&
@@ -217,33 +221,34 @@ class _$FileImpl extends _File {
   int get hashCode =>
       Object.hash(runtimeType, path, name, size, modified, type, content);
 
-  /// Create a copy of File
+  /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$FileImplCopyWith<_$FileImpl> get copyWith =>
-      __$$FileImplCopyWithImpl<_$FileImpl>(this, _$identity);
+  _$$RemoteFileImplCopyWith<_$RemoteFileImpl> get copyWith =>
+      __$$RemoteFileImplCopyWithImpl<_$RemoteFileImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FileImplToJson(
+    return _$$RemoteFileImplToJson(
       this,
     );
   }
 }
 
-abstract class _File extends File {
-  const factory _File(
+abstract class _RemoteFile extends RemoteFile {
+  const factory _RemoteFile(
       {required final String path,
       required final String name,
       required final int size,
       required final DateTime modified,
       required final String type,
-      final String? content}) = _$FileImpl;
-  const _File._() : super._();
+      final String? content}) = _$RemoteFileImpl;
+  const _RemoteFile._() : super._();
 
-  factory _File.fromJson(Map<String, dynamic> json) = _$FileImpl.fromJson;
+  factory _RemoteFile.fromJson(Map<String, dynamic> json) =
+      _$RemoteFileImpl.fromJson;
 
   @override
   String get path;
@@ -258,10 +263,10 @@ abstract class _File extends File {
   @override
   String? get content;
 
-  /// Create a copy of File
+  /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$FileImplCopyWith<_$FileImpl> get copyWith =>
+  _$$RemoteFileImplCopyWith<_$RemoteFileImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

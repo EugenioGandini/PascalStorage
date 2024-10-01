@@ -6,11 +6,13 @@ import './file_widget.dart';
 import './folder_widget.dart';
 
 class FolderContentWidget extends StatelessWidget {
-  final Folder folder;
+  final RemoteFolder folder;
   final FolderContent content;
 
-  final Function(Folder folder) onFolderTap;
-  final Function(File file) onFileTap;
+  final Function(RemoteFolder folder) onFolderTap;
+  final Function(RemoteFile file) onFileTap;
+
+  final double maxWidthItem = 400;
 
   const FolderContentWidget({
     super.key,
@@ -22,10 +24,20 @@ class FolderContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+    // print(width);
+
+    var maxCrossAxisExtent = maxWidthItem;
+
+    var columns = (width / maxCrossAxisExtent).ceil();
+    var aspectRatio = (width / 90.21) / columns;
+
     return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 300,
-        childAspectRatio: 3,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: maxCrossAxisExtent,
+        childAspectRatio: aspectRatio,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
       ),
       itemBuilder: (context, index) {
         if (index < content.folders.length) {
@@ -44,7 +56,7 @@ class FolderContentWidget extends StatelessWidget {
         return InkWell(
           child: FileWidget(
             file: file,
-            onTap: () {},
+            onTap: () => onFileTap(file),
           ),
         );
       },

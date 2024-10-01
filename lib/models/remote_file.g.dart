@@ -1,12 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'file.dart';
+part of 'remote_file.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$FileImpl _$$FileImplFromJson(Map<String, dynamic> json) => _$FileImpl(
+_$RemoteFileImpl _$$RemoteFileImplFromJson(Map<String, dynamic> json) =>
+    _$RemoteFileImpl(
       path: json['path'] as String,
       name: json['name'] as String,
       size: (json['size'] as num).toInt(),
@@ -15,7 +16,7 @@ _$FileImpl _$$FileImplFromJson(Map<String, dynamic> json) => _$FileImpl(
       content: json['content'] as String?,
     );
 
-Map<String, dynamic> _$$FileImplToJson(_$FileImpl instance) =>
+Map<String, dynamic> _$$RemoteFileImplToJson(_$RemoteFileImpl instance) =>
     <String, dynamic>{
       'path': instance.path,
       'name': instance.name,

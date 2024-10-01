@@ -3,9 +3,9 @@ import 'package:filebrowser/models/models.dart';
 class FolderContent {
   String path = "";
 
-  Folder currentFolder;
-  List<Folder> folders = [];
-  List<File> files = [];
+  RemoteFolder currentFolder;
+  List<RemoteFolder> folders = [];
+  List<RemoteFile> files = [];
 
   FolderContent({
     required this.currentFolder,

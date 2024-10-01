@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
@@ -28,7 +30,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<FolderContent?> openFolder(Folder folder) async {
+  Future<FolderContent?> openFolder(RemoteFolder folder) async {
     try {
       final url = Uri.parse("$_baseUrl${HttpApi.loadResource}${folder.path}");
       final response = await http.get(url, headers: {
@@ -49,9 +51,9 @@ class ResourceServiceHttpImpl extends ResourceService {
         bool isDirectory = item['isDir'] as bool;
 
         if (isDirectory) {
-          content.folders.add(Folder.fromJson(item));
+          content.folders.add(RemoteFolder.fromJson(item));
         } else {
-          content.files.add(File.fromJson(item));
+          content.files.add(RemoteFile.fromJson(item));
         }
       }
 
@@ -61,5 +63,43 @@ class ResourceServiceHttpImpl extends ResourceService {
     }
 
     return null;
+  }
+
+  @override
+  Stream<int> downloadFile(RemoteFile file, String dirOutput) async* {
+    try {
+      final url = Uri.parse(
+          "$_baseUrl${HttpApi.downloadResource}${file.path}?auth=$jwt&inline=true");
+      final responseStream = http.get(
+        url,
+        headers: {"Transfer-Encoding": "chunked"},
+      ).asStream();
+
+      int percentage = 0;
+
+      BytesBuilder bytesBuilder = BytesBuilder();
+
+      await for (final response in responseStream) {
+        int? totalBytes = response.contentLength;
+        int numBytes = response.bodyBytes.length;
+
+        if (totalBytes == null) continue;
+
+        var deltaPercentage = ((numBytes / totalBytes) * 100).toInt();
+
+        percentage = percentage + deltaPercentage;
+
+        bytesBuilder.add(response.bodyBytes);
+
+        yield percentage;
+      }
+
+      await File('$dirOutput/${file.name}')
+          .writeAsBytes(bytesBuilder.toBytes());
+
+      yield 100;
+    } catch (error) {
+      _logger.message("Failed to download the file");
+    }
   }
 }

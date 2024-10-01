@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:filebrowser/models/models.dart';
 
 class FolderWidget extends StatelessWidget {
-  final Folder folder;
+  final RemoteFolder folder;
   final VoidCallback? onTap;
 
   const FolderWidget({

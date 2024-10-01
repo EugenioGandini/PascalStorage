@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:filebrowser/models/models.dart';
 
 class FileWidget extends StatelessWidget {
-  final File file;
+  final RemoteFile file;
   final VoidCallback? onTap;
 
   const FileWidget({
