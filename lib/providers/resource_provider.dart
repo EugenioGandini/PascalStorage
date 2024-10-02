@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 
 import 'package:filebrowser/models/models.dart';
@@ -6,6 +8,7 @@ import 'package:filebrowser/services/base/resource_service.dart';
 import 'package:filebrowser/services/impl/resource_service_http_impl.dart';
 
 import 'package:filebrowser/utils/logger.dart';
+import 'package:path/path.dart';
 
 class ResourceProvider with ChangeNotifier {
   static const Logger _logger = Logger("ResourceProvider");
@@ -14,6 +17,15 @@ class ResourceProvider with ChangeNotifier {
 
   ResourceProvider(Settings settings) {
     updateSettings(settings);
+  }
+
+  RemoteFolder get homeFolder {
+    return RemoteFolder(
+      path: '',
+      name: 'Home',
+      size: 0,
+      modified: DateTime.now(),
+    );
   }
 
   void updateSettings(Settings newSettings) {
@@ -29,12 +41,7 @@ class ResourceProvider with ChangeNotifier {
   }
 
   Future<FolderContent?> loadHomeFolder() async {
-    return openFolder(RemoteFolder(
-      path: '',
-      name: 'Home',
-      size: 0,
-      modified: DateTime.now(),
-    ));
+    return openFolder(homeFolder);
   }
 
   Future<FolderContent?> openFolder(RemoteFolder folder) async {
@@ -54,5 +61,21 @@ class ResourceProvider with ChangeNotifier {
     _logger.message('downloading file... ${file.name} to $dirOutput');
 
     return _resourceService.downloadFile(file, dirOutput);
+  }
+
+  Stream<int> uploadFile(
+    File localFilePath,
+    RemoteFolder remoteFolder,
+    bool override,
+  ) {
+    var fileName = basename(localFilePath.path);
+
+    _logger.message('uploading file... $fileName to ${remoteFolder.path}');
+
+    return _resourceService.uploadFile(
+      localFilePath.path,
+      "${remoteFolder.path}/$fileName",
+      override,
+    );
   }
 }

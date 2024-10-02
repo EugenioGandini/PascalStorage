@@ -99,7 +99,66 @@ class ResourceServiceHttpImpl extends ResourceService {
 
       yield 100;
     } catch (error) {
-      _logger.message("Failed to download the file");
+      _logger.message("Failed to download the file $error");
+    }
+  }
+
+  @override
+  Stream<int> uploadFile(
+      String localFilePath, String remoteFolderPath, bool override) async* {
+    try {
+      final url = Uri.parse(
+          "$_baseUrl${HttpApi.uploadResource}$remoteFolderPath?override=$override");
+      final responsePost = await http.post(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt,
+      });
+
+      if (responsePost.statusCode != 201) throw Exception();
+
+      yield 10;
+
+      final responseHead = await http.head(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt,
+      });
+
+      if (responseHead.statusCode != 200) throw Exception();
+
+      yield 20;
+
+      var fileToUpload = File(localFilePath);
+      var fileLenght = await fileToUpload.length();
+      var bytes = await fileToUpload.readAsBytes();
+
+      final responsePatch = http
+          .patch(
+            url,
+            headers: {
+              'Content-Type': 'application/offset+octet-stream',
+              'Cookie': 'auth=$jwt',
+              'X-Auth': jwt,
+              'Content-Length': "$fileLenght",
+              'Upload-Offset': "0",
+            },
+            body: bytes.toList(),
+          )
+          .asStream();
+
+      await for (var response in responsePatch) {
+        var offsetStr = response.headers['Upload-Offset'];
+        if (offsetStr == null) continue;
+
+        int offset = int.parse(offsetStr);
+
+        int percentageUpload = (offset / fileLenght * 100).toInt();
+
+        yield (percentageUpload * 80 / 100).toInt();
+      }
+
+      yield 100;
+    } catch (error) {
+      _logger.message("Failed to upload the file $error");
     }
   }
 }

@@ -10,4 +10,8 @@ class FolderContent {
   FolderContent({
     required this.currentFolder,
   });
+
+  bool containsFileWithName(String fileName) {
+    return files.any((file) => file.name == fileName);
+  }
 }

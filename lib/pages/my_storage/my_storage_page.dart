@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
 
 import 'package:filebrowser/models/models.dart';
@@ -19,6 +23,8 @@ class MyStoragePage extends StatefulWidget {
 class _MyStoragePageState extends State<MyStoragePage> {
   late Future _futureLoadFolder;
   late ResourceProvider resProvider;
+  late RemoteFolder _remoteFolder;
+  late FolderContent _folderContent;
   bool _init = false;
   String _title = 'My Storage';
 
@@ -33,10 +39,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
     var arguments = ModalRoute.of(context)!.settings.arguments;
 
     if (arguments != null) {
-      RemoteFolder folderToLoad = arguments as RemoteFolder;
-      _title = folderToLoad.name;
-      _futureLoadFolder = resProvider.openFolder(folderToLoad);
+      _remoteFolder = arguments as RemoteFolder;
+      _title = _remoteFolder.name;
+      _futureLoadFolder = resProvider.openFolder(_remoteFolder);
     } else {
+      _remoteFolder = resProvider.homeFolder;
       _futureLoadFolder = resProvider.loadHomeFolder();
     }
 
@@ -59,7 +66,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
-  Future<void> _saveFile(RemoteFile file, String path) async {
+  Future _saveFile(RemoteFile file, String path) async {
     await for (final percentage in resProvider.downloadFile(file, path)) {
       print("Download $percentage %");
     }
@@ -67,17 +74,49 @@ class _MyStoragePageState extends State<MyStoragePage> {
     // TODO show toast success download
   }
 
+  Future _selectFileUpload() async {
+    var result = await FilePicker.platform.pickFiles(allowMultiple: false);
+
+    if (result == null) return;
+    List<PlatformFile> filePath = result.files;
+
+    var fileToUpload = File(filePath[0].path!);
+
+    await _uploadFile(fileToUpload);
+  }
+
+  Future _uploadFile(File file) async {
+    var fileName = path.basename(file.path);
+    var override = _folderContent.containsFileWithName(fileName);
+
+    await for (var percentage
+        in resProvider.uploadFile(file, _remoteFolder, override)) {
+      print('Uploading... $percentage %');
+    }
+
+    // TODO show confirmation of upload
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(_title),
+        actions: [
+          IconButton(
+            onPressed: _selectFileUpload,
+            icon: const Icon(Icons.upload),
+          )
+        ],
       ),
       body: FutureBuilder(
         future: _futureLoadFolder,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             var loadedContent = snapshot.data as FolderContent;
+
+            _folderContent = loadedContent;
+
             return Padding(
               padding: const EdgeInsets.all(8.0),
               child: FolderContentWidget(
