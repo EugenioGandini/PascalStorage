@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../config/permissions.dart';
 import '../../utils/files_utils.dart';
 
 class FileDetails extends StatelessWidget {
@@ -17,6 +18,8 @@ class FileDetails extends StatelessWidget {
   });
 
   void _selectFolder() async {
+    if (!await hasStorageAccessPermission()) return;
+
     var result = await FilePicker.platform.getDirectoryPath();
 
     if (result == null) return;
@@ -27,6 +30,8 @@ class FileDetails extends StatelessWidget {
   }
 
   void _saveDownloadFolder() async {
+    if (!await hasStorageAccessPermission()) return;
+
     var downloadDirectory = await getDownloadsDirectory();
 
     if (downloadDirectory == null) return;

@@ -7,6 +7,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../utils/logger.dart';
+import '../../config/permissions.dart';
 import '../../models/models.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/resource_provider.dart';
@@ -107,6 +108,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
   }
 
   Future _selectFileToBeUploaded() async {
+    if (!await hasStorageAccessPermission()) return;
+
     _logger.message('Selecting file to upload');
 
     var result = await FilePicker.platform.pickFiles(
