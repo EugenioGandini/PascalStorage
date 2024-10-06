@@ -16,6 +16,10 @@ class FolderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: InkWell(
         onTap: onTap,
         child: ListTile(

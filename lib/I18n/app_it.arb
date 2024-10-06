@@ -1,0 +1,23 @@
+{
+  "titleSignIn": "Accesso",
+  "loginSuccess": "Accesso effettuato",
+  "loginFailed": "Accesso fallito. Si prega di riprovare",
+  "host": "Host",
+  "validatorEmptyHost": "Il tuo host (e.g.: https://example.com:3000)",
+  "validatorStartNameHost": "L'host deve iniziare con https oppure http",
+  "validatorEndNameHost": "L'Host NON deve terminare con '/'",
+  "username": "Nome utente",
+  "validatorEmptyUsername": "Si prega di inserire il nome utente",
+  "password": "Parola d'ordine",
+  "validatorEmptyPassword": "Si prega di inserire la parola d'ordine",
+  "saveCredentials": "Salva le credenziali",
+  "enter": "Entra",
+  "exit": "Esci",
+  "titleMyStorage": "Il mio Spazio",
+  "downloadSuccess": "File scaricato con successo",
+  "uploadSuccess": "File caricato con successo",
+  "selectFileToBeUploaded": "Seleziona il file da caricare",
+  "downloadTitle": "Scaricamento",
+  "download": "Scarica",
+  "saveTo": "Salva in..."
+}

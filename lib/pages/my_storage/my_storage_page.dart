@@ -1,15 +1,21 @@
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:path/path.dart' as path;
 import 'package:provider/provider.dart';
+import 'package:path/path.dart' as path;
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:filebrowser/models/models.dart';
-import 'package:filebrowser/providers/resource_provider.dart';
+import '../../utils/logger.dart';
+import '../../models/models.dart';
+import '../../providers/auth_provider.dart';
+import '../../providers/resource_provider.dart';
+import '../login/login_page.dart';
+import '../base_page.dart';
 
 import './folder_content_widget.dart';
 import './file_details.dart';
+import 'notifications.dart' as notify;
 
 class MyStoragePage extends StatefulWidget {
   static const String routeName = '/myStorage';
@@ -21,18 +27,22 @@ class MyStoragePage extends StatefulWidget {
 }
 
 class _MyStoragePageState extends State<MyStoragePage> {
+  final Logger _logger = const Logger('MyStoragePage');
+
   late Future _futureLoadFolder;
   late ResourceProvider resProvider;
   late RemoteFolder _remoteFolder;
   late FolderContent _folderContent;
   bool _init = false;
-  String _title = 'My Storage';
+  String _title = '';
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
     if (_init) return;
+
+    _logger.message('Initialization page...');
 
     resProvider = Provider.of<ResourceProvider>(context, listen: false);
 
@@ -42,43 +52,72 @@ class _MyStoragePageState extends State<MyStoragePage> {
       _remoteFolder = arguments as RemoteFolder;
       _title = _remoteFolder.name;
       _futureLoadFolder = resProvider.openFolder(_remoteFolder);
+
+      _logger.message('Loading folder ${_remoteFolder.name}');
     } else {
+      _title = AppLocalizations.of(context)!.titleMyStorage;
       _remoteFolder = resProvider.homeFolder;
       _futureLoadFolder = resProvider.loadHomeFolder();
+
+      _logger.message('Loading HOME folder');
     }
 
     _init = true;
   }
 
   void _openFolder(BuildContext context, RemoteFolder folder) {
+    _logger.message('User navigate to folder ${folder.name}');
+
     Navigator.of(context).pushNamed(MyStoragePage.routeName, arguments: folder);
   }
 
   void _openFileDetails(BuildContext context, RemoteFile file) {
+    _logger.message('User opened file ${file.name}');
+
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return FileDetails(
-          file: file,
-          onSaveFile: (dir) => _saveFile(file, dir),
+        return SizedBox(
+          width: double.infinity,
+          child: FileDetails(
+            file: file,
+            onSaveFile: (dir) {
+              _saveFile(file, dir);
+              Navigator.of(context).pop();
+            },
+          ),
         );
       },
     );
   }
 
   Future _saveFile(RemoteFile file, String path) async {
-    await for (final percentage in resProvider.downloadFile(file, path)) {
-      print("Download $percentage %");
-    }
+    _logger.message(
+        'Saving remote file ${file.name} onto this device at path $path');
 
-    // TODO show toast success download
+    await for (final percentage in resProvider.downloadFile(file, path)) {
+      _logger.message('Download $percentage %');
+
+      if (percentage == 100) {
+        _logger.message('Donwload completed succesfully!!!');
+
+        notify.showDownloadSuccess(context);
+      }
+    }
   }
 
-  Future _selectFileUpload() async {
-    var result = await FilePicker.platform.pickFiles(allowMultiple: false);
+  Future _selectFileToBeUploaded() async {
+    _logger.message('Selecting file to upload');
+
+    var result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      dialogTitle: AppLocalizations.of(context)!.selectFileToBeUploaded,
+    );
 
     if (result == null) return;
+
     List<PlatformFile> filePath = result.files;
+    _logger.message('File selected ${filePath[0].path}');
 
     var fileToUpload = File(filePath[0].path!);
 
@@ -86,26 +125,65 @@ class _MyStoragePageState extends State<MyStoragePage> {
   }
 
   Future _uploadFile(File file) async {
+    _logger.message(
+        'Uploading file ${file.path} to remote folder ${_remoteFolder.name}');
+
     var fileName = path.basename(file.path);
     var override = _folderContent.containsFileWithName(fileName);
 
     await for (var percentage
         in resProvider.uploadFile(file, _remoteFolder, override)) {
-      print('Uploading... $percentage %');
-    }
+      _logger.message('Uploading... $percentage %');
 
-    // TODO show confirmation of upload
+      if (percentage == 100) {
+        _logger.message('Upload completed successfully !!!');
+
+        notify.showUploadSuccess(context);
+
+        _logger.message('Reloading folder content...');
+
+        setState(() {
+          _futureLoadFolder = resProvider.openFolder(_remoteFolder);
+        });
+      }
+    }
+  }
+
+  void _popupActionHandler(String option) {
+    if (option == 'logout') {
+      _logout();
+    }
+  }
+
+  void _logout() {
+    _logger.message('Logging out user...');
+
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    var navigator = Navigator.of(context);
+
+    authProvider.logout().then((ignored) {
+      _logger.message('Logout completed. Redirecting to login page');
+
+      navigator.pushReplacementNamed(LoginPage.routeName);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BasePage(
       appBar: AppBar(
         title: Text(_title),
         actions: [
-          IconButton(
-            onPressed: _selectFileUpload,
-            icon: const Icon(Icons.upload),
+          PopupMenuButton<String>(
+            onSelected: _popupActionHandler,
+            itemBuilder: (context) {
+              return {'logout'}.map((action) {
+                return PopupMenuItem(
+                  value: action,
+                  child: Text(AppLocalizations.of(context)!.exit),
+                );
+              }).toList();
+            },
           )
         ],
       ),
@@ -117,16 +195,13 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
             _folderContent = loadedContent;
 
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: FolderContentWidget(
-                folder: loadedContent.currentFolder,
-                content: loadedContent,
-                onFolderTap: (folder) => _openFolder(context, folder),
-                onFileTap: (file) => _openFileDetails(
-                  context,
-                  file,
-                ),
+            return FolderContentWidget(
+              folder: loadedContent.currentFolder,
+              content: loadedContent,
+              onFolderTap: (folder) => _openFolder(context, folder),
+              onFileTap: (file) => _openFileDetails(
+                context,
+                file,
               ),
             );
           }
@@ -135,6 +210,10 @@ class _MyStoragePageState extends State<MyStoragePage> {
             child: CircularProgressIndicator(),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _selectFileToBeUploaded,
+        child: const Icon(Icons.upload),
       ),
     );
   }

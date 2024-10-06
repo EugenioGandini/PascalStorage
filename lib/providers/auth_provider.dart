@@ -48,6 +48,12 @@ class AuthProvider with ChangeNotifier {
 
   Future logout() async {
     await _authService.logout();
+    await _localStorageService.deleteCredentials();
+    _savedCredentials = null;
+    _token = null;
+    _loggedIn = false;
+
+    notifyListeners();
   }
 
   Future saveCredentials(User userCrendentials) async {

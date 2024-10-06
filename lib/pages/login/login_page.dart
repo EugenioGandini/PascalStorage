@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../config/colors.dart';
+import '../base_page.dart';
 import './login_form.dart';
 import '../my_storage/my_storage_page.dart';
 
@@ -8,16 +11,27 @@ class LoginPage extends StatelessWidget {
 
   const LoginPage({super.key});
 
-  void navigareToMyStorage(BuildContext context) {
+  void _goToMyStorage(BuildContext context) {
     Navigator.of(context).pushReplacementNamed(MyStoragePage.routeName);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BasePage(
       body: Center(
-        child: SizedBox(
+        child: Container(
           width: 350,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: const [
+              BoxShadow(
+                offset: Offset(10, 10),
+                blurRadius: 20,
+              )
+            ],
+          ),
+          padding: const EdgeInsets.all(16),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -26,12 +40,12 @@ class LoginPage extends StatelessWidget {
                   bottom: 24,
                 ),
                 child: Text(
-                  "Sign-in",
+                  AppLocalizations.of(context)!.titleSignIn,
                   style: Theme.of(context).textTheme.headlineLarge,
                 ),
               ),
               LoginForm(
-                onLoggedIn: () => navigareToMyStorage(context),
+                onLoggedInSuccessfully: () => _goToMyStorage(context),
               ),
             ],
           ),

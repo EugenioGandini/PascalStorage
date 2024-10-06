@@ -83,6 +83,13 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
   }
 
   @override
+  Future deleteCredentials() async {
+    var userBox = await _openBox('user');
+
+    await userBox.deleteAll(['username', 'password']);
+  }
+
+  @override
   Future<User?> getSavedCredentials() async {
     var userBox = await _openBox('user');
 

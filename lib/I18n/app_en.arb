@@ -1,0 +1,23 @@
+{
+  "titleSignIn": "Sign-in",
+  "loginSuccess": "Sign-in successfully",
+  "loginFailed": "Login failed. Please retry",
+  "host": "Host",
+  "validatorEmptyHost": "Your host (e.g.: https://example.com:3000)",
+  "validatorStartNameHost": "Host must start with https or http",
+  "validatorEndNameHost": "Host must NOT end with '/'",
+  "username": "Username",
+  "validatorEmptyUsername": "Please enter a username",
+  "password": "Password",
+  "validatorEmptyPassword": "Please enter a password",
+  "saveCredentials": "Save credentials",
+  "enter": "Enter",
+  "exit": "Exit",
+  "titleMyStorage": "My Storage",
+  "downloadSuccess": "File downloaded successfully",
+  "uploadSuccess": "File uploaded successfully",
+  "selectFileToBeUploaded": "Select the file that should be uploaded",
+  "downloadTitle": "Download operations",
+  "download": "Download",
+  "saveTo": "Save to..."
+}

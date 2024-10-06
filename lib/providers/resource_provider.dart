@@ -40,6 +40,12 @@ class ResourceProvider with ChangeNotifier {
     }
   }
 
+  void removeToken() {
+    if (_resourceService is ResourceServiceHttpImpl) {
+      _resourceService.updateToken(null);
+    }
+  }
+
   Future<FolderContent?> loadHomeFolder() async {
     return openFolder(homeFolder);
   }

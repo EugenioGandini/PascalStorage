@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:filebrowser/models/models.dart';
 
 import 'package:filebrowser/providers/auth_provider.dart';
 import 'package:filebrowser/providers/settings_provider.dart';
 
+import 'notifications.dart' as notify;
+
 class LoginForm extends StatefulWidget {
-  final VoidCallback onLoggedIn;
+  final VoidCallback onLoggedInSuccessfully;
 
   const LoginForm({
     super.key,
-    required this.onLoggedIn,
+    required this.onLoggedInSuccessfully,
   });
 
   @override
@@ -46,10 +49,16 @@ class _LoginFormState extends State<LoginForm> {
         _username = credentials.username;
         _password = credentials.password;
       });
+
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (context.mounted) {
+          _submit(context);
+        }
+      });
     }
   }
 
-  Future<void> _submit(BuildContext context) async {
+  Future _submit(BuildContext context) async {
     if (!_keyForm.currentState!.validate()) return;
 
     _keyForm.currentState!.save();
@@ -73,9 +82,15 @@ class _LoginFormState extends State<LoginForm> {
         await authProvider.saveCredentials(user);
       }
 
-      widget.onLoggedIn();
+      if (context.mounted) {
+        notify.showSuccessLogin(context);
+      }
+
+      widget.onLoggedInSuccessfully();
     } else {
-      // TODO show error login
+      if (context.mounted) {
+        notify.showErrorLogin(context);
+      }
     }
 
     setState(() {
@@ -98,22 +113,22 @@ class _LoginFormState extends State<LoginForm> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.http),
-              labelText: "Host",
+            decoration: InputDecoration(
+              icon: const Icon(Icons.http),
+              labelText: AppLocalizations.of(context)!.host,
             ),
             enabled: !_logginIn,
             textInputAction: TextInputAction.next,
             initialValue: _host,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Your host (e.g.: https://example.com:3000)';
+                return AppLocalizations.of(context)!.validatorEmptyHost;
               }
               if (!value.startsWith('http')) {
-                return 'Host must start with https or http';
+                return AppLocalizations.of(context)!.validatorStartNameHost;
               }
               if (value.endsWith('/')) {
-                return 'Host must end without \'/\'';
+                return AppLocalizations.of(context)!.validatorEndNameHost;
               }
 
               return null;
@@ -126,16 +141,16 @@ class _LoginFormState extends State<LoginForm> {
             height: 46,
           ),
           TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.person),
-              labelText: "Username",
+            decoration: InputDecoration(
+              icon: const Icon(Icons.person),
+              labelText: AppLocalizations.of(context)!.username,
             ),
             initialValue: _username,
             enabled: !_logginIn,
             textInputAction: TextInputAction.next,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a username';
+                return AppLocalizations.of(context)!.validatorEmptyUsername;
               }
 
               return null;
@@ -145,9 +160,9 @@ class _LoginFormState extends State<LoginForm> {
             },
           ),
           TextFormField(
-            decoration: const InputDecoration(
-              icon: Icon(Icons.password),
-              labelText: "Password",
+            decoration: InputDecoration(
+              icon: const Icon(Icons.password),
+              labelText: AppLocalizations.of(context)!.password,
             ),
             initialValue: _password,
             enabled: !_logginIn,
@@ -155,7 +170,7 @@ class _LoginFormState extends State<LoginForm> {
             obscureText: true,
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter a password';
+                return AppLocalizations.of(context)!.validatorEmptyPassword;
               }
 
               return null;
@@ -171,7 +186,7 @@ class _LoginFormState extends State<LoginForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Save credentials'),
+              Text(AppLocalizations.of(context)!.saveCredentials),
               Checkbox(
                 value: _saveCredentials,
                 onChanged: (value) {
@@ -191,7 +206,7 @@ class _LoginFormState extends State<LoginForm> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _logginIn ? null : () => _submit(context),
-              label: const Text("Enter"),
+              label: Text(AppLocalizations.of(context)!.enter),
               icon: const Icon(Icons.login_outlined),
             ),
           )

@@ -15,18 +15,18 @@ class ResourceServiceHttpImpl extends ResourceService {
   static const Logger _logger = Logger("ResourceService");
 
   String _baseUrl = '';
-  late Token _token;
+  Token? _token;
 
   void setHost(String host) {
     _baseUrl = host;
   }
 
-  void updateToken(Token newToken) {
+  void updateToken(Token? newToken) {
     _token = newToken;
   }
 
-  String get jwt {
-    return _token.jwtBase64;
+  String? get jwt {
+    return _token?.jwtBase64;
   }
 
   @override
@@ -36,7 +36,7 @@ class ResourceServiceHttpImpl extends ResourceService {
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Cookie': 'auth=$jwt',
-        'X-Auth': jwt
+        'X-Auth': jwt!
       });
 
       if (response.statusCode != 200) return null;
@@ -91,6 +91,8 @@ class ResourceServiceHttpImpl extends ResourceService {
 
         bytesBuilder.add(response.bodyBytes);
 
+        if (percentage == 100) continue;
+
         yield percentage;
       }
 
@@ -111,7 +113,7 @@ class ResourceServiceHttpImpl extends ResourceService {
           "$_baseUrl${HttpApi.uploadResource}$remoteFolderPath?override=$override");
       final responsePost = await http.post(url, headers: {
         'Cookie': 'auth=$jwt',
-        'X-Auth': jwt,
+        'X-Auth': jwt!,
       });
 
       if (responsePost.statusCode != 201) throw Exception();
@@ -120,7 +122,7 @@ class ResourceServiceHttpImpl extends ResourceService {
 
       final responseHead = await http.head(url, headers: {
         'Cookie': 'auth=$jwt',
-        'X-Auth': jwt,
+        'X-Auth': jwt!,
       });
 
       if (responseHead.statusCode != 200) throw Exception();
@@ -137,7 +139,7 @@ class ResourceServiceHttpImpl extends ResourceService {
             headers: {
               'Content-Type': 'application/offset+octet-stream',
               'Cookie': 'auth=$jwt',
-              'X-Auth': jwt,
+              'X-Auth': jwt!,
               'Content-Length': "$fileLenght",
               'Upload-Offset': "0",
             },
