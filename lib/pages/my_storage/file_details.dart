@@ -50,12 +50,14 @@ class FileDetails extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                file.name,
-                style: Theme.of(context).textTheme.titleLarge!.copyWith(
-                      fontStyle: FontStyle.italic,
-                      fontWeight: FontWeight.bold,
-                    ),
+              Flexible(
+                child: Text(
+                  file.name,
+                  style: Theme.of(context).textTheme.titleLarge!.copyWith(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
               ),
               Container(
                 decoration: BoxDecoration(
