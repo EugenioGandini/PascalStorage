@@ -19,5 +19,22 @@
   "selectFileToBeUploaded": "Select the file that should be uploaded",
   "downloadTitle": "Download operations",
   "download": "Download",
-  "saveTo": "Save to..."
+  "saveTo": "Save to...",
+  "deleteResourceSuccess": "Resource deleted successfully",
+  "deleteTitle": "Destructive operations",
+  "delete": "Delete",
+  "modifyTitle": "Modification operations",
+  "moveTo": "Move to...",
+  "renameInto": "Rename into...",
+  "renameResourceSuccess": "Re-name resource completed",
+  "dialogTitleRename": "Rename resource",
+  "rename": "Re-name",
+  "newName": "New name",
+  "validatorEmptyName": "A name must be inserted",
+  "validatorSameName": "The inserted name has not been changed",
+  "dialogDeleteTitle": "Delete resource",
+  "dialogDeleteMessage": "Are you sure you want to delete this resource",
+  "yes": "Yes",
+  "no": "No",
+  "fullName": "Fullname"
 }

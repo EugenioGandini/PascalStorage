@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:filebrowser/models/models.dart';
@@ -32,36 +33,44 @@ class FolderContentWidget extends StatelessWidget {
     var columns = (width / maxCrossAxisExtent).ceil();
     var aspectRatio = (width / 90.21) / columns;
 
-    return GridView.builder(
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: maxCrossAxisExtent,
-        childAspectRatio: aspectRatio,
-        crossAxisSpacing: 8,
-        mainAxisSpacing: 8,
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+        },
       ),
-      padding: const EdgeInsets.only(top: 8, bottom: 72, left: 8, right: 8),
-      itemBuilder: (context, index) {
-        if (index < content.folders.length) {
-          var folder = content.folders[index];
+      child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: maxCrossAxisExtent,
+          childAspectRatio: aspectRatio,
+          crossAxisSpacing: 8,
+          mainAxisSpacing: 8,
+        ),
+        padding: const EdgeInsets.only(top: 8, bottom: 72, left: 8, right: 8),
+        itemBuilder: (context, index) {
+          if (index < content.folders.length) {
+            var folder = content.folders[index];
 
-          return FolderWidget(
-            folder: folder,
-            onTap: () => onFolderTap(folder),
+            return FolderWidget(
+              folder: folder,
+              onTap: () => onFolderTap(folder),
+            );
+          }
+
+          int indexFile = index - content.folders.length;
+
+          var file = content.files[indexFile];
+
+          return InkWell(
+            child: FileWidget(
+              file: file,
+              onTap: () => onFileTap(file),
+            ),
           );
-        }
-
-        int indexFile = index - content.folders.length;
-
-        var file = content.files[indexFile];
-
-        return InkWell(
-          child: FileWidget(
-            file: file,
-            onTap: () => onFileTap(file),
-          ),
-        );
-      },
-      itemCount: content.folders.length + content.files.length,
+        },
+        itemCount: content.folders.length + content.files.length,
+      ),
     );
   }
 }

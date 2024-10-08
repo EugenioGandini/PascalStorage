@@ -2,27 +2,44 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void showDownloadSuccess(BuildContext context) {
-  var snackbarError = SnackBar(
-    content: Row(
-      children: [
-        const Icon(Icons.download_rounded, color: Colors.white),
-        const SizedBox(width: 16),
-        Text(AppLocalizations.of(context)!.downloadSuccess),
-      ],
-    ),
-    backgroundColor: Colors.green,
+  _showSnackbar(
+    context,
+    const Icon(Icons.download_rounded, color: Colors.white),
+    AppLocalizations.of(context)!.downloadSuccess,
   );
-
-  ScaffoldMessenger.of(context).showSnackBar(snackbarError);
 }
 
 void showUploadSuccess(BuildContext context) {
+  _showSnackbar(
+    context,
+    const Icon(Icons.upload, color: Colors.white),
+    AppLocalizations.of(context)!.uploadSuccess,
+  );
+}
+
+void showDeleteResourceSuccess(BuildContext context) {
+  _showSnackbar(
+    context,
+    const Icon(Icons.delete_forever_rounded, color: Colors.white),
+    AppLocalizations.of(context)!.deleteResourceSuccess,
+  );
+}
+
+void showRenameResourceSuccess(BuildContext context) {
+  _showSnackbar(
+    context,
+    const Icon(Icons.text_fields, color: Colors.white),
+    AppLocalizations.of(context)!.renameResourceSuccess,
+  );
+}
+
+void _showSnackbar(BuildContext context, Icon icon, String text) {
   var snackbarError = SnackBar(
     content: Row(
       children: [
-        const Icon(Icons.upload, color: Colors.white),
+        icon,
         const SizedBox(width: 16),
-        Text(AppLocalizations.of(context)!.uploadSuccess),
+        Text(text),
       ],
     ),
     backgroundColor: Colors.green,

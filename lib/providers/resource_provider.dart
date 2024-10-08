@@ -84,4 +84,24 @@ class ResourceProvider with ChangeNotifier {
       override,
     );
   }
+
+  Future<bool> deleteFile(RemoteFile file) async {
+    _logger.message('deleting remote file... ${file.path}');
+
+    return _resourceService.deleteFile(file);
+  }
+
+  Future<bool> moveFile(RemoteFile file, String destinationPath) async {
+    _logger.message('moving remote file... ${file.path} to $destinationPath');
+
+    return _resourceService.moveFile(file, destinationPath);
+  }
+
+  Future<bool> renameFile(RemoteFile file, String newName) async {
+    _logger.message('renaming remote file... ${file.path} into $newName');
+
+    String newPath = "${file.parentPath}/$newName";
+
+    return _resourceService.moveFile(file, newPath);
+  }
 }

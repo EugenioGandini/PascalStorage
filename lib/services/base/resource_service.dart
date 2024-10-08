@@ -5,4 +5,6 @@ abstract class ResourceService {
   Stream<int> downloadFile(RemoteFile file, String dirOutput);
   Stream<int> uploadFile(
       String localFilePath, String remoteFolderPath, bool override);
+  Future<bool> deleteFile(RemoteFile file);
+  Future<bool> moveFile(RemoteFile file, String destinationPath);
 }

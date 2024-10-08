@@ -19,5 +19,22 @@
   "selectFileToBeUploaded": "Seleziona il file da caricare",
   "downloadTitle": "Scaricamento",
   "download": "Scarica",
-  "saveTo": "Salva in..."
+  "saveTo": "Salva in...",
+  "deleteResourceSuccess": "Risorsa rimossa con successo",
+  "deleteTitle": "Operazioni distruttive",
+  "delete": "Elimina",
+  "modifyTitle": "Modifiche",
+  "moveTo": "Sposta in...",
+  "renameInto": "Rinomina in...",
+  "renameResourceSuccess": "Ri-nominazione risorsa completata",
+  "dialogTitleRename": "Rinomina la risorsa",
+  "rename": "Rinomina",
+  "newName": "Nuovo nome",
+  "validatorEmptyName": "Deve essere inserito un nome",
+  "validatorSameName": "Il nome inserito non è cambiato",
+  "dialogDeleteTitle": "Elimina la risorsa",
+  "dialogDeleteMessage": "Sei sicuro di voler eliminare questa risorsa",
+  "yes": "Sì",
+  "no": "No",
+  "fullName": "Nome completo"
 }

@@ -155,12 +155,52 @@ class ResourceServiceHttpImpl extends ResourceService {
 
         int percentageUpload = (offset / fileLenght * 100).toInt();
 
-        yield (percentageUpload * 80 / 100).toInt();
+        yield (percentageUpload * 80) ~/ 100;
       }
 
       yield 100;
     } catch (error) {
       _logger.message("Failed to upload the file $error");
     }
+  }
+
+  @override
+  Future<bool> deleteFile(RemoteFile file) async {
+    try {
+      final url = Uri.parse("$_baseUrl${HttpApi.deleteResource}${file.path}");
+      final response = await http.delete(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (response.statusCode != 204) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to delete the file $error");
+    }
+
+    return false;
+  }
+
+  @override
+  Future<bool> moveFile(RemoteFile file, String destinationPath) async {
+    try {
+      final url = Uri.parse(
+          "$_baseUrl${HttpApi.deleteResource}${file.path}?action=rename"
+          "&destination=$destinationPath&override=false&rename=false");
+      final response = await http.patch(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (response.statusCode != 200) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to move the file $error");
+    }
+
+    return false;
   }
 }

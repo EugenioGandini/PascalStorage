@@ -1,4 +1,4 @@
-package cc.eugenioing.filebrowser.filebrowser
+package cc.eugenioing.filebrowser
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -8,7 +8,7 @@
 PRODUCT_NAME = filebrowser
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = cc.eugenioing.filebrowser.filebrowser
+PRODUCT_BUNDLE_IDENTIFIER = cc.eugenioing.filebrowser
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2024 cc.eugenioing.filebrowser. All rights reserved.

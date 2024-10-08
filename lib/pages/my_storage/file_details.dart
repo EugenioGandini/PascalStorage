@@ -9,12 +9,18 @@ import '../../utils/files_utils.dart';
 
 class FileDetails extends StatelessWidget {
   final void Function(String) onSaveFile;
+  final void Function(RemoteFile) onDelete;
+  final void Function(RemoteFile) onMove;
+  final void Function(RemoteFile) onRename;
   final RemoteFile file;
 
   const FileDetails({
     super.key,
     required this.file,
     required this.onSaveFile,
+    required this.onDelete,
+    required this.onMove,
+    required this.onRename,
   });
 
   void _selectFolder() async {
@@ -37,6 +43,30 @@ class FileDetails extends StatelessWidget {
     if (downloadDirectory == null) return;
 
     onSaveFile(downloadDirectory.path);
+  }
+
+  List<Widget> _buildSubArea(
+      BuildContext context, String title, List<Widget> children) {
+    return [
+      const Divider(),
+      Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      const SizedBox(
+        height: 8,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: children,
+      ),
+    ];
+  }
+
+  Widget _buildSeparatorAction() {
+    return const SizedBox(
+      width: 16,
+    );
   }
 
   @override
@@ -73,27 +103,43 @@ class FileDetails extends StatelessWidget {
               ),
             ],
           ),
-          const Divider(),
-          Text(
+          ..._buildSubArea(
+            context,
             AppLocalizations.of(context)!.downloadTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            [
               ElevatedButton(
                 onPressed: _selectFolder,
                 child: Text(AppLocalizations.of(context)!.saveTo),
               ),
-              const SizedBox(
-                width: 16,
-              ),
+              _buildSeparatorAction(),
               ElevatedButton(
                 onPressed: _saveDownloadFolder,
                 child: Text(AppLocalizations.of(context)!.download),
+              ),
+            ],
+          ),
+          ..._buildSubArea(
+            context,
+            AppLocalizations.of(context)!.modifyTitle,
+            [
+              ElevatedButton(
+                onPressed: () => onMove(file),
+                child: Text(AppLocalizations.of(context)!.moveTo),
+              ),
+              _buildSeparatorAction(),
+              ElevatedButton(
+                onPressed: () => onRename(file),
+                child: Text(AppLocalizations.of(context)!.renameInto),
+              ),
+            ],
+          ),
+          ..._buildSubArea(
+            context,
+            AppLocalizations.of(context)!.deleteTitle,
+            [
+              ElevatedButton(
+                onPressed: () => onDelete(file),
+                child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],
           ),
