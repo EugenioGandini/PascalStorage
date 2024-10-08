@@ -25,7 +25,8 @@ class FolderWidget extends StatelessWidget {
         child: ListTile(
           leading: const Icon(Icons.folder),
           title: Text(folder.name),
-          subtitle: Text(DateFormat.yMMMd().add_jm().format(folder.modified)),
+          subtitle: Text(
+              DateFormat.yMMMd().add_jm().format(folder.modified.toLocal())),
         ),
       ),
     );

@@ -43,7 +43,7 @@ class FileWidget extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            "${DateFormat.yMMMd().add_jm().format(file.modified)} (${getFileSize(file)})",
+            "${DateFormat.yMMMd().add_jm().format(file.modified.toLocal())} (${getFileSize(file)})",
             style: TextStyle(
               fontSize: 12,
               color: getFileForegroundColor(file),
