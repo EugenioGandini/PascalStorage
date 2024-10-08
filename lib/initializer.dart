@@ -2,14 +2,20 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:window_manager/window_manager.dart';
 
 class Initializer {
-  static Future<void> _initializeHive() async {
+  static Future _initializeLocale() async {
+    var locale = Platform.localeName;
+    Intl.defaultLocale = locale;
+  }
+
+  static Future _initializeHive() async {
     await Hive.initFlutter();
   }
 
-  static Future<void> _initializeWindow() async {
+  static Future _initializeWindow() async {
     await windowManager.ensureInitialized();
 
     WindowOptions windowsOptions = const WindowOptions(
@@ -23,6 +29,8 @@ class Initializer {
 
   static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    await _initializeLocale();
 
     await _initializeHive();
 
