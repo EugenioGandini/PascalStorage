@@ -52,13 +52,13 @@ class _LoginFormState extends State<LoginForm> {
 
       Future.delayed(const Duration(milliseconds: 500), () {
         if (context.mounted) {
-          _submit(context);
+          _submit();
         }
       });
     }
   }
 
-  Future _submit(BuildContext context) async {
+  Future _submit() async {
     if (!_keyForm.currentState!.validate()) return;
 
     _keyForm.currentState!.save();
@@ -82,13 +82,13 @@ class _LoginFormState extends State<LoginForm> {
         await authProvider.saveCredentials(user);
       }
 
-      if (context.mounted) {
+      if (mounted) {
         notify.showSuccessLogin(context);
       }
 
       widget.onLoggedInSuccessfully();
     } else {
-      if (context.mounted) {
+      if (mounted) {
         notify.showErrorLogin(context);
       }
     }
@@ -178,7 +178,7 @@ class _LoginFormState extends State<LoginForm> {
             onSaved: (passwordEntered) {
               _password = passwordEntered!;
             },
-            onFieldSubmitted: (_) => _submit(context),
+            onFieldSubmitted: (_) => _submit(),
           ),
           const SizedBox(
             height: 16,
@@ -205,7 +205,7 @@ class _LoginFormState extends State<LoginForm> {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
-              onPressed: _logginIn ? null : () => _submit(context),
+              onPressed: _logginIn ? null : _submit,
               label: Text(AppLocalizations.of(context)!.enter),
               icon: const Icon(Icons.login_outlined),
             ),
