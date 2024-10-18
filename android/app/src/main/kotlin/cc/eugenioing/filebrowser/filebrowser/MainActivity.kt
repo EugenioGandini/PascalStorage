@@ -1,4 +1,4 @@
-package cc.eugenioing.filebrowser
+package cc.eugenioing.pascalstorage
 
 import io.flutter.embedding.android.FlutterActivity
 

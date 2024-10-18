@@ -6,11 +6,13 @@ import '../../models/models.dart';
 import '../../providers/resource_provider.dart';
 
 class DialogRename extends StatefulWidget {
-  final RemoteFile file;
+  final RemoteFolder? folder;
+  final RemoteFile? file;
 
   const DialogRename({
     super.key,
-    required this.file,
+    this.file, // accept or the file
+    this.folder, // accept or the folder
   });
 
   @override
@@ -23,12 +25,17 @@ class _DialogRenameState extends State<DialogRename> {
   String _newName = "";
   bool _fullName = false;
 
+  bool get isForAFile {
+    return widget.file != null;
+  }
+
   @override
   void initState() {
     super.initState();
 
     _fullName = false;
-    _newName = widget.file.nameWithoutExtension;
+    _newName =
+        isForAFile ? widget.file!.nameWithoutExtension : widget.folder!.name;
     _newNameController.text = _newName;
   }
 
@@ -37,9 +44,9 @@ class _DialogRenameState extends State<DialogRename> {
       _fullName = !_fullName;
 
       if (_fullName) {
-        _newName = widget.file.name;
+        _newName = widget.file!.name;
       } else {
-        _newName = widget.file.nameWithoutExtension;
+        _newName = widget.file!.nameWithoutExtension;
       }
 
       _newNameController.text = _newName;
@@ -55,11 +62,15 @@ class _DialogRenameState extends State<DialogRename> {
     var resProvider = Provider.of<ResourceProvider>(context, listen: false);
 
     String finalName = _newName;
-    if (!_fullName) {
-      finalName = "$finalName.${widget.file.extension}";
+    if (!_fullName && isForAFile) {
+      var extension = widget.file!.extension;
+
+      finalName = "$finalName.$extension";
     }
 
-    bool success = await resProvider.renameFile(widget.file, finalName);
+    bool success = isForAFile
+        ? await resProvider.renameFile(widget.file!, finalName)
+        : await resProvider.renameFolder(widget.folder!, finalName);
 
     if (success) {
       navigator.pop(true);
@@ -79,13 +90,15 @@ class _DialogRenameState extends State<DialogRename> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            children: [
-              Expanded(child: Text(AppLocalizations.of(context)!.fullName)),
-              Checkbox(value: _fullName, onChanged: (_) => _toggleFullName()),
-            ],
-          ),
-          const SizedBox(height: 16),
+          if (isForAFile) ...[
+            Row(
+              children: [
+                Expanded(child: Text(AppLocalizations.of(context)!.fullName)),
+                Checkbox(value: _fullName, onChanged: (_) => _toggleFullName()),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
           TextFormField(
             decoration: InputDecoration(
               icon: const Icon(Icons.text_fields),
@@ -97,7 +110,12 @@ class _DialogRenameState extends State<DialogRename> {
               if (value == null || value.isEmpty) {
                 return AppLocalizations.of(context)!.validatorEmptyName;
               }
-              if (value == widget.file.nameWithoutExtension) {
+
+              var name = isForAFile
+                  ? widget.file!.nameWithoutExtension
+                  : widget.folder!.name;
+
+              if (value == name) {
                 return AppLocalizations.of(context)!.validatorSameName;
               }
 
@@ -124,7 +142,10 @@ class _DialogRenameState extends State<DialogRename> {
 }
 
 Future buildDialogRenameResource(
-    BuildContext context, RemoteFile fileToBeRenamed) async {
+  BuildContext context, {
+  RemoteFile? fileToBeRenamed,
+  RemoteFolder? folderToBeRenamed,
+}) async {
   var renameSuccessfully = await showDialog(
     context: context,
     builder: (context) {
@@ -144,6 +165,7 @@ Future buildDialogRenameResource(
         ),
         content: DialogRename(
           file: fileToBeRenamed,
+          folder: folderToBeRenamed,
         ),
       );
     },

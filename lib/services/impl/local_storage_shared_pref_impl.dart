@@ -1,8 +1,8 @@
 // import 'package:shared_preferences/shared_preferences.dart';
 
-// import 'package:filebrowser/models/settings.dart';
+// import 'package:pascalstorage/models/settings.dart';
 
-// import 'package:filebrowser/services/base/local_storage_service.dart';
+// import 'package:pascalstorage/services/base/local_storage_service.dart';
 
 // /// This implementation save the settings into
 // /// local storage only

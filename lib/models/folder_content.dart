@@ -1,4 +1,4 @@
-import 'package:filebrowser/models/models.dart';
+import './models.dart';
 
 class FolderContent {
   String path = "";
@@ -13,5 +13,11 @@ class FolderContent {
 
   bool containsFileWithName(String fileName) {
     return files.any((file) => file.name == fileName);
+  }
+
+  int get folderSize {
+    return files.map((file) => file.size).reduce((accumulator, sizeFolder) {
+      return accumulator + sizeFolder;
+    });
   }
 }

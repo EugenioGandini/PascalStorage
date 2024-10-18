@@ -1,13 +1,13 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:filebrowser/models/models.dart';
+import '../../models/models.dart';
 
-import 'package:filebrowser/services/base/auth_service.dart';
-import 'package:filebrowser/services/base/local_storage_service.dart';
-import 'package:filebrowser/services/impl/auth_service_http_impl.dart';
-import 'package:filebrowser/services/impl/local_storage_service_hive_impl.dart';
+import '../services/base/auth_service.dart';
+import '../services/base/local_storage_service.dart';
+import '../services/impl/auth_service_http_impl.dart';
+import '../services/impl/local_storage_service_hive_impl.dart';
 
-import 'package:filebrowser/utils/logger.dart';
+import '../utils/logger.dart';
 
 class AuthProvider with ChangeNotifier {
   static const Logger _logger = Logger("AuthProvider");

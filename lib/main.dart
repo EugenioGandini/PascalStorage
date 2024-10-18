@@ -3,17 +3,17 @@ import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'package:filebrowser/initializer.dart';
+import 'initializer.dart';
 
-import 'package:filebrowser/models/models.dart';
+import 'models/models.dart';
 
-import 'package:filebrowser/providers/settings_provider.dart';
-import 'package:filebrowser/providers/auth_provider.dart';
-import 'package:filebrowser/providers/resource_provider.dart';
+import 'providers/settings_provider.dart';
+import 'providers/auth_provider.dart';
+import 'providers/resource_provider.dart';
 
-import 'package:filebrowser/pages/pages.dart';
+import 'pages/pages.dart';
 
-import 'package:filebrowser/config/theme.dart';
+import 'config/theme.dart';
 
 Future<void> main() async {
   await Initializer.initialize();
@@ -67,7 +67,7 @@ class FileBrowserApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'File Browser Flutter',
+      title: 'Pascal Storage',
       theme: getAppTheme(),
       localizationsDelegates: const [
         AppLocalizations.delegate,

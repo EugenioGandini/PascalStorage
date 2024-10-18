@@ -33,6 +33,14 @@ void showRenameResourceSuccess(BuildContext context) {
   );
 }
 
+void showNewResourceCreatedSuccess(BuildContext context) {
+  _showSnackbar(
+    context,
+    const Icon(Icons.text_fields, color: Colors.white),
+    AppLocalizations.of(context)!.newResourceCreatedSuccess,
+  );
+}
+
 void _showSnackbar(BuildContext context, Icon icon, String text) {
   var snackbarError = SnackBar(
     content: Row(

@@ -1,12 +1,12 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:filebrowser/models/models.dart';
+import '../../utils/platform.dart';
+import '../../models/models.dart';
 
-import 'package:filebrowser/services/base/local_storage_service.dart';
+import '../base/local_storage_service.dart';
 
 /// This implementation of the settings service save
 /// data in local encrypted storage on the device
@@ -38,7 +38,7 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
 
   String? get storagePath {
     if (Platform.isWindows) {
-      return "${Platform.environment['APPDATA']!}/cc.eugenioing.filebrowser/filebrowser";
+      return "${Platform.appDataPath}/cc.eugenioing.pascalstorage/pascalstorage";
     }
 
     return null;

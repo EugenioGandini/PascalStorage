@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "cc.eugenioing.filebrowser" "\0"
-            VALUE "FileDescription", "filebrowser" "\0"
+            VALUE "CompanyName", "cc.eugenioing.pascalstorage" "\0"
+            VALUE "FileDescription", "pascalstorage" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "filebrowser" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 cc.eugenioing.filebrowser. All rights reserved." "\0"
-            VALUE "OriginalFilename", "filebrowser.exe" "\0"
-            VALUE "ProductName", "filebrowser" "\0"
+            VALUE "InternalName", "pascalstorage" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 cc.eugenioing.pascalstorage. All rights reserved." "\0"
+            VALUE "OriginalFilename", "pascalstorage.exe" "\0"
+            VALUE "ProductName", "pascalstorage" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

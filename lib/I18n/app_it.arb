@@ -36,5 +36,10 @@
   "dialogDeleteMessage": "Sei sicuro di voler eliminare questa risorsa",
   "yes": "Sì",
   "no": "No",
-  "fullName": "Nome completo"
+  "fullName": "Nome completo",
+  "validatorMissingExtension": "Deve essere fornita un'estensione",
+  "create": "Crea",
+  "dialogTitleNewFolder": "Crea una nuova cartella",
+  "dialogTitleNewFile": "Crea un nuovo file",
+  "newResourceCreatedSuccess": "La nuova risorsa è stata creata con successo"
 }

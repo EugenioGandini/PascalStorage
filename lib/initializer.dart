@@ -1,9 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:window_manager/window_manager.dart';
+
+import '../utils/platform.dart';
 
 class Initializer {
   static Future _initializeLocale() async {
@@ -21,7 +21,7 @@ class Initializer {
     WindowOptions windowsOptions = const WindowOptions(
       size: Size(800, 600),
       center: true,
-      title: 'File Browser Flutter',
+      title: 'Pascal Storage',
     );
 
     windowManager.waitUntilReadyToShow(windowsOptions);
@@ -30,7 +30,7 @@ class Initializer {
   static Future<void> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await _initializeLocale();
+    if (!Platform.isWeb) await _initializeLocale();
 
     await _initializeHive();
 

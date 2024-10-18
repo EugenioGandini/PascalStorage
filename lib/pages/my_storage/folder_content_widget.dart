@@ -1,7 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-import 'package:filebrowser/models/models.dart';
+import '../../models/models.dart';
 
 import './file_widget.dart';
 import './folder_widget.dart';
@@ -11,6 +11,7 @@ class FolderContentWidget extends StatelessWidget {
   final FolderContent content;
 
   final Function(RemoteFolder folder) onFolderTap;
+  final Function(RemoteFolder folder) onFolderLongPress;
   final Function(RemoteFile file) onFileTap;
 
   final double maxWidthItem = 400;
@@ -20,6 +21,7 @@ class FolderContentWidget extends StatelessWidget {
     required this.folder,
     required this.content,
     required this.onFolderTap,
+    required this.onFolderLongPress,
     required this.onFileTap,
   });
 
@@ -55,6 +57,7 @@ class FolderContentWidget extends StatelessWidget {
             return FolderWidget(
               folder: folder,
               onTap: () => onFolderTap(folder),
+              onLongPress: () => onFolderLongPress(folder),
             );
           }
 

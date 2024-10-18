@@ -36,5 +36,10 @@
   "dialogDeleteMessage": "Are you sure you want to delete this resource",
   "yes": "Yes",
   "no": "No",
-  "fullName": "Fullname"
+  "fullName": "Fullname",
+  "validatorMissingExtension": "An extension must be provided",
+  "create": "Create",
+  "dialogTitleNewFolder": "Create a new folder",
+  "dialogTitleNewFile": "Create a new file",
+  "newResourceCreatedSuccess": "New resource created successfully"
 }

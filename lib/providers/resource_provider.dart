@@ -1,14 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 
-import 'package:filebrowser/models/models.dart';
+import '../../models/models.dart';
 
-import 'package:filebrowser/services/base/resource_service.dart';
-import 'package:filebrowser/services/impl/resource_service_http_impl.dart';
+import '../services/base/resource_service.dart';
+import '../services/impl/resource_service_http_impl.dart';
 
-import 'package:filebrowser/utils/logger.dart';
-import 'package:path/path.dart';
+import '../../utils/logger.dart';
 
 class ResourceProvider with ChangeNotifier {
   static const Logger _logger = Logger("ResourceProvider");
@@ -70,17 +67,16 @@ class ResourceProvider with ChangeNotifier {
   }
 
   Stream<int> uploadFile(
-    File localFilePath,
+    String fileFullName,
+    Uint8List bufferFile,
     RemoteFolder remoteFolder,
     bool override,
   ) {
-    var fileName = basename(localFilePath.path);
-
-    _logger.message('uploading file... $fileName to ${remoteFolder.path}');
+    _logger.message('uploading file... $fileFullName to ${remoteFolder.path}');
 
     return _resourceService.uploadFile(
-      localFilePath.path,
-      "${remoteFolder.path}/$fileName",
+      bufferFile,
+      "${remoteFolder.path}/$fileFullName",
       override,
     );
   }
@@ -103,5 +99,25 @@ class ResourceProvider with ChangeNotifier {
     String newPath = "${file.parentPath}/$newName";
 
     return _resourceService.moveFile(file, newPath);
+  }
+
+  Future<bool> createFolder(RemoteFolder folder) async {
+    _logger.message('creating remote folder... ${folder.path}');
+
+    return _resourceService.createFolder(folder.name, folder.path);
+  }
+
+  Future<bool> renameFolder(RemoteFolder folder, String newName) async {
+    _logger.message('renaming remote folder... ${folder.path} into $newName');
+
+    String newPath = "${folder.parentPath}/$newName";
+
+    return _resourceService.moveFolder(folder, newPath);
+  }
+
+  Future<bool> deleteFolder(RemoteFolder folder) async {
+    _logger.message('deleting remote folder... ${folder.path}');
+
+    return _resourceService.deleteFolder(folder);
   }
 }

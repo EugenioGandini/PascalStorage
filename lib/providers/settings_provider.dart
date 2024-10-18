@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-import 'package:filebrowser/services/base/local_storage_service.dart';
-import 'package:filebrowser/services/impl/local_storage_service_hive_impl.dart';
+import '../services/base/local_storage_service.dart';
+import '../services/impl/local_storage_service_hive_impl.dart';
 
-import 'package:filebrowser/models/models.dart';
+import '../../models/models.dart';
 
 class SettingsProvider with ChangeNotifier {
   Settings _settings = const Settings();

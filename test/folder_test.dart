@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:filebrowser/models/remote_folder.dart';
-import 'package:filebrowser/pages/my_storage/folder_widget.dart';
+import 'package:pascalstorage/models/remote_folder.dart';
+import 'package:pascalstorage/pages/my_storage/folder_widget.dart';
 
 void main() {
   testWidgets('Show folder sample widget', (tester) async {

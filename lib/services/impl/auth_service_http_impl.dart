@@ -2,12 +2,12 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'package:filebrowser/models/models.dart';
-import 'package:filebrowser/utils/logger.dart';
+import '../../models/models.dart';
+import '../../utils/logger.dart';
 
 import './http_api.dart';
 
-import 'package:filebrowser/services/base/auth_service.dart';
+import '../base/auth_service.dart';
 
 class AuthServiceHttpImpl extends AuthService {
   static const Logger _logger = Logger("AuthService");

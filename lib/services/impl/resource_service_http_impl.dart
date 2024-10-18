@@ -1,15 +1,17 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:http/http.dart' as http;
 
-import 'package:filebrowser/models/models.dart';
-import 'package:filebrowser/utils/logger.dart';
+import '../../utils/platform.dart';
+import '../../models/models.dart';
+import '../../utils/logger.dart';
 
-import 'package:filebrowser/services/impl/http_api.dart';
+import './http_api.dart';
 
-import 'package:filebrowser/services/base/resource_service.dart';
+import '../base/resource_service.dart';
 
 class ResourceServiceHttpImpl extends ResourceService {
   static const Logger _logger = Logger("ResourceService");
@@ -96,8 +98,12 @@ class ResourceServiceHttpImpl extends ResourceService {
         yield percentage;
       }
 
-      await File('$dirOutput/${file.name}')
-          .writeAsBytes(bytesBuilder.toBytes());
+      if (Platform.isWeb) {
+        download(bytesBuilder.toBytes(), file.name);
+      } else {
+        await File('$dirOutput/${file.name}')
+            .writeAsBytes(bytesBuilder.toBytes());
+      }
 
       yield 100;
     } catch (error) {
@@ -105,9 +111,28 @@ class ResourceServiceHttpImpl extends ResourceService {
     }
   }
 
+  void download(
+    List<int> bytes,
+    String downloadName,
+  ) {
+    // Encode our file in base64
+    final _base64 = base64Encode(bytes);
+    // Create the link with the file
+    final anchor = html.AnchorElement(
+        href: 'data:application/octet-stream;base64,$_base64')
+      ..target = 'blank';
+    // add the name
+    anchor.download = downloadName;
+    // trigger download
+    html.document.body!.append(anchor);
+    anchor.click();
+    anchor.remove();
+    return;
+  }
+
   @override
   Stream<int> uploadFile(
-      String localFilePath, String remoteFolderPath, bool override) async* {
+      Uint8List bufferFile, String remoteFolderPath, bool override) async* {
     try {
       final url = Uri.parse(
           "$_baseUrl${HttpApi.uploadResource}$remoteFolderPath?override=$override");
@@ -129,9 +154,8 @@ class ResourceServiceHttpImpl extends ResourceService {
 
       yield 20;
 
-      var fileToUpload = File(localFilePath);
-      var fileLenght = await fileToUpload.length();
-      var bytes = await fileToUpload.readAsBytes();
+      var fileLenght = bufferFile.length;
+      var bytes = bufferFile;
 
       final responsePatch = http
           .patch(
@@ -186,9 +210,9 @@ class ResourceServiceHttpImpl extends ResourceService {
   @override
   Future<bool> moveFile(RemoteFile file, String destinationPath) async {
     try {
-      final url = Uri.parse(
-          "$_baseUrl${HttpApi.deleteResource}${file.path}?action=rename"
-          "&destination=$destinationPath&override=false&rename=false");
+      final url =
+          Uri.parse("$_baseUrl${HttpApi.moveResource}${file.path}?action=rename"
+              "&destination=$destinationPath&override=false&rename=false");
       final response = await http.patch(url, headers: {
         'Cookie': 'auth=$jwt',
         'X-Auth': jwt!,
@@ -199,6 +223,66 @@ class ResourceServiceHttpImpl extends ResourceService {
       return true;
     } catch (error) {
       _logger.message("Failed to move the file $error");
+    }
+
+    return false;
+  }
+
+  @override
+  Future<bool> createFolder(String folderName, String parentFolderPath) async {
+    try {
+      final url = Uri.parse(
+          "$_baseUrl${HttpApi.createFolder}$parentFolderPath/$folderName/");
+      final responsePost = await http.post(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (responsePost.statusCode != 200) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to create the new folder $error");
+    }
+
+    return false;
+  }
+
+  @override
+  Future<bool> moveFolder(RemoteFolder folder, String destinationPath) async {
+    try {
+      final url =
+          Uri.parse("$_baseUrl${HttpApi.moveFolder}${folder.path}?action=rename"
+              "&destination=$destinationPath&override=false&rename=false");
+      final response = await http.patch(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (response.statusCode != 200) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to move the folder $error");
+    }
+
+    return false;
+  }
+
+  @override
+  Future<bool> deleteFolder(RemoteFolder folder) async {
+    try {
+      final url = Uri.parse("$_baseUrl${HttpApi.deleteFolder}${folder.path}");
+      final response = await http.delete(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (response.statusCode != 204) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to delete the folder $error");
     }
 
     return false;

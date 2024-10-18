@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,6 +7,7 @@ import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../utils/platform.dart';
 import '../../utils/logger.dart';
 import '../../config/permissions.dart';
 import '../../models/models.dart';
@@ -16,6 +18,8 @@ import '../base_page.dart';
 
 import './folder_content_widget.dart';
 import './file_details.dart';
+import './folder_details.dart';
+import './dialog_new.dart';
 import './dialog_rename.dart';
 import './dialog_yes_no.dart';
 import 'notifications.dart' as notify;
@@ -100,6 +104,32 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
+  void _openFolderDetails(BuildContext context, RemoteFolder folder) {
+    _logger.message('User ask for details on folder ${folder.name}');
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: SizedBox(
+            width: double.infinity,
+            child: FolderDetails(
+              folder: folder,
+              // onSaveFile: (dir) {
+              //   Navigator.of(context).pop();
+              //   _saveFile(file, dir);
+              // },
+              // onMove: (file) => {}, //_selectNewFolderFile(file),
+              onRename: (file) => {},
+              onDelete: (file) => {},
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Future _saveFile(RemoteFile file, String path) async {
     _logger.message(
         'Saving remote file ${file.name} onto this device at path $path');
@@ -121,6 +151,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     _logger.message('Selecting file to upload');
 
     var result = await FilePicker.platform.pickFiles(
+      withData: Platform.isWeb,
       allowMultiple: false,
       dialogTitle:
           mounted ? AppLocalizations.of(context)!.selectFileToBeUploaded : '',
@@ -128,23 +159,37 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
     if (result == null) return;
 
-    List<PlatformFile> filePath = result.files;
-    _logger.message('File selected ${filePath[0].path}');
+    PlatformFile filePath = result.files.single;
 
-    var fileToUpload = File(filePath[0].path!);
+    late Uint8List buffer;
+    late String fileFullName;
 
-    await _uploadFile(fileToUpload);
+    if (Platform.isWeb) {
+      _logger.message(
+          'File selected ${filePath.name} ${filePath.bytes!.length} bytes');
+
+      fileFullName = filePath.name;
+      buffer = filePath.bytes!;
+    } else {
+      _logger.message('File selected ${filePath.path}');
+
+      var fileToUpload = File(filePath.path!);
+
+      fileFullName = path.basename(fileToUpload.path);
+      buffer = await fileToUpload.readAsBytes();
+    }
+
+    await _uploadFile(fileFullName, buffer);
   }
 
-  Future _uploadFile(File file) async {
+  Future _uploadFile(String fileFullName, Uint8List buffer) async {
     _logger.message(
-        'Uploading file ${file.path} to remote folder ${_remoteFolder.name}');
+        'Uploading file $fileFullName to remote folder ${_remoteFolder.name}');
 
-    var fileName = path.basename(file.path);
-    var override = _folderContent.containsFileWithName(fileName);
+    var override = _folderContent.containsFileWithName(fileFullName);
 
-    await for (var percentage
-        in _resProvider.uploadFile(file, _remoteFolder, override)) {
+    await for (var percentage in _resProvider.uploadFile(
+        fileFullName, buffer, _remoteFolder, override)) {
       _logger.message('Uploading... $percentage %');
 
       if (percentage == 100) {
@@ -181,11 +226,24 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
   Future _selectNewNameFile(RemoteFile file) async {
     Navigator.of(context).pop();
-    bool renameSuccess = await buildDialogRenameResource(context, file);
+    bool renameSuccess =
+        await buildDialogRenameResource(context, fileToBeRenamed: file);
 
     if (renameSuccess) {
       if (mounted) {
         notify.showRenameResourceSuccess(context);
+      }
+      _forceReloadContent();
+    }
+  }
+
+  Future _crateNewResource() async {
+    bool newFolderSuccess =
+        await buildDialogNewResource(context, _remoteFolder, true);
+
+    if (newFolderSuccess) {
+      if (mounted) {
+        notify.showNewResourceCreatedSuccess(context);
       }
       _forceReloadContent();
     }
@@ -248,10 +306,16 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
               _folderContent = loadedContent;
 
+              // setState(() {
+              //   _title = "$_title ($_folderContent)";
+              // });
+
               return FolderContentWidget(
                 folder: loadedContent.currentFolder,
                 content: loadedContent,
                 onFolderTap: (folder) => _openFolder(context, folder),
+                onFolderLongPress: (folder) =>
+                    _openFolderDetails(context, folder),
                 onFileTap: (file) => _openFileDetails(
                   context,
                   file,
@@ -265,10 +329,18 @@ class _MyStoragePageState extends State<MyStoragePage> {
           },
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _selectFileToBeUploaded,
-        child: const Icon(Icons.upload),
-      ),
+      floatingActionButton: [
+        FloatingActionButton(
+          heroTag: 'UploadNewFile',
+          onPressed: _selectFileToBeUploaded,
+          child: const Icon(Icons.upload),
+        ),
+        FloatingActionButton(
+          heroTag: 'CreateNewFolder',
+          onPressed: _crateNewResource,
+          child: const Icon(Icons.create_new_folder),
+        ),
+      ],
     );
   }
 }

@@ -1,9 +1,10 @@
-import 'package:filebrowser/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../models/models.dart';
+import '../../utils/platform.dart';
 import '../../config/permissions.dart';
 import '../../utils/files_utils.dart';
 
@@ -38,11 +39,16 @@ class FileDetails extends StatelessWidget {
   void _saveDownloadFolder() async {
     if (!await hasStorageAccessPermission()) return;
 
-    var downloadDirectory = await getDownloadsDirectory();
+    var outputPath = "";
 
-    if (downloadDirectory == null) return;
+    if (!Platform.isWeb) {
+      var downloadDirectory = await getDownloadsDirectory();
 
-    onSaveFile(downloadDirectory.path);
+      if (downloadDirectory == null) return;
+      outputPath = downloadDirectory.path;
+    }
+
+    onSaveFile(outputPath);
   }
 
   List<Widget> _buildSubArea(
@@ -107,11 +113,13 @@ class FileDetails extends StatelessWidget {
             context,
             AppLocalizations.of(context)!.downloadTitle,
             [
-              ElevatedButton(
-                onPressed: _selectFolder,
-                child: Text(AppLocalizations.of(context)!.saveTo),
-              ),
-              _buildSeparatorAction(),
+              if (!Platform.isWeb) ...[
+                ElevatedButton(
+                  onPressed: _selectFolder,
+                  child: Text(AppLocalizations.of(context)!.saveTo),
+                ),
+                _buildSeparatorAction(),
+              ],
               ElevatedButton(
                 onPressed: _saveDownloadFolder,
                 child: Text(AppLocalizations.of(context)!.download),

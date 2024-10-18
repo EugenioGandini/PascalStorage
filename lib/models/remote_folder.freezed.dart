@@ -137,12 +137,13 @@ class __$$RemoteFolderImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$RemoteFolderImpl implements _RemoteFolder {
+class _$RemoteFolderImpl extends _RemoteFolder {
   const _$RemoteFolderImpl(
       {required this.path,
       required this.name,
       required this.size,
-      required this.modified});
+      required this.modified})
+      : super._();
 
   factory _$RemoteFolderImpl.fromJson(Map<String, dynamic> json) =>
       _$$RemoteFolderImplFromJson(json);
@@ -193,12 +194,13 @@ class _$RemoteFolderImpl implements _RemoteFolder {
   }
 }
 
-abstract class _RemoteFolder implements RemoteFolder {
+abstract class _RemoteFolder extends RemoteFolder {
   const factory _RemoteFolder(
       {required final String path,
       required final String name,
       required final int size,
       required final DateTime modified}) = _$RemoteFolderImpl;
+  const _RemoteFolder._() : super._();
 
   factory _RemoteFolder.fromJson(Map<String, dynamic> json) =
       _$RemoteFolderImpl.fromJson;

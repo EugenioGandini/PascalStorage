@@ -1,4 +1,4 @@
-import 'package:filebrowser/models/models.dart';
+import '../../models/models.dart';
 
 abstract class LocalStorageService {
   Future saveSettings(Settings settings);

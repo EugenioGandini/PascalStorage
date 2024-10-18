@@ -1,6 +1,6 @@
 {
-    "name": "filebrowser",
-    "short_name": "filebrowser",
+    "name": "pascalstorage",
+    "short_name": "pascalstorage",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
