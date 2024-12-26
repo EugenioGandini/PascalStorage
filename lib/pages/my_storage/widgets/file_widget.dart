@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/models.dart';
-import '../../utils/files_utils.dart';
+import '../../../models/models.dart';
+import '../../../utils/files_utils.dart';
 
+/// Widget for displaying files
 class FileWidget extends StatelessWidget {
   final RemoteFile file;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final bool isSelected;
 
   const FileWidget({
     super.key,
     required this.file,
     this.onTap,
+    this.onLongPress,
+    this.isSelected = false,
   });
 
   String get name {
@@ -31,6 +36,7 @@ class FileWidget extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: ListTile(
           leading: Icon(
             getFileIcon(file),

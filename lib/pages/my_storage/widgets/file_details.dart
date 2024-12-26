@@ -1,23 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../models/models.dart';
+import '../../../models/models.dart';
 
-class FolderDetails extends StatelessWidget {
-  // final void Function(String) onSaveFile;
-  final void Function(RemoteFolder) onDelete;
-  // final void Function(RemoteFile) onMove;
-  final void Function(RemoteFolder) onRename;
-  final RemoteFolder folder;
+import '../../../utils/platform.dart';
+import '../../../utils/files_utils.dart';
+import '../../../utils/storage_utils.dart';
 
-  const FolderDetails({
+/// Widget for displaying a single file details with
+/// actions:
+/// - save locally
+/// - delete remotly
+/// - move remotly
+/// - rename remotly
+class FileDetails extends StatelessWidget {
+  final void Function(String) onSaveFile;
+  final void Function(RemoteFile) onDelete;
+  final void Function(RemoteFile) onMove;
+  final void Function(RemoteFile) onRename;
+  final RemoteFile file;
+
+  const FileDetails({
     super.key,
-    required this.folder,
-    // required this.onSaveFile,
+    required this.file,
+    required this.onSaveFile,
     required this.onDelete,
-    // required this.onMove,
+    required this.onMove,
     required this.onRename,
   });
+
+  void _selectFolder() async {
+    String? directoryPath = await chooseOutputFolder();
+
+    if (directoryPath == null) return;
+
+    onSaveFile(directoryPath);
+  }
+
+  void _saveDownloadFolder() async {
+    String? outputPath = await getDownloadFolder();
+
+    if (outputPath == null) return;
+
+    onSaveFile(outputPath);
+  }
 
   List<Widget> _buildSubArea(
       BuildContext context, String title, List<Widget> children) {
@@ -56,7 +82,7 @@ class FolderDetails extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  folder.name,
+                  file.name,
                   style: Theme.of(context).textTheme.titleLarge!.copyWith(
                         fontStyle: FontStyle.italic,
                         fontWeight: FontWeight.bold,
@@ -66,14 +92,31 @@ class FolderDetails extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(5),
-                  color: const Color.fromARGB(255, 204, 204, 204),
+                  color: getFileBackgroundColor(file),
                 ),
                 padding: const EdgeInsets.all(4),
-                child: const Icon(
-                  Icons.folder,
+                child: Icon(
+                  getFileIcon(file),
                   size: 42,
-                  color: Colors.black,
+                  color: getFileForegroundColor(file),
                 ),
+              ),
+            ],
+          ),
+          ..._buildSubArea(
+            context,
+            AppLocalizations.of(context)!.downloadTitle,
+            [
+              if (!Platform.isWeb) ...[
+                ElevatedButton(
+                  onPressed: _selectFolder,
+                  child: Text(AppLocalizations.of(context)!.saveTo),
+                ),
+                _buildSeparatorAction(),
+              ],
+              ElevatedButton(
+                onPressed: _saveDownloadFolder,
+                child: Text(AppLocalizations.of(context)!.download),
               ),
             ],
           ),
@@ -82,7 +125,12 @@ class FolderDetails extends StatelessWidget {
             AppLocalizations.of(context)!.modifyTitle,
             [
               ElevatedButton(
-                onPressed: () => onRename(folder),
+                onPressed: () => onMove(file),
+                child: Text(AppLocalizations.of(context)!.moveTo),
+              ),
+              _buildSeparatorAction(),
+              ElevatedButton(
+                onPressed: () => onRename(file),
                 child: Text(AppLocalizations.of(context)!.renameInto),
               ),
             ],
@@ -92,7 +140,7 @@ class FolderDetails extends StatelessWidget {
             AppLocalizations.of(context)!.deleteTitle,
             [
               ElevatedButton(
-                onPressed: () => onDelete(folder),
+                onPressed: () => onDelete(file),
                 child: Text(AppLocalizations.of(context)!.delete),
               ),
             ],

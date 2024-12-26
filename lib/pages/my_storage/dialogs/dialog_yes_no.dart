@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+/// Asks for a confirmation to the user to do something with
+/// customizable:
+/// - title
+/// - message
+///
+/// The return will be a Future of bool
 Future<bool> askConfirmation(
-    BuildContext context, String title, String message) async {
+  BuildContext context,
+  String title,
+  String message,
+) async {
   var result = await showDialog(
     context: context,
     builder: (context) {

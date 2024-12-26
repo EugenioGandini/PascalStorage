@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/models.dart';
+import '../../../models/models.dart';
 
+/// Widget for displaying folders
 class FolderWidget extends StatelessWidget {
   final RemoteFolder folder;
   final VoidCallback? onTap;

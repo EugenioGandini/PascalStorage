@@ -3,16 +3,25 @@ import 'package:flutter/material.dart';
 
 import '../config/colors.dart';
 
+/// Base layout of all pages (except login)
+/// with a stack of:
+/// - gradient background
+/// - floating action button for opening other actions
 class BasePage extends StatefulWidget {
   final Widget body;
   final AppBar? appBar;
-  final List<FloatingActionButton> floatingActionButton;
+
+  final VoidCallback? selectFileToBeUploaded;
+  final VoidCallback? crateNewResource;
+  final VoidCallback? toggleSelectMode;
 
   const BasePage({
     super.key,
     required this.body,
     this.appBar,
-    this.floatingActionButton = const [],
+    this.selectFileToBeUploaded,
+    this.crateNewResource,
+    this.toggleSelectMode,
   });
 
   @override
@@ -25,7 +34,9 @@ class _BasePageState extends State<BasePage> {
   double _rotationIconEnd = 180;
 
   bool get isActionMenuVisible {
-    return widget.floatingActionButton.isNotEmpty;
+    return widget.toggleSelectMode != null &&
+        widget.crateNewResource != null &&
+        widget.selectFileToBeUploaded != null;
   }
 
   Widget _buildMainMenuButton(BuildContext context) {
@@ -52,18 +63,51 @@ class _BasePageState extends State<BasePage> {
             });
           },
         ),
-        onPressed: () {
-          setState(() {
-            _showFullMenu = !_showFullMenu;
-            _rotationIconEnd = _rotationIconEnd + (_showFullMenu ? -180 : 180);
-          });
-        },
+        onPressed: _toggleShowFullMenu,
       ),
     );
   }
 
+  void _toggleShowFullMenu() {
+    setState(() {
+      _showFullMenu = !_showFullMenu;
+      _rotationIconEnd = _rotationIconEnd + (_showFullMenu ? -180 : 180);
+    });
+  }
+
   List<Widget> _buildOptionsMenu() {
-    return widget.floatingActionButton.map((singleOption) {
+    return [
+      FloatingActionButton(
+        heroTag: 'MultiSelect',
+        onPressed: widget.toggleSelectMode != null
+            ? () {
+                _toggleShowFullMenu();
+                widget.toggleSelectMode!();
+              }
+            : null,
+        child: const Icon(Icons.select_all),
+      ),
+      FloatingActionButton(
+        heroTag: 'CreateNewFolder',
+        onPressed: widget.crateNewResource != null
+            ? () {
+                _toggleShowFullMenu();
+                widget.crateNewResource!();
+              }
+            : null,
+        child: const Icon(Icons.create_new_folder),
+      ),
+      FloatingActionButton(
+        heroTag: 'UploadNewFile',
+        onPressed: widget.selectFileToBeUploaded != null
+            ? () {
+                _toggleShowFullMenu();
+                widget.selectFileToBeUploaded!();
+              }
+            : null,
+        child: const Icon(Icons.upload),
+      ),
+    ].map((singleOption) {
       return Padding(
         padding: const EdgeInsets.only(top: 8.0),
         child: singleOption,

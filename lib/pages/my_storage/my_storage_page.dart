@@ -9,6 +9,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../utils/platform.dart';
 import '../../utils/logger.dart';
+import '../../utils/storage_utils.dart';
 import '../../config/permissions.dart';
 import '../../models/models.dart';
 import '../../providers/auth_provider.dart';
@@ -16,12 +17,13 @@ import '../../providers/resource_provider.dart';
 import '../login/login_page.dart';
 import '../base_page.dart';
 
-import './folder_content_widget.dart';
-import './file_details.dart';
-import './folder_details.dart';
-import './dialog_new.dart';
-import './dialog_rename.dart';
-import './dialog_yes_no.dart';
+import 'dialogs/dialog_new.dart';
+import 'dialogs/dialog_rename.dart';
+import 'dialogs/dialog_yes_no.dart';
+import 'widgets/file_details.dart';
+import 'widgets/folder_details.dart';
+import 'widgets/my_storage_app_bar.dart';
+import 'folder_content_widget.dart';
 import 'notifications.dart' as notify;
 
 class MyStoragePage extends StatefulWidget {
@@ -51,7 +53,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
     _logger.message('Initialization page...');
 
-    _resProvider = Provider.of<ResourceProvider>(context, listen: false);
+    _resProvider = Provider.of<ResourceProvider>(context);
 
     var arguments = ModalRoute.of(context)!.settings.arguments;
 
@@ -224,6 +226,19 @@ class _MyStoragePageState extends State<MyStoragePage> {
     }
   }
 
+  Future _askSaveFile(RemoteFile file) async {
+    var hasConfirmed = await askConfirmation(context, 'Scaricare il file?',
+        'Vuoi scaricare localmente questo file: ${file.name}?');
+
+    if (!hasConfirmed) return;
+
+    String? downloadOutputFolder = await getDownloadFolder();
+
+    if (downloadOutputFolder == null) return;
+
+    _saveFile(file, downloadOutputFolder);
+  }
+
   Future _selectNewNameFile(RemoteFile file) async {
     Navigator.of(context).pop();
     bool renameSuccess =
@@ -274,24 +289,24 @@ class _MyStoragePageState extends State<MyStoragePage> {
     });
   }
 
+  void _toggleSelectMode() {
+    bool selectModeActive = _resProvider.isSelectModeActive;
+    if (!selectModeActive) {
+      _resProvider.updateSelectMode(true);
+    } else {
+      _resProvider.updateSelectMode(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool selectModeEnable = _resProvider.isSelectModeActive;
+
     return BasePage(
-      appBar: AppBar(
-        title: Text(_title),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: _popupActionHandler,
-            itemBuilder: (context) {
-              return {'logout'}.map((action) {
-                return PopupMenuItem(
-                  value: action,
-                  child: Text(AppLocalizations.of(context)!.exit),
-                );
-              }).toList();
-            },
-          )
-        ],
+      appBar: MyStorageAppBar(
+        titleText: _title,
+        onAdvancedActionPressed: _popupActionHandler,
+        selectModeEnable: selectModeEnable,
       ),
       body: RefreshIndicator(
         onRefresh: () {
@@ -306,20 +321,14 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
               _folderContent = loadedContent;
 
-              // setState(() {
-              //   _title = "$_title ($_folderContent)";
-              // });
-
               return FolderContentWidget(
                 folder: loadedContent.currentFolder,
                 content: loadedContent,
                 onFolderTap: (folder) => _openFolder(context, folder),
                 onFolderLongPress: (folder) =>
                     _openFolderDetails(context, folder),
-                onFileTap: (file) => _openFileDetails(
-                  context,
-                  file,
-                ),
+                onFileLongPress: (file) => _openFileDetails(context, file),
+                onFileTap: (file) => _askSaveFile(file),
               );
             }
 
@@ -329,18 +338,9 @@ class _MyStoragePageState extends State<MyStoragePage> {
           },
         ),
       ),
-      floatingActionButton: [
-        FloatingActionButton(
-          heroTag: 'UploadNewFile',
-          onPressed: _selectFileToBeUploaded,
-          child: const Icon(Icons.upload),
-        ),
-        FloatingActionButton(
-          heroTag: 'CreateNewFolder',
-          onPressed: _crateNewResource,
-          child: const Icon(Icons.create_new_folder),
-        ),
-      ],
+      selectFileToBeUploaded: _selectFileToBeUploaded,
+      crateNewResource: _crateNewResource,
+      toggleSelectMode: _toggleSelectMode,
     );
   }
 }

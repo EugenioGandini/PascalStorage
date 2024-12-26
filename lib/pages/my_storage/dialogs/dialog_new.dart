@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../models/models.dart';
-import '../../providers/resource_provider.dart';
+import '../../../models/models.dart';
+import '../../../providers/resource_provider.dart';
 
 class DialogNew extends StatefulWidget {
   final bool isFolder;

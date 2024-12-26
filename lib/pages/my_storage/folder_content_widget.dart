@@ -3,9 +3,12 @@ import 'package:flutter/material.dart';
 
 import '../../models/models.dart';
 
-import './file_widget.dart';
-import './folder_widget.dart';
+import 'widgets/file_widget.dart';
+import 'widgets/folder_widget.dart';
 
+/// Widget to display the content of a folder. A folder can contain:
+/// - files
+/// - other sub-folders
 class FolderContentWidget extends StatelessWidget {
   final RemoteFolder folder;
   final FolderContent content;
@@ -13,6 +16,7 @@ class FolderContentWidget extends StatelessWidget {
   final Function(RemoteFolder folder) onFolderTap;
   final Function(RemoteFolder folder) onFolderLongPress;
   final Function(RemoteFile file) onFileTap;
+  final Function(RemoteFile file) onFileLongPress;
 
   final double maxWidthItem = 400;
 
@@ -23,6 +27,7 @@ class FolderContentWidget extends StatelessWidget {
     required this.onFolderTap,
     required this.onFolderLongPress,
     required this.onFileTap,
+    required this.onFileLongPress,
   });
 
   @override
@@ -69,6 +74,7 @@ class FolderContentWidget extends StatelessWidget {
             child: FileWidget(
               file: file,
               onTap: () => onFileTap(file),
+              onLongPress: () => onFileLongPress(file),
             ),
           );
         },
