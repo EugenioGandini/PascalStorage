@@ -1,13 +1,13 @@
 # Pascal Storage
 
-This app is a client for the [File Browser server service](https://github.com/filebrowser/filebrowser/). This app has been tested with version [] of the server.
+This app is a client for the [File Browser server service](https://github.com/filebrowser/filebrowser/). This app has been tested with version [2.31.1] of the server.
 
 ## Features
 
 These are the feature of this client available at the moment:
 * login/logout with user credentials
 * navigation through all folders and files of the user account.
-* Drag down to refresh folder if user want to force a refresh of a folder.
+* drag down to refresh folder if user want to force a refresh of a folder.
 * download of files (1 at a time) to local disk of the device
 * upload of files (1 at a time) from local disk to the remote folder in view.
 * delete remote files (1 at a time).
