@@ -93,7 +93,11 @@ class _DialogRenameState extends State<DialogRename> {
           if (isForAFile) ...[
             Row(
               children: [
-                Expanded(child: Text(AppLocalizations.of(context)!.fullName)),
+                Expanded(
+                    child: Text(
+                  AppLocalizations.of(context)!.fullName,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                )),
                 Checkbox(value: _fullName, onChanged: (_) => _toggleFullName()),
               ],
             ),
@@ -130,7 +134,7 @@ class _DialogRenameState extends State<DialogRename> {
           ),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton(
+            child: OutlinedButton(
               onPressed: _submit,
               child: Text(AppLocalizations.of(context)!.rename),
             ),
@@ -155,17 +159,23 @@ Future buildDialogRenameResource(
             Expanded(
               child: Text(AppLocalizations.of(context)!.dialogTitleRename),
             ),
+            const SizedBox(width: 16),
             IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close, size: 32),
             ),
           ],
         ),
         content: DialogRename(
           file: fileToBeRenamed,
           folder: folderToBeRenamed,
+        ),
+        titlePadding: const EdgeInsets.all(20),
+        contentPadding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
         ),
       );
     },

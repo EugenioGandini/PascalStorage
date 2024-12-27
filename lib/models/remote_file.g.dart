@@ -14,6 +14,7 @@ _$RemoteFileImpl _$$RemoteFileImplFromJson(Map<String, dynamic> json) =>
       modified: DateTime.parse(json['modified'] as String),
       type: json['type'] as String,
       content: json['content'] as String?,
+      selected: json['selected'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$RemoteFileImplToJson(_$RemoteFileImpl instance) =>
@@ -24,4 +25,5 @@ Map<String, dynamic> _$$RemoteFileImplToJson(_$RemoteFileImpl instance) =>
       'modified': instance.modified.toIso8601String(),
       'type': instance.type,
       'content': instance.content,
+      'selected': instance.selected,
     };

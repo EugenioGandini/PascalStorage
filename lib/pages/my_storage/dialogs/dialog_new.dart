@@ -103,6 +103,7 @@ Future buildDialogNewResource(
     builder: (context) {
       return AlertDialog(
         title: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Text(
@@ -111,17 +112,23 @@ Future buildDialogNewResource(
                     : AppLocalizations.of(context)!.dialogTitleNewFile,
               ),
             ),
+            const SizedBox(width: 16),
             IconButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close, size: 32),
             ),
           ],
         ),
         content: DialogNew(
           parentFolder: parentFolder,
           isFolder: isFolder,
+        ),
+        titlePadding: const EdgeInsets.all(20),
+        contentPadding: const EdgeInsets.only(right: 20, left: 20, bottom: 20),
+        shape: ContinuousRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
         ),
       );
     },

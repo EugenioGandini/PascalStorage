@@ -124,11 +124,11 @@ class FileDetails extends StatelessWidget {
             context,
             AppLocalizations.of(context)!.modifyTitle,
             [
-              ElevatedButton(
-                onPressed: () => onMove(file),
-                child: Text(AppLocalizations.of(context)!.moveTo),
-              ),
-              _buildSeparatorAction(),
+              // ElevatedButton(
+              //   onPressed: () => onMove(file),
+              //   child: Text(AppLocalizations.of(context)!.moveTo),
+              // ),
+              // _buildSeparatorAction(),
               ElevatedButton(
                 onPressed: () => onRename(file),
                 child: Text(AppLocalizations.of(context)!.renameInto),

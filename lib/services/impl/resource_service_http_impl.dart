@@ -116,11 +116,11 @@ class ResourceServiceHttpImpl extends ResourceService {
     String downloadName,
   ) {
     // Encode our file in base64
-    final _base64 = base64Encode(bytes);
+    final base64 = base64Encode(bytes);
     // Create the link with the file
-    final anchor = html.AnchorElement(
-        href: 'data:application/octet-stream;base64,$_base64')
-      ..target = 'blank';
+    final anchor =
+        html.AnchorElement(href: 'data:application/octet-stream;base64,$base64')
+          ..target = 'blank';
     // add the name
     anchor.download = downloadName;
     // trigger download

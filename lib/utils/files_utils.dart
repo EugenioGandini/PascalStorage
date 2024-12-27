@@ -40,22 +40,22 @@ Color getFileBackgroundColor(RemoteFile file) {
     case 'log':
       return Colors.grey;
     case 'pdf':
-      return Colors.red.withOpacity(0.8);
+      return const Color.fromARGB(255, 252, 79, 66);
     case 'tar':
     case 'gz':
     case '7zip':
     case 'zip':
-      return Colors.yellow.withOpacity(0.8);
+      return const Color.fromARGB(255, 241, 192, 57);
     case 'jpg':
     case 'png':
     case 'xlsx':
-      return const Color.fromARGB(255, 65, 231, 70).withOpacity(0.7);
+      return const Color.fromARGB(255, 56, 187, 61);
     case 'mp4':
     case 'mkv':
     case 'avi':
     case 'mov':
     case 'docx':
-      return Colors.blue.withOpacity(0.7);
+      return const Color.fromARGB(255, 18, 121, 206);
     default:
       return const Color.fromARGB(255, 204, 204, 204);
   }
@@ -89,12 +89,16 @@ Color getFileForegroundColor(RemoteFile file) {
   }
 }
 
+String getHumanReadableSize(int sizeBytes) {
+  if (sizeBytes < 1000000) {
+    return "~ ${(sizeBytes / 1000).round()} Kb"; // in Kb
+  }
+  if (sizeBytes < 1000000000) {
+    return "~ ${(sizeBytes / 1000000).round()} Mb"; // in Mb
+  }
+  return "~ ${(sizeBytes / 1000000000).round()} Gb"; // in Gb
+}
+
 String getFileSize(RemoteFile file) {
-  if (file.size < 1000000) {
-    return "~ ${(file.size / 1000).round()} Kb"; // in Kb
-  }
-  if (file.size < 1000000000) {
-    return "~ ${(file.size / 1000000).round()} Mb"; // in Mb
-  }
-  return "~ ${(file.size / 1000000000).round()} Gb"; // in Gb
+  return getHumanReadableSize(file.size);
 }

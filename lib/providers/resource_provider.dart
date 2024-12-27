@@ -10,10 +10,6 @@ import '../../utils/logger.dart';
 class ResourceProvider with ChangeNotifier {
   static const Logger _logger = Logger("ResourceProvider");
 
-  bool _selectModeEnable = false;
-  List<RemoteFile> _selectedFiles = [];
-  List<RemoteFolder> _selectedFolders = [];
-
   final ResourceService _resourceService = ResourceServiceHttpImpl();
 
   ResourceProvider(Settings settings) {
@@ -27,10 +23,6 @@ class ResourceProvider with ChangeNotifier {
       size: 0,
       modified: DateTime.now(),
     );
-  }
-
-  bool get isSelectModeActive {
-    return _selectModeEnable;
   }
 
   void updateSettings(Settings newSettings) {
@@ -89,42 +81,21 @@ class ResourceProvider with ChangeNotifier {
     );
   }
 
-  void setSelectedRemoteResource(
-      List<RemoteFile> selectedFiles, List<RemoteFolder> selectedFolder) {
-    _selectedFiles = selectedFiles;
-    _selectedFolders = selectedFolder;
-    _selectModeEnable = true;
+  Future<bool> deleteSelectedResources(FolderContent folderContent) async {
+    var selectedFiles = folderContent.selectedFiles;
+    var selectedFolders = folderContent.selectedFolders;
 
-    notifyListeners();
-  }
+    bool success = true;
 
-  void updateSelectMode(bool enable) {
-    _selectModeEnable = enable;
-    notifyListeners();
-  }
-
-  void toggleSelectedFileResource(RemoteFile selectedFile) {
-    if (_selectedFiles.contains(selectedFile)) {
-      _selectedFiles.remove(selectedFile);
-    } else {
-      _selectedFiles.add(selectedFile);
+    for (var file in selectedFiles) {
+      if (!await deleteFile(file)) success = false;
     }
 
-    _selectModeEnable = true;
-
-    notifyListeners();
-  }
-
-  void toggleSelectedFolderResource(RemoteFolder selectedFolder) {
-    if (_selectedFolders.contains(selectedFolder)) {
-      _selectedFolders.remove(selectedFolder);
-    } else {
-      _selectedFolders.add(selectedFolder);
+    for (var folder in selectedFolders) {
+      if (!await deleteFolder(folder)) success = false;
     }
 
-    _selectModeEnable = true;
-
-    notifyListeners();
+    return success;
   }
 
   Future<bool> deleteFile(RemoteFile file) async {

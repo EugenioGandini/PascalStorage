@@ -26,6 +26,7 @@ mixin _$RemoteFile {
   DateTime get modified => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   String? get content => throw _privateConstructorUsedError;
+  bool get selected => throw _privateConstructorUsedError;
 
   /// Serializes this RemoteFile to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -49,7 +50,8 @@ abstract class $RemoteFileCopyWith<$Res> {
       int size,
       DateTime modified,
       String type,
-      String? content});
+      String? content,
+      bool selected});
 }
 
 /// @nodoc
@@ -73,6 +75,7 @@ class _$RemoteFileCopyWithImpl<$Res, $Val extends RemoteFile>
     Object? modified = null,
     Object? type = null,
     Object? content = freezed,
+    Object? selected = null,
   }) {
     return _then(_value.copyWith(
       path: null == path
@@ -99,6 +102,10 @@ class _$RemoteFileCopyWithImpl<$Res, $Val extends RemoteFile>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String?,
+      selected: null == selected
+          ? _value.selected
+          : selected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -117,7 +124,8 @@ abstract class _$$RemoteFileImplCopyWith<$Res>
       int size,
       DateTime modified,
       String type,
-      String? content});
+      String? content,
+      bool selected});
 }
 
 /// @nodoc
@@ -139,6 +147,7 @@ class __$$RemoteFileImplCopyWithImpl<$Res>
     Object? modified = null,
     Object? type = null,
     Object? content = freezed,
+    Object? selected = null,
   }) {
     return _then(_$RemoteFileImpl(
       path: null == path
@@ -165,6 +174,10 @@ class __$$RemoteFileImplCopyWithImpl<$Res>
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
               as String?,
+      selected: null == selected
+          ? _value.selected
+          : selected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -178,7 +191,8 @@ class _$RemoteFileImpl extends _RemoteFile {
       required this.size,
       required this.modified,
       required this.type,
-      this.content})
+      this.content,
+      this.selected = false})
       : super._();
 
   factory _$RemoteFileImpl.fromJson(Map<String, dynamic> json) =>
@@ -196,30 +210,14 @@ class _$RemoteFileImpl extends _RemoteFile {
   final String type;
   @override
   final String? content;
+  @override
+  @JsonKey()
+  final bool selected;
 
   @override
   String toString() {
-    return 'RemoteFile(path: $path, name: $name, size: $size, modified: $modified, type: $type, content: $content)';
+    return 'RemoteFile(path: $path, name: $name, size: $size, modified: $modified, type: $type, content: $content, selected: $selected)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RemoteFileImpl &&
-            (identical(other.path, path) || other.path == path) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.size, size) || other.size == size) &&
-            (identical(other.modified, modified) ||
-                other.modified == modified) &&
-            (identical(other.type, type) || other.type == type) &&
-            (identical(other.content, content) || other.content == content));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, path, name, size, modified, type, content);
 
   /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.
@@ -244,7 +242,8 @@ abstract class _RemoteFile extends RemoteFile {
       required final int size,
       required final DateTime modified,
       required final String type,
-      final String? content}) = _$RemoteFileImpl;
+      final String? content,
+      final bool selected}) = _$RemoteFileImpl;
   const _RemoteFile._() : super._();
 
   factory _RemoteFile.fromJson(Map<String, dynamic> json) =
@@ -262,6 +261,8 @@ abstract class _RemoteFile extends RemoteFile {
   String get type;
   @override
   String? get content;
+  @override
+  bool get selected;
 
   /// Create a copy of RemoteFile
   /// with the given fields replaced by the non-null parameter values.

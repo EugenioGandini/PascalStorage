@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:pascalstorage/widgets/footer.dart';
 
 import '../config/colors.dart';
 
@@ -44,6 +45,7 @@ class _BasePageState extends State<BasePage> {
       padding: const EdgeInsets.only(top: 8.0),
       child: FloatingActionButton(
         heroTag: 'MenuController',
+        onPressed: _toggleShowFullMenu,
         child: TweenAnimationBuilder<double>(
           duration: const Duration(milliseconds: 100),
           tween: Tween(begin: _rotationIcon, end: _rotationIconEnd),
@@ -63,7 +65,6 @@ class _BasePageState extends State<BasePage> {
             });
           },
         ),
-        onPressed: _toggleShowFullMenu,
       ),
     );
   }
@@ -134,7 +135,15 @@ class _BasePageState extends State<BasePage> {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: widget.body,
+            child: Stack(
+              children: [
+                const Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Footer(),
+                ),
+                widget.body,
+              ],
+            ),
           ),
           if (isActionMenuVisible)
             Align(

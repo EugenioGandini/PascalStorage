@@ -7,16 +7,22 @@ import '../../../utils/files_utils.dart';
 /// Widget for displaying files
 class FileWidget extends StatelessWidget {
   final RemoteFile file;
+
+  /// When the user tap on this file
   final VoidCallback? onTap;
+
+  /// When the user long press this file
   final VoidCallback? onLongPress;
-  final bool isSelected;
+
+  /// Optional trailing widget to insert at the end of this widget file
+  final Widget? trailing;
 
   const FileWidget({
     super.key,
     required this.file,
     this.onTap,
     this.onLongPress,
-    this.isSelected = false,
+    this.trailing,
   });
 
   String get name {
@@ -55,6 +61,7 @@ class FileWidget extends StatelessWidget {
               color: getFileForegroundColor(file),
             ),
           ),
+          trailing: trailing,
         ),
       ),
     );

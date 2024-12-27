@@ -19,8 +19,10 @@
   "selectFileToBeUploaded": "Select the file that should be uploaded",
   "downloadTitle": "Download operations",
   "download": "Download",
+  "askDownloadFileTitle": "Download the file?",
+  "askDownloadFileMessage": "Do you want to download locally this file?",
   "saveTo": "Save to...",
-  "deleteResourceSuccess": "Resource deleted successfully",
+  "deleteResourceSuccess": "Resource/s deleted successfully",
   "deleteTitle": "Destructive operations",
   "delete": "Delete",
   "modifyTitle": "Modification operations",
@@ -41,5 +43,14 @@
   "create": "Create",
   "dialogTitleNewFolder": "Create a new folder",
   "dialogTitleNewFile": "Create a new file",
-  "newResourceCreatedSuccess": "New resource created successfully"
+  "newResourceCreatedSuccess": "New resource created successfully",
+  "footerAuthor": "Created by Eugenio Gandini",
+  "footerAppVersion": "App Version: {version} (Winter 2024)",
+  "@footerAppVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -24,6 +24,7 @@ mixin _$RemoteFolder {
   String get name => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
   DateTime get modified => throw _privateConstructorUsedError;
+  bool get selected => throw _privateConstructorUsedError;
 
   /// Serializes this RemoteFolder to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -41,7 +42,8 @@ abstract class $RemoteFolderCopyWith<$Res> {
           RemoteFolder value, $Res Function(RemoteFolder) then) =
       _$RemoteFolderCopyWithImpl<$Res, RemoteFolder>;
   @useResult
-  $Res call({String path, String name, int size, DateTime modified});
+  $Res call(
+      {String path, String name, int size, DateTime modified, bool selected});
 }
 
 /// @nodoc
@@ -63,6 +65,7 @@ class _$RemoteFolderCopyWithImpl<$Res, $Val extends RemoteFolder>
     Object? name = null,
     Object? size = null,
     Object? modified = null,
+    Object? selected = null,
   }) {
     return _then(_value.copyWith(
       path: null == path
@@ -81,6 +84,10 @@ class _$RemoteFolderCopyWithImpl<$Res, $Val extends RemoteFolder>
           ? _value.modified
           : modified // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      selected: null == selected
+          ? _value.selected
+          : selected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -93,7 +100,8 @@ abstract class _$$RemoteFolderImplCopyWith<$Res>
       __$$RemoteFolderImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String path, String name, int size, DateTime modified});
+  $Res call(
+      {String path, String name, int size, DateTime modified, bool selected});
 }
 
 /// @nodoc
@@ -113,6 +121,7 @@ class __$$RemoteFolderImplCopyWithImpl<$Res>
     Object? name = null,
     Object? size = null,
     Object? modified = null,
+    Object? selected = null,
   }) {
     return _then(_$RemoteFolderImpl(
       path: null == path
@@ -131,6 +140,10 @@ class __$$RemoteFolderImplCopyWithImpl<$Res>
           ? _value.modified
           : modified // ignore: cast_nullable_to_non_nullable
               as DateTime,
+      selected: null == selected
+          ? _value.selected
+          : selected // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -142,7 +155,8 @@ class _$RemoteFolderImpl extends _RemoteFolder {
       {required this.path,
       required this.name,
       required this.size,
-      required this.modified})
+      required this.modified,
+      this.selected = false})
       : super._();
 
   factory _$RemoteFolderImpl.fromJson(Map<String, dynamic> json) =>
@@ -156,27 +170,14 @@ class _$RemoteFolderImpl extends _RemoteFolder {
   final int size;
   @override
   final DateTime modified;
+  @override
+  @JsonKey()
+  final bool selected;
 
   @override
   String toString() {
-    return 'RemoteFolder(path: $path, name: $name, size: $size, modified: $modified)';
+    return 'RemoteFolder(path: $path, name: $name, size: $size, modified: $modified, selected: $selected)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$RemoteFolderImpl &&
-            (identical(other.path, path) || other.path == path) &&
-            (identical(other.name, name) || other.name == name) &&
-            (identical(other.size, size) || other.size == size) &&
-            (identical(other.modified, modified) ||
-                other.modified == modified));
-  }
-
-  @JsonKey(includeFromJson: false, includeToJson: false)
-  @override
-  int get hashCode => Object.hash(runtimeType, path, name, size, modified);
 
   /// Create a copy of RemoteFolder
   /// with the given fields replaced by the non-null parameter values.
@@ -199,7 +200,8 @@ abstract class _RemoteFolder extends RemoteFolder {
       {required final String path,
       required final String name,
       required final int size,
-      required final DateTime modified}) = _$RemoteFolderImpl;
+      required final DateTime modified,
+      final bool selected}) = _$RemoteFolderImpl;
   const _RemoteFolder._() : super._();
 
   factory _RemoteFolder.fromJson(Map<String, dynamic> json) =
@@ -213,6 +215,8 @@ abstract class _RemoteFolder extends RemoteFolder {
   int get size;
   @override
   DateTime get modified;
+  @override
+  bool get selected;
 
   /// Create a copy of RemoteFolder
   /// with the given fields replaced by the non-null parameter values.

@@ -4,30 +4,32 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 class MyStorageAppBar extends AppBar {
   final String titleText;
   final bool selectModeEnable;
-  final Function(String action)? onAdvancedActionPressed;
+  final Function(String action) onAdvancedActionPressed;
+  final VoidCallback onDelete;
+  final VoidCallback onToggleCheckAll;
 
   MyStorageAppBar({
     super.key,
     required this.titleText,
-    this.onAdvancedActionPressed,
+    required this.onAdvancedActionPressed,
+    required this.onDelete,
+    required this.onToggleCheckAll,
     this.selectModeEnable = false,
   }) : super(
           title: Text(titleText),
           actions: selectModeEnable
               ? [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: onToggleCheckAll,
+                    icon: const Icon(
+                      Icons.checklist,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onDelete,
                     icon: const Icon(
                       Icons.delete,
                     ),
-                    color: Colors.red[400],
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.arrow_downward_rounded,
-                    ),
-                    color: Colors.blue[900],
                   ),
                 ]
               : [

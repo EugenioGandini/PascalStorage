@@ -19,8 +19,10 @@
   "selectFileToBeUploaded": "Seleziona il file da caricare",
   "downloadTitle": "Scaricamento",
   "download": "Scarica",
+  "askDownloadFileTitle": "Scaricare il file?",
+  "askDownloadFileMessage": "Vuoi scaricare localmente questo file?",
   "saveTo": "Salva in...",
-  "deleteResourceSuccess": "Risorsa rimossa con successo",
+  "deleteResourceSuccess": "Risorsa/e rimossa/e con successo",
   "deleteTitle": "Operazioni distruttive",
   "delete": "Elimina",
   "modifyTitle": "Modifiche",
@@ -41,5 +43,14 @@
   "create": "Crea",
   "dialogTitleNewFolder": "Crea una nuova cartella",
   "dialogTitleNewFile": "Crea un nuovo file",
-  "newResourceCreatedSuccess": "La nuova risorsa è stata creata con successo"
+  "newResourceCreatedSuccess": "La nuova risorsa è stata creata con successo",
+  "footerAuthor": "Creata da Eugenio Gandini",
+  "footerAppVersion": "Versione App: {version} (Inverno 2024)",
+  "@footerAppVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  }
 }

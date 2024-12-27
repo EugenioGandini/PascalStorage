@@ -27,7 +27,9 @@ Future<String?> getDownloadFolder() async {
     if (!await downloadDir.exists()) {
       try {
         return (await downloadDir.create()).path;
-      } catch (ignored) {}
+      } catch (ignored) {
+        /// folder cannot be retrieved. fallback to standard download directory
+      }
     } else {
       return downloadDir.path;
     }
