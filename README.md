@@ -1,4 +1,4 @@
-# File Browser Flutter
+# Pascal Storage
 
 This app is a client for the [File Browser server service](https://github.com/filebrowser/filebrowser/). This app has been tested with version [] of the server.
 
