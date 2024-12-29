@@ -81,27 +81,25 @@ class ResourceProvider with ChangeNotifier {
     );
   }
 
-  Future<bool> deleteSelectedResources(FolderContent folderContent) async {
-    var selectedFiles = folderContent.selectedFiles;
-    var selectedFolders = folderContent.selectedFolders;
+  Future<bool> deleteRemoteResource(List<Resource> resources) async {
+    for (var resource in resources) {
+      if (resource is RemoteFile) {
+        _logger.message('deleting remote file... ${resource.path}');
 
-    bool success = true;
+        if (!await _resourceService.deleteFile(resource)) {
+          return false;
+        }
+      }
+      if (resource is RemoteFolder) {
+        _logger.message('deleting remote folder... ${resource.path}');
 
-    for (var file in selectedFiles) {
-      if (!await deleteFile(file)) success = false;
+        if (!await _resourceService.deleteFolder(resource)) {
+          return false;
+        }
+      }
     }
 
-    for (var folder in selectedFolders) {
-      if (!await deleteFolder(folder)) success = false;
-    }
-
-    return success;
-  }
-
-  Future<bool> deleteFile(RemoteFile file) async {
-    _logger.message('deleting remote file... ${file.path}');
-
-    return _resourceService.deleteFile(file);
+    return true;
   }
 
   Future<bool> moveFile(RemoteFile file, String destinationPath) async {
@@ -110,31 +108,26 @@ class ResourceProvider with ChangeNotifier {
     return _resourceService.moveFile(file, destinationPath);
   }
 
-  Future<bool> renameFile(RemoteFile file, String newName) async {
-    _logger.message('renaming remote file... ${file.path} into $newName');
+  Future<bool> renameResource(Resource resource, String newName) async {
+    String newPath = "${resource.parentPath}/$newName";
 
-    String newPath = "${file.parentPath}/$newName";
+    if (resource is RemoteFile) {
+      _logger.message('renaming remote file... ${resource.path} into $newName');
 
-    return _resourceService.moveFile(file, newPath);
+      return _resourceService.moveFile(resource, newPath);
+    }
+    if (resource is RemoteFolder) {
+      _logger
+          .message('renaming remote folder... ${resource.path} into $newName');
+
+      return _resourceService.moveFolder(resource, newPath);
+    }
+    return false;
   }
 
   Future<bool> createFolder(RemoteFolder folder) async {
     _logger.message('creating remote folder... ${folder.path}');
 
     return _resourceService.createFolder(folder.name, folder.path);
-  }
-
-  Future<bool> renameFolder(RemoteFolder folder, String newName) async {
-    _logger.message('renaming remote folder... ${folder.path} into $newName');
-
-    String newPath = "${folder.parentPath}/$newName";
-
-    return _resourceService.moveFolder(folder, newPath);
-  }
-
-  Future<bool> deleteFolder(RemoteFolder folder) async {
-    _logger.message('deleting remote folder... ${folder.path}');
-
-    return _resourceService.deleteFolder(folder);
   }
 }

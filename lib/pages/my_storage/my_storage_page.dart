@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
@@ -119,13 +120,19 @@ class _MyStoragePageState extends State<MyStoragePage> {
             width: double.infinity,
             child: FileDetails(
               file: file,
-              onSaveFile: (dir) {
+              onSaveFile: (dir) async {
                 Navigator.of(context).pop();
-                _saveFile(file, dir);
+
+                await _saveFile([file], dir);
+
+                OpenFile.open(path.join(dir, file.name));
               },
               onMove: (file) => {}, //_selectNewFolderFile(file),
-              onRename: (file) => _selectNewNameFile(file),
-              onDelete: (file) => _deleteFile(file),
+              onRename: (file) => _selectNewName(file),
+              onDelete: (file) {
+                Navigator.of(context).pop();
+                _deleteRemoteResource([file]);
+              },
             ),
           ),
         );
@@ -150,8 +157,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
               //   _saveFile(file, dir);
               // },
               // onMove: (file) => {}, //_selectNewFolderFile(file),
-              onRename: (folder) => _selectNewNameFolder(folder),
-              onDelete: (folder) => _deleteFolder(folder),
+              onRename: (folder) => _selectNewName(folder),
+              onDelete: (folder) {
+                Navigator.of(context).pop();
+                _deleteRemoteResource([folder]);
+              },
             ),
           ),
         );
@@ -159,19 +169,83 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
+  Future _selectNewName(Resource resource) async {
+    Navigator.of(context).pop();
+
+    bool renameSuccess =
+        await buildDialogRenameResource(context, resourceToBeRenamed: resource);
+
+    if (renameSuccess) {
+      if (mounted) {
+        notify.showRenameResourceSuccess(context);
+      }
+      _forceReloadContent();
+    }
+  }
+
+  Future _deleteRemoteResource(List<Resource> resources) async {
+    String message = resources[0].name;
+    int numResources = resources.length;
+
+    if (numResources > 1) {
+      int numFiles = resources.whereType<RemoteFile>().length;
+      int numFolders = resources.whereType<RemoteFolder>().length;
+
+      List<String> messageParts = [];
+      if (numFiles > 0) messageParts.add('$numFiles file');
+      if (numFolders > 0) messageParts.add('$numFolders cartelle');
+      message = messageParts.join('\n');
+    }
+
+    var hasConfirmed = await askConfirmation(
+      context,
+      AppLocalizations.of(context)!.dialogDeleteTitle,
+      '${AppLocalizations.of(context)!.dialogDeleteMessage}?',
+      titleHeading: const Icon(
+        Icons.delete_forever,
+        size: 32,
+        color: Colors.red,
+      ),
+      centerChild: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.headlineSmall,
+      ),
+    );
+
+    if (!hasConfirmed) return;
+
+    bool success = await _resProvider.deleteRemoteResource(resources);
+
+    if (success) {
+      if (mounted) {
+        notify.showDeleteResourceSuccess(
+          context,
+          resource: numResources == 1 ? resources[0] : null,
+        );
+      }
+      _forceReloadContent();
+    }
+  }
+
   /////// FILE operations ///////
 
-  Future _saveFile(RemoteFile file, String path) async {
-    _logger.message(
-        'Saving remote file ${file.name} onto this device at path $path');
+  Future _saveFile(List<Resource> remoteResources, String path) async {
+    for (var resource in remoteResources) {
+      if (resource is! RemoteFile) continue;
 
-    await for (final percentage in _resProvider.downloadFile(file, path)) {
-      _logger.message('Download $percentage %');
+      _logger.message(
+          'Saving remote file ${resource.name} onto this device at path $path');
 
-      if (percentage == 100) {
-        _logger.message('Donwload completed succesfully!!!');
+      await for (final percentage
+          in _resProvider.downloadFile(resource, path)) {
+        _logger.message('Download $percentage %');
 
-        notify.showDownloadSuccess(context);
+        if (percentage == 100) {
+          _logger.message('Download completed succesfully!!!');
+
+          notify.showDownloadSuccess(context);
+        }
       }
     }
   }
@@ -183,34 +257,36 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
     var result = await FilePicker.platform.pickFiles(
       withData: Platform.isWeb,
-      allowMultiple: false,
+      allowMultiple: true,
       dialogTitle:
           mounted ? AppLocalizations.of(context)!.selectFileToBeUploaded : '',
     );
 
     if (result == null) return;
 
-    PlatformFile filePath = result.files.single;
+    for (var file in result.files) {
+      PlatformFile filePath = file;
 
-    late Uint8List buffer;
-    late String fileFullName;
+      late Uint8List buffer;
+      late String fileFullName;
 
-    if (Platform.isWeb) {
-      _logger.message(
-          'File selected ${filePath.name} ${filePath.bytes!.length} bytes');
+      if (Platform.isWeb) {
+        _logger.message(
+            'File selected ${filePath.name} ${filePath.bytes!.length} bytes');
 
-      fileFullName = filePath.name;
-      buffer = filePath.bytes!;
-    } else {
-      _logger.message('File selected ${filePath.path}');
+        fileFullName = filePath.name;
+        buffer = filePath.bytes!;
+      } else {
+        _logger.message('File selected ${filePath.path}');
 
-      var fileToUpload = File(filePath.path!);
+        var fileToUpload = File(filePath.path!);
 
-      fileFullName = path.basename(fileToUpload.path);
-      buffer = await fileToUpload.readAsBytes();
+        fileFullName = path.basename(fileToUpload.path);
+        buffer = await fileToUpload.readAsBytes();
+      }
+
+      await _uploadFile(fileFullName, buffer);
     }
-
-    await _uploadFile(fileFullName, buffer);
   }
 
   Future _uploadFile(String fileFullName, Uint8List buffer) async {
@@ -235,48 +311,30 @@ class _MyStoragePageState extends State<MyStoragePage> {
     }
   }
 
-  Future _deleteFile(RemoteFile file) async {
-    Navigator.of(context).pop();
+  Future _askSaveFile(List<Resource> resources) async {
+    String message = resources[0].name;
+    int numResources = resources.length;
 
-    var hasConfirmed = await askConfirmation(
-      context,
-      AppLocalizations.of(context)!.dialogDeleteTitle,
-      '${AppLocalizations.of(context)!.dialogDeleteMessage}?',
-      titleHeading: const Icon(
-        Icons.delete_forever,
-        size: 32,
-        color: Colors.red,
-      ),
-      centerChild: Text(
-        file.name,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-    );
+    if (numResources > 1) {
+      int numFiles = resources.whereType<RemoteFile>().length;
+      int numFolders = resources.whereType<RemoteFolder>().length;
 
-    if (!hasConfirmed) return;
-
-    bool success = await _resProvider.deleteFile(file);
-
-    if (success) {
-      if (mounted) {
-        notify.showDeleteResourceSuccess(context);
-      }
-      _forceReloadContent();
+      List<String> messageParts = [];
+      if (numFiles > 0) messageParts.add('$numFiles file');
+      if (numFolders > 0) messageParts.add('$numFolders cartelle');
+      message = messageParts.join('\n');
     }
-  }
 
-  Future _askSaveFile(RemoteFile file) async {
     var hasConfirmed = await askConfirmation(
       context,
-      AppLocalizations.of(context)!.askDownloadFileTitle,
-      AppLocalizations.of(context)!.askDownloadFileMessage,
+      AppLocalizations.of(context)!.askDownloadTitle,
+      AppLocalizations.of(context)!.askDownloadMessage,
       titleHeading: const Icon(
         Icons.download,
         size: 32,
       ),
       centerChild: Text(
-        file.name,
+        message,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.headlineSmall,
       ),
@@ -288,19 +346,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
     if (downloadOutputFolder == null) return;
 
-    _saveFile(file, downloadOutputFolder);
-  }
+    await _saveFile(resources, downloadOutputFolder);
 
-  Future _selectNewNameFile(RemoteFile file) async {
-    Navigator.of(context).pop();
-    bool renameSuccess =
-        await buildDialogRenameResource(context, fileToBeRenamed: file);
-
-    if (renameSuccess) {
-      if (mounted) {
-        notify.showRenameResourceSuccess(context);
-      }
-      _forceReloadContent();
+    if (numResources == 1) {
+      var result = await OpenFile.open(
+          path.join(downloadOutputFolder, resources[0].name));
     }
   }
 
@@ -318,50 +368,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     }
   }
 
-  Future _deleteFolder(RemoteFolder folder) async {
-    Navigator.of(context).pop();
-
-    var hasConfirmed = await askConfirmation(
-      context,
-      AppLocalizations.of(context)!.dialogDeleteTitle,
-      '${AppLocalizations.of(context)!.dialogDeleteMessage}?',
-      titleHeading: const Icon(
-        Icons.delete_forever,
-        size: 32,
-        color: Colors.red,
-      ),
-      centerChild: Text(
-        folder.name,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-    );
-
-    if (!hasConfirmed) return;
-
-    bool success = await _resProvider.deleteFolder(folder);
-
-    if (success) {
-      if (mounted) {
-        notify.showDeleteResourceSuccess(context);
-      }
-      _forceReloadContent();
-    }
-  }
-
-  Future _selectNewNameFolder(RemoteFolder folder) async {
-    Navigator.of(context).pop();
-
-    bool renameSuccess =
-        await buildDialogRenameResource(context, folderToBeRenamed: folder);
-
-    if (renameSuccess) {
-      if (mounted) {
-        notify.showRenameResourceSuccess(context);
-      }
-      _forceReloadContent();
-    }
-  }
+  /////// Actions ///////
 
   void _forceReloadContent() {
     setState(() {
@@ -426,19 +433,6 @@ class _MyStoragePageState extends State<MyStoragePage> {
     });
   }
 
-  Future _deleteSelectedResouces() async {
-    bool success = await _resProvider.deleteSelectedResources(_folderContent);
-
-    if (success) {
-      _toggleSelectMode();
-
-      if (mounted) {
-        notify.showDeleteResourceSuccess(context);
-      }
-      _forceReloadContent();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return BasePage(
@@ -446,8 +440,14 @@ class _MyStoragePageState extends State<MyStoragePage> {
         titleText: _title,
         onAdvancedActionPressed: _popupActionHandler,
         selectModeEnable: selectModeEnable,
-        onDelete: _deleteSelectedResouces,
+        onDelete: () => _deleteRemoteResource(_folderContent.selectedResources),
         onToggleCheckAll: _toggleCheckAll,
+        onDownload: () async {
+          await _askSaveFile(_folderContent.selectedResources);
+          setState(() {
+            _toggleSelectMode();
+          });
+        },
       ),
       body: RefreshIndicator(
         onRefresh: () {
@@ -479,7 +479,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
                   if (selectModeEnable) {
                     _toggleResourceSelection(file);
                   } else {
-                    _askSaveFile(file);
+                    _askSaveFile([file]);
                   }
                 },
                 selectModeEnable: selectModeEnable,

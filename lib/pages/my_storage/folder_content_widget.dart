@@ -60,7 +60,7 @@ class FolderContentWidget extends StatelessWidget {
           crossAxisSpacing: 8,
           mainAxisSpacing: 8,
         ),
-        padding: const EdgeInsets.only(top: 8, bottom: 72, left: 8, right: 8),
+        padding: const EdgeInsets.only(top: 8, bottom: 96, left: 8, right: 8),
         itemBuilder: (context, index) {
           if (index < content.folders.length) {
             var folder = content.folders[index];

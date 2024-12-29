@@ -7,6 +7,7 @@ class MyStorageAppBar extends AppBar {
   final Function(String action) onAdvancedActionPressed;
   final VoidCallback onDelete;
   final VoidCallback onToggleCheckAll;
+  final VoidCallback onDownload;
 
   MyStorageAppBar({
     super.key,
@@ -14,6 +15,7 @@ class MyStorageAppBar extends AppBar {
     required this.onAdvancedActionPressed,
     required this.onDelete,
     required this.onToggleCheckAll,
+    required this.onDownload,
     this.selectModeEnable = false,
   }) : super(
           title: Text(titleText),
@@ -23,6 +25,12 @@ class MyStorageAppBar extends AppBar {
                     onPressed: onToggleCheckAll,
                     icon: const Icon(
                       Icons.checklist,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: onDownload,
+                    icon: const Icon(
+                      Icons.download,
                     ),
                   ),
                   IconButton(
