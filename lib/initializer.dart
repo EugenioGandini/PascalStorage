@@ -19,7 +19,7 @@ class Initializer {
     await windowManager.ensureInitialized();
 
     WindowOptions windowsOptions = const WindowOptions(
-      size: Size(800, 600),
+      size: Size(1280, 720),
       center: true,
       title: 'Pascal Storage',
     );
