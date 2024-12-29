@@ -30,12 +30,11 @@ class FolderContent {
     return _selectModeEnable;
   }
 
-  List<RemoteFile> get selectedFiles {
-    return files.where((file) => file.selected).toList();
-  }
+  List<Resource> get selectedResources {
+    var selectedFiles = files.where((file) => file.selected).toList();
+    var selectedFolders = folders.where((folder) => folder.selected).toList();
 
-  List<RemoteFolder> get selectedFolders {
-    return folders.where((folder) => folder.selected).toList();
+    return [...selectedFiles, ...selectedFolders];
   }
 
   void toggleSelectMode() {

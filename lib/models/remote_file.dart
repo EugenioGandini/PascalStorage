@@ -1,51 +1,50 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'resource.dart';
 
-part 'remote_file.freezed.dart';
-part 'remote_file.g.dart';
+class RemoteFile extends Resource {
+  final String type;
+  String? content;
 
-@Freezed(
-  equal: false,
-)
-@JsonSerializable()
-class RemoteFile with _$RemoteFile {
-  const RemoteFile._();
+  RemoteFile({
+    required super.path,
+    required super.name,
+    required super.size,
+    required super.modified,
+    required this.type,
+    this.content,
+    super.selected,
+  });
 
-  const factory RemoteFile({
-    required String path,
-    required String name,
-    required int size,
-    required DateTime modified,
-    required String type,
-    String? content,
-    @Default(false) bool selected,
-  }) = _RemoteFile;
+  static fromJson(Map<String, Object?> json) {
+    return RemoteFile(
+      path: json['path'] as String,
+      name: json['name'] as String,
+      size: json['size'] as int,
+      modified: DateTime.parse(json['modified'] as String),
+      type: json['type'] as String,
+      content: json['content'] as String?,
+    );
+  }
 
-  factory RemoteFile.fromJson(Map<String, Object?> json) =>
-      _$RemoteFileFromJson(json);
+  RemoteFile copyWith({
+    bool selected = false,
+  }) {
+    return RemoteFile(
+      path: path,
+      name: name,
+      size: size,
+      modified: modified,
+      type: type,
+      content: content,
+      selected: selected,
+    );
+  }
 
   String get nameWithoutExtension {
     return name.substring(0, name.lastIndexOf("."));
   }
 
   String get extension {
-    return name.split(".")[1];
+    if (!name.contains('.')) return '';
+    return name.split(".").last;
   }
-
-  String get parentPath {
-    return path.substring(0, path.lastIndexOf('/'));
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (other is! RemoteFile) return false;
-    var otherRemoteFile = other;
-
-    return otherRemoteFile.path == path &&
-        otherRemoteFile.name == name &&
-        otherRemoteFile.modified == modified;
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      runtimeType, path, name, size, modified, type, content, selected);
 }

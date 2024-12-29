@@ -1,11 +1,9 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class User {
+  final String username;
+  final String password;
 
-part 'user.freezed.dart';
-
-@freezed
-class User with _$User {
-  const factory User({
-    required String username,
-    required String password,
-  }) = _User;
+  User({
+    required this.username,
+    required this.password,
+  });
 }

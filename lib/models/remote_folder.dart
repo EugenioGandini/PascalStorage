@@ -1,41 +1,32 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'resource.dart';
 
-part 'remote_folder.freezed.dart';
-part 'remote_folder.g.dart';
+class RemoteFolder extends Resource {
+  RemoteFolder({
+    required super.path,
+    required super.name,
+    required super.size,
+    required super.modified,
+    super.selected,
+  });
 
-@Freezed(
-  equal: false,
-)
-@JsonSerializable()
-class RemoteFolder with _$RemoteFolder {
-  const RemoteFolder._();
-
-  const factory RemoteFolder({
-    required String path,
-    required String name,
-    required int size,
-    required DateTime modified,
-    @Default(false) bool selected,
-  }) = _RemoteFolder;
-
-  factory RemoteFolder.fromJson(Map<String, Object?> json) =>
-      _$RemoteFolderFromJson(json);
-
-  String get parentPath {
-    return path.substring(0, path.lastIndexOf('/'));
+  static fromJson(Map<String, Object?> json) {
+    return RemoteFolder(
+      path: json['path'] as String,
+      name: json['name'] as String,
+      size: json['size'] as int,
+      modified: DateTime.parse(json['modified'] as String),
+    );
   }
 
-  @override
-  bool operator ==(Object other) {
-    if (other is! RemoteFolder) return false;
-    var otherRemoteFile = other;
-
-    return otherRemoteFile.path == path &&
-        otherRemoteFile.name == name &&
-        otherRemoteFile.modified == modified;
+  RemoteFolder copyWith({
+    bool selected = false,
+  }) {
+    return RemoteFolder(
+      path: path,
+      name: name,
+      size: size,
+      modified: modified,
+      selected: selected,
+    );
   }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, path, name, size, modified, selected);
 }

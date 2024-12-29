@@ -1,4 +1,5 @@
 export 'user.dart';
+export 'resource.dart';
 export 'remote_file.dart';
 export 'remote_folder.dart';
 export 'token.dart';

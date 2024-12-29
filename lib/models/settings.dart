@@ -1,10 +1,11 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
+class Settings {
+  final String host;
 
-part 'settings.freezed.dart';
+  const Settings({
+    this.host = '',
+  });
 
-@freezed
-class Settings with _$Settings {
-  const factory Settings({
-    @Default('') String host,
-  }) = _Settings;
+  Settings copyWith({String host = ''}) {
+    return Settings(host: host);
+  }
 }
