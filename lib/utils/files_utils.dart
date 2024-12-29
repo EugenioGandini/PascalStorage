@@ -7,6 +7,7 @@ IconData getFileIcon(RemoteFile file) {
     case 'sql':
     case 'txt':
     case 'log':
+    case 'odt':
     case 'docx':
       return Icons.text_format;
     case 'pdf':
@@ -54,6 +55,7 @@ Color getFileBackgroundColor(RemoteFile file) {
     case 'mkv':
     case 'avi':
     case 'mov':
+    case 'odt':
     case 'docx':
       return const Color.fromARGB(255, 18, 121, 206);
     default:
@@ -82,6 +84,7 @@ Color getFileForegroundColor(RemoteFile file) {
     case 'mkv':
     case 'avi':
     case 'mov':
+    case 'odt':
     case 'docx':
       return Colors.white;
     default:
