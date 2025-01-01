@@ -493,7 +493,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
               _folderContent = loadedContent;
 
               if (_folderContent.isEmpty) {
-                return EmptyContent();
+                return const EmptyContent();
               }
 
               return FolderContentWidget(
