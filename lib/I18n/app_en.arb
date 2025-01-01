@@ -11,6 +11,7 @@
   "password": "Password",
   "validatorEmptyPassword": "Please enter a password",
   "saveCredentials": "Save credentials",
+  "save": "Save",
   "enter": "Enter",
   "exit": "Exit",
   "titleMyStorage": "My Storage",
@@ -54,5 +55,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsLabelRemote": "Remote",
+  "settingsLabelSettings": "Settings",
+  "titleSettings": "App Settings",
+  "defaultFolderDownload": "Default download path",
+  "defaultFolderDownloadChanged": "Default folder changed",
+  "downloadFolder": "Download folder",
+  "hostChanged": "Host changed",
+  "dialogTitleNewHost": "Change host",
+  "errorLoadContent": "Error while loading the content",
+  "errorLoadContentHint": "Retry or check your connectivity with the host",
+  "noContent": "Empty folder",
+  "noContentHint": "Add some files or create sub-folders",
+  "behaviourChanged": "Changed behaviour",
+  "openFileUponDownload": "Open downloaded files automatically"
 }

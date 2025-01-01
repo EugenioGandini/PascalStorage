@@ -8,23 +8,18 @@ import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../utils/platform.dart';
-import '../../utils/logger.dart';
-import '../../utils/storage_utils.dart';
-import '../../utils/files_utils.dart';
-import '../../config/permissions.dart';
 import '../../models/models.dart';
+import '../../utils/utilities.dart';
+import '../../config/permissions.dart';
+import '../../providers/settings_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/resource_provider.dart';
 import '../login/login_page.dart';
 import '../base_page.dart';
 
-import 'dialogs/dialog_new.dart';
-import 'dialogs/dialog_rename.dart';
-import 'dialogs/dialog_yes_no.dart';
-import 'widgets/file_details.dart';
-import 'widgets/folder_details.dart';
-import 'widgets/my_storage_app_bar.dart';
+import '../../widgets/app_navigator.dart';
+import 'widgets/widgets.dart';
+import 'dialogs/dialogs.dart';
 import 'folder_content_widget.dart';
 import 'notifications.dart' as notify;
 
@@ -46,7 +41,9 @@ class _MyStoragePageState extends State<MyStoragePage> {
   late FolderContent _folderContent;
   bool selectModeEnable = false;
   bool _init = false;
+  bool _canShowDrawer = false;
   String _title = '';
+  late Settings _settings;
 
   @override
   void didChangeDependencies() {
@@ -57,6 +54,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     _logger.message('Initialization page...');
 
     _resProvider = Provider.of<ResourceProvider>(context);
+    _settings = Provider.of<SettingsProvider>(context, listen: false).settings;
 
     var arguments = ModalRoute.of(context)!.settings.arguments;
 
@@ -68,7 +66,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
       _futureLoadFolder =
           _resProvider.openFolder(_remoteFolder).then((content) {
-        _updateTitle(folderName, content: content);
+        setState(() {
+          _updateTitle(folderName, content: content);
+          _updateDrawer(_remoteFolder.isHome);
+        });
+
         return content;
       });
 
@@ -80,7 +82,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
       _remoteFolder = _resProvider.homeFolder;
 
       _futureLoadFolder = _resProvider.loadHomeFolder().then((content) {
-        _updateTitle(homeStorageTitle, content: content);
+        setState(() {
+          _updateTitle(homeStorageTitle, content: content);
+          _updateDrawer(_remoteFolder.isHome);
+        });
+
         return content;
       });
 
@@ -97,9 +103,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
       title = "$title (${getHumanReadableSize(content.folderSize)})";
     }
 
-    setState(() {
-      _title = title;
-    });
+    _title = title;
+  }
+
+  void _updateDrawer(bool isHomeFolder) {
+    _canShowDrawer = isHomeFolder;
   }
 
   void _openFolder(BuildContext context, RemoteFolder folder) {
@@ -124,6 +132,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
                 Navigator.of(context).pop();
 
                 await _saveFile([file], dir);
+
+                if (!_settings.openFileUponDownload) return;
 
                 OpenFile.open(path.join(dir, file.name));
               },
@@ -342,15 +352,21 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
     if (!hasConfirmed) return;
 
-    String? downloadOutputFolder = await getDownloadFolder();
+    if (!context.mounted) return;
+    var customDestination = _settings.defaultFolderDownload;
 
-    if (downloadOutputFolder == null) return;
+    String? outputFolder = customDestination.isNotEmpty
+        ? customDestination
+        : await getDownloadFolder();
 
-    await _saveFile(resources, downloadOutputFolder);
+    if (outputFolder == null) return;
 
-    if (numResources == 1) {
-      var result = await OpenFile.open(
-          path.join(downloadOutputFolder, resources[0].name));
+    await _saveFile(resources, outputFolder);
+
+    if (numResources == 1 && _settings.openFileUponDownload) {
+      await OpenFile.open(
+        path.join(outputFolder, resources[0].name),
+      );
     }
   }
 
@@ -371,12 +387,19 @@ class _MyStoragePageState extends State<MyStoragePage> {
   /////// Actions ///////
 
   void _forceReloadContent() {
-    setState(() {
-      var folderName = _remoteFolder.name;
+    var folderName = _remoteFolder.name;
 
+    if (_remoteFolder.isHome) {
+      folderName = AppLocalizations.of(context)!.titleMyStorage;
+    }
+
+    setState(() {
       _futureLoadFolder =
           _resProvider.openFolder(_remoteFolder).then((content) {
-        _updateTitle(folderName, content: content);
+        setState(() {
+          _updateTitle(folderName, content: content);
+          _updateDrawer(_remoteFolder.isHome);
+        });
         return content;
       });
     });
@@ -449,6 +472,9 @@ class _MyStoragePageState extends State<MyStoragePage> {
           });
         },
       ),
+      drawer: _canShowDrawer
+          ? const AppNavigator(currentRoute: MyStoragePage.routeName)
+          : null,
       body: RefreshIndicator(
         onRefresh: () {
           _forceReloadContent();
@@ -458,9 +484,17 @@ class _MyStoragePageState extends State<MyStoragePage> {
           future: _futureLoadFolder,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              var loadedContent = snapshot.data as FolderContent;
+              var loadedContent = snapshot.data as FolderContent?;
+
+              if (loadedContent == null) {
+                return const FailLoadContent();
+              }
 
               _folderContent = loadedContent;
+
+              if (_folderContent.isEmpty) {
+                return EmptyContent();
+              }
 
               return FolderContentWidget(
                 folder: loadedContent.currentFolder,

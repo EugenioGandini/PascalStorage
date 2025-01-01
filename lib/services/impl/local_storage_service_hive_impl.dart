@@ -61,9 +61,19 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
     var settingsBox = await _openBox('settings');
 
     String? savedHost = settingsBox.get('host');
+    String? defaultFolderDownload = settingsBox.get('defaultFolderDownload');
+    var openFileStr = settingsBox.get('openFileUponDownload');
+
+    bool? openFileUponDownload;
+
+    if (openFileStr != null) {
+      openFileUponDownload = bool.parse(openFileStr);
+    }
 
     return Settings(
       host: savedHost ?? '',
+      defaultFolderDownload: defaultFolderDownload ?? '',
+      openFileUponDownload: openFileUponDownload ?? true,
     );
   }
 
@@ -72,6 +82,10 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
     var settingsBox = await _openBox('settings');
 
     await settingsBox.put('host', settings.host);
+    await settingsBox.put(
+        'defaultFolderDownload', settings.defaultFolderDownload);
+    await settingsBox.put(
+        'openFileUponDownload', settings.openFileUponDownload.toString());
   }
 
   @override

@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:pascalstorage/widgets/footer.dart';
 
+import '../widgets/footer.dart';
 import '../config/colors.dart';
 
 /// Base layout of all pages (except login)
@@ -11,6 +11,7 @@ import '../config/colors.dart';
 class BasePage extends StatefulWidget {
   final Widget body;
   final AppBar? appBar;
+  final Widget? drawer;
 
   final VoidCallback? selectFileToBeUploaded;
   final VoidCallback? crateNewResource;
@@ -20,6 +21,7 @@ class BasePage extends StatefulWidget {
     super.key,
     required this.body,
     this.appBar,
+    this.drawer,
     this.selectFileToBeUploaded,
     this.crateNewResource,
     this.toggleSelectMode,
@@ -120,6 +122,7 @@ class _BasePageState extends State<BasePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: widget.appBar,
+      drawer: widget.drawer,
       body: Stack(
         children: [
           Container(

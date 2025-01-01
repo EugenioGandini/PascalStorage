@@ -29,4 +29,8 @@ class RemoteFolder extends Resource {
       selected: selected,
     );
   }
+
+  bool get isHome {
+    return path == '' && name == 'Home';
+  }
 }

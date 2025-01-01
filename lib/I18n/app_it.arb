@@ -11,6 +11,7 @@
   "password": "Parola d'ordine",
   "validatorEmptyPassword": "Si prega di inserire la parola d'ordine",
   "saveCredentials": "Salva le credenziali",
+  "save": "Salva",
   "enter": "Entra",
   "exit": "Esci",
   "titleMyStorage": "Il mio Spazio",
@@ -54,5 +55,19 @@
         "type": "String"
       }
     }
-  }
+  },
+  "settingsLabelRemote": "Remoto",
+  "settingsLabelSettings": "Impostazioni",
+  "titleSettings": "Impostazioni App",
+  "defaultFolderDownload": "Percorso predefinito download",
+  "defaultFolderDownloadChanged": "Cartella predefinita modificata",
+  "downloadFolder": "Cartella download",
+  "hostChanged": "Host cambiato",
+  "dialogTitleNewHost": "Cambio host",
+  "errorLoadContent": "Errore nel caricamento del contenuto",
+  "errorLoadContentHint": "Riprovare o controllare la connessione con l'host",
+  "noContent": "Cartella vuota",
+  "noContentHint": "Aggiungi dei file o crea delle sotto-cartelle",
+  "behaviourChanged": "Comportamento cambiato",
+  "openFileUponDownload": "Apri i file scaricati automaticamente"
 }

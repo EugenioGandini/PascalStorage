@@ -18,6 +18,10 @@ class FolderContent {
     return files.any((file) => file.name == fileName);
   }
 
+  bool get isEmpty {
+    return files.isEmpty && folders.isEmpty;
+  }
+
   int get folderSize {
     if (files.isEmpty) return 0;
 

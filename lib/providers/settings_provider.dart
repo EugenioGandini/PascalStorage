@@ -26,4 +26,20 @@ class SettingsProvider with ChangeNotifier {
 
     await Future.delayed(const Duration(milliseconds: 500));
   }
+
+  Future<void> changeDefaultFolderDownload(String folderPath) async {
+    _settings = _settings.copyWith(defaultFolderDownload: folderPath);
+
+    await _settingsService.saveSettings(_settings);
+
+    notifyListeners();
+  }
+
+  Future<void> changeOpenFileUponDownload(bool openFileUponDownload) async {
+    _settings = _settings.copyWith(openFileUponDownload: openFileUponDownload);
+
+    await _settingsService.saveSettings(_settings);
+
+    notifyListeners();
+  }
 }

@@ -5,21 +5,21 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../../models/models.dart';
 import '../../../providers/resource_provider.dart';
 
-class DialogNew extends StatefulWidget {
+class DialogNewResource extends StatefulWidget {
   final bool isFolder;
   final RemoteFolder parentFolder;
 
-  const DialogNew({
+  const DialogNewResource({
     super.key,
     required this.parentFolder,
     this.isFolder = true,
   });
 
   @override
-  State<DialogNew> createState() => _DialogNewState();
+  State<DialogNewResource> createState() => _DialogNewResourceState();
 }
 
-class _DialogNewState extends State<DialogNew> {
+class _DialogNewResourceState extends State<DialogNewResource> {
   final _formKey = GlobalKey<FormState>();
   String _name = "";
 
@@ -121,7 +121,7 @@ Future buildDialogNewResource(
             ),
           ],
         ),
-        content: DialogNew(
+        content: DialogNewResource(
           parentFolder: parentFolder,
           isFolder: isFolder,
         ),

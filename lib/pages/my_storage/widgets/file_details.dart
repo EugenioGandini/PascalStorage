@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../models/models.dart';
+import '../../../providers/settings_provider.dart';
 
 import '../../../utils/platform.dart';
 import '../../../utils/files_utils.dart';
@@ -37,8 +39,21 @@ class FileDetails extends StatelessWidget {
     onSaveFile(directoryPath);
   }
 
-  void _saveDownloadFolder() async {
-    String? outputPath = await getDownloadFolder();
+  void _saveDownloadFolder(BuildContext context) async {
+    String? outputPath;
+
+    if (!Platform.isWeb) {
+      var customDestination =
+          Provider.of<SettingsProvider>(context, listen: false)
+              .settings
+              .defaultFolderDownload;
+
+      if (customDestination.isNotEmpty) {
+        outputPath = customDestination;
+      }
+    }
+
+    outputPath ??= await getDownloadFolder();
 
     if (outputPath == null) return;
 
@@ -115,7 +130,7 @@ class FileDetails extends StatelessWidget {
                 _buildSeparatorAction(),
               ],
               ElevatedButton(
-                onPressed: _saveDownloadFolder,
+                onPressed: () => _saveDownloadFolder(context),
                 child: Text(AppLocalizations.of(context)!.download),
               ),
             ],
