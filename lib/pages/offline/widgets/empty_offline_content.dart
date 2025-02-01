@@ -22,6 +22,7 @@ class EmptyOfflineContent extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             AppLocalizations.of(context)!.noOfflineFileHint,
+            textAlign: TextAlign.center,
           ),
         ],
       ),
