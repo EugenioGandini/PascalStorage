@@ -13,6 +13,9 @@ These are the feature of this client available at the moment:
 * delete remote files (1 at a time).
 * rename a remote file (name with or without extension).
 * multi-language support** (it - en).
+* offline access to local resources.
+* synchronization between local - remote files.
+* configurable synchronization timing (or at login).
 
 ** : additional languages could be imported. If you want to translate the app to other languages, then download this [RAW file](./lib/I18n/app_en.arb) and create a copy on your PC. Call it ```app_$language$>.arb``` where ```$language$``` will be the short representation of the language and edit all content inside. Keep all the keys the same but change the value corresponding (this file is like a JSON file so it must be edited in pretty the same way).
 
@@ -35,6 +38,15 @@ After that depending on the O.S. you have to:
 * <strong>On Android</strong>: copy the downloaded APK file to your device and install it using a file browser (you should grant allow app to be installed from unknown location in Android settings).
 * <strong>On web client</strong>: you must download the archive of this app for the web. After that you have to serve this web static content (html, js etc...) with a file server like nginx or apache or any other server framework (Express.js or others). After that you must ensure that your File Browser server is running behind a proxy (like nginx or traefik for example) controlled by you and ensure that, on this proxy, you allow cors. This step is mandatory because if you just use the File Browser server API directly the REST API calls coming from this web app will be blocked (by the browser). This happens because (this is how cors works) they will be called from a different origin (nginx, apache or other file server origin) other than the one provided by the File Browser server (written inside the response).
 I successfully test this case with traefik and after enabling the header middleware to rewrite cors out of my infrastructure, the web app, served from an nginx web server,works as exprected.
+
+## Build setup
+Application has been developed and built with Flutter version (flutter --version):
+```
+Flutter 3.27.1 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision 17025dd882 (5 weeks ago) • 2024-12-17 03:23:09 +0900
+Engine • revision cb4b5fff73
+Tools • Dart 3.6.0 • DevTools 2.40.2
+```
 
 ## Libraries used
 

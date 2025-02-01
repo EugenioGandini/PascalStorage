@@ -69,5 +69,31 @@
   "noContent": "Empty folder",
   "noContentHint": "Add some files or create sub-folders",
   "behaviourChanged": "Changed behaviour",
-  "openFileUponDownload": "Open downloaded files automatically"
+  "openFileUponDownload": "Open downloaded files automatically",
+  "titleOfflinePage": "Offline resources",
+  "settingsLabelOffline": "Offline saved resources",
+  "enterOffline": "Enter in offline mode",
+  "userNotLoggedIn": "You are NOT logged in yet",
+  "loginRequired": "login required",
+  "noOfflineFilesSaved": "No offline file saved",
+  "noOfflineFileHint": "You can save any remote file to access them when offline",
+  "syncTitle": "Synchronization",
+  "syncActivate": "Activate",
+  "syncDeactivate": "Deactivate",
+  "syncAtLogin": "Always execute a sync at user login",
+  "periodicSync": "Sync files every {durationSyncMin} minutes and {durationSyncSec} seconds",
+  "@periodicSync": {
+    "placeholders": {
+      "durationSyncMin": {
+        "type": "String"
+      },
+      "durationSyncSec": {
+        "type": "String"
+      }
+    }
+  },
+  "frequencySeconds": "Frequency in seconds",
+  "dialogTitleNewFrequency": "Change frequency",
+  "frequencySyncUpdated": "Sync frequency updated",
+  "syncDisable": "Sync disable"
 }

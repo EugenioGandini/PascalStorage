@@ -1,9 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../../models/models.dart';
 
+import '../services/base/local_storage_service.dart';
+import '../services/impl/local_storage_service_hive_impl.dart';
 import '../services/base/resource_service.dart';
 import '../services/impl/resource_service_http_impl.dart';
+import '../services/base/sync_service.dart';
+import '../services/impl/sync_service_impl.dart';
 
 import '../../utils/logger.dart';
 
@@ -11,14 +17,24 @@ class ResourceProvider with ChangeNotifier {
   static const Logger _logger = Logger("ResourceProvider");
 
   final ResourceService _resourceService = ResourceServiceHttpImpl();
+  final LocalStorageService _localService = LocalStorageServiceHiveImpl();
+  late SyncService _syncService;
+
+  Timer? _periodicSync;
+  Duration _runSyncEvery = Duration.zero;
 
   ResourceProvider(Settings settings) {
+    _syncService = SyncServiceImpl(
+      localStorageService: _localService,
+      resourceService: _resourceService,
+    );
+
     updateSettings(settings);
   }
 
-  RemoteFolder get homeFolder {
-    return RemoteFolder(
-      path: '',
+  ResourceFolder get homeFolder {
+    return ResourceFolder(
+      path: '/',
       name: 'Home',
       size: 0,
       modified: DateTime.now(),
@@ -29,28 +45,47 @@ class ResourceProvider with ChangeNotifier {
     if (_resourceService is ResourceServiceHttpImpl) {
       _resourceService.setHost(newSettings.host);
     }
+
+    if (_runSyncEvery != newSettings.periodicSync) {
+      _runSyncEvery = newSettings.periodicSync;
+    }
   }
 
-  void updateToken(Token token) {
+  void updateLogin(Token token) {
     if (_resourceService is ResourceServiceHttpImpl) {
       _resourceService.updateToken(token);
     }
+
+    _updateTimerSync();
   }
 
-  void removeToken() {
-    if (_resourceService is ResourceServiceHttpImpl) {
-      _resourceService.updateToken(null);
+  void _updateTimerSync() {
+    _periodicSync?.cancel();
+    _logger.message('Cancelled timer sync. Frequency is now $_runSyncEvery');
+
+    if (_runSyncEvery != Duration.zero) {
+      _periodicSync = Timer.periodic(_runSyncEvery, (timer) {
+        syncFiles();
+      });
     }
   }
 
-  Future<FolderContent?> loadHomeFolder() async {
+  void removeLogout() {
+    if (_resourceService is ResourceServiceHttpImpl) {
+      _resourceService.updateToken(null);
+    }
+
+    _periodicSync?.cancel();
+  }
+
+  Future<ResourceFolder?> loadHomeFolder() async {
     return openFolder(homeFolder);
   }
 
-  Future<FolderContent?> openFolder(RemoteFolder folder) async {
+  Future<ResourceFolder?> openFolder(ResourceFolder folder) async {
     _logger.message('loading folder... ${folder.name}');
 
-    FolderContent? content = await _resourceService.openFolder(folder);
+    ResourceFolder? content = await _resourceService.openFolder(folder.path);
 
     if (content == null) {
       _logger.message('Failed to load content');
@@ -60,16 +95,35 @@ class ResourceProvider with ChangeNotifier {
     return content;
   }
 
-  Stream<int> downloadFile(RemoteFile file, String dirOutput) {
+  Stream<int> downloadFile(ResourceFile file, String dirOutput) {
     _logger.message('downloading file... ${file.name} to $dirOutput');
 
-    return _resourceService.downloadFile(file, dirOutput);
+    var streamDownload = _resourceService.downloadFile(file, dirOutput);
+
+    return streamDownload;
+  }
+
+  Future registerOfflineResource(
+      ResourceFile remoteFile, String localPath) async {
+    await _syncService.addOfflineFileToSync(
+      remoteFile: remoteFile,
+      localPath: localPath,
+    );
+  }
+
+  Future updateOfflineFiles(OfflineFile updatedOfflineFile) async {
+    await _syncService.updateOfflineFileSync(updatedOfflineFile);
+    notifyListeners();
+  }
+
+  Future<Sync> loadSync({int? id}) async {
+    return await _localService.getSync();
   }
 
   Stream<int> uploadFile(
     String fileFullName,
     Uint8List bufferFile,
-    RemoteFolder remoteFolder,
+    ResourceFolder remoteFolder,
     bool override,
   ) {
     _logger.message('uploading file... $fileFullName to ${remoteFolder.path}');
@@ -83,14 +137,14 @@ class ResourceProvider with ChangeNotifier {
 
   Future<bool> deleteRemoteResource(List<Resource> resources) async {
     for (var resource in resources) {
-      if (resource is RemoteFile) {
+      if (resource is ResourceFile) {
         _logger.message('deleting remote file... ${resource.path}');
 
         if (!await _resourceService.deleteFile(resource)) {
           return false;
         }
       }
-      if (resource is RemoteFolder) {
+      if (resource is ResourceFolder) {
         _logger.message('deleting remote folder... ${resource.path}');
 
         if (!await _resourceService.deleteFolder(resource)) {
@@ -102,7 +156,19 @@ class ResourceProvider with ChangeNotifier {
     return true;
   }
 
-  Future<bool> moveFile(RemoteFile file, String destinationPath) async {
+  Future<bool> deleteOfflineFiles(List<OfflineFile> offlineFiles) async {
+    await _syncService.removeOfflineFileFromSync(offlineFiles);
+
+    notifyListeners();
+
+    return true;
+  }
+
+  Future syncFiles() async {
+    await _syncService.syncResources();
+  }
+
+  Future<bool> moveFile(ResourceFile file, String destinationPath) async {
     _logger.message('moving remote file... ${file.path} to $destinationPath');
 
     return _resourceService.moveFile(file, destinationPath);
@@ -111,12 +177,12 @@ class ResourceProvider with ChangeNotifier {
   Future<bool> renameResource(Resource resource, String newName) async {
     String newPath = "${resource.parentPath}/$newName";
 
-    if (resource is RemoteFile) {
+    if (resource is ResourceFile) {
       _logger.message('renaming remote file... ${resource.path} into $newName');
 
       return _resourceService.moveFile(resource, newPath);
     }
-    if (resource is RemoteFolder) {
+    if (resource is ResourceFolder) {
       _logger
           .message('renaming remote folder... ${resource.path} into $newName');
 
@@ -125,7 +191,7 @@ class ResourceProvider with ChangeNotifier {
     return false;
   }
 
-  Future<bool> createFolder(RemoteFolder folder) async {
+  Future<bool> createFolder(ResourceFolder folder) async {
     _logger.message('creating remote folder... ${folder.path}');
 
     return _resourceService.createFolder(folder.name, folder.path);

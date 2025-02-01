@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/models.dart';
-
 /// Widget for displaying folders
 class FolderWidget extends StatelessWidget {
-  final RemoteFolder folder;
+  final String folderName;
+  final DateTime? folderModified;
 
   /// When the user tap on this folder
   final VoidCallback? onTap;
@@ -17,7 +16,8 @@ class FolderWidget extends StatelessWidget {
 
   const FolderWidget({
     super.key,
-    required this.folder,
+    required this.folderName,
+    this.folderModified,
     this.onTap,
     this.onLongPress,
     this.trailing,
@@ -25,6 +25,10 @@ class FolderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var subtitle = folderModified != null
+        ? DateFormat.yMMMd().add_jm().format(folderModified!.toLocal())
+        : '';
+
     return Card(
       elevation: 10,
       shape: RoundedRectangleBorder(
@@ -35,9 +39,9 @@ class FolderWidget extends StatelessWidget {
         onLongPress: onLongPress,
         child: ListTile(
           leading: const Icon(Icons.folder),
-          title: Text(folder.name),
+          title: Text(folderName),
           subtitle: Text(
-            DateFormat.yMMMd().add_jm().format(folder.modified.toLocal()),
+            subtitle,
           ),
           trailing: trailing,
         ),

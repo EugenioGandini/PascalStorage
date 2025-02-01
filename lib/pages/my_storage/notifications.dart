@@ -26,10 +26,10 @@ void showDeleteResourceSuccess(
 }) {
   String message = AppLocalizations.of(context)!.deleteSuccess;
 
-  if (resource is RemoteFile) {
+  if (resource is ResourceFile) {
     message = AppLocalizations.of(context)!.deleteFileSuccess;
   }
-  if (resource is RemoteFolder) {
+  if (resource is ResourceFolder) {
     message = AppLocalizations.of(context)!.deleteFolderSuccess;
   }
 

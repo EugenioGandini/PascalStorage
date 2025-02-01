@@ -42,4 +42,20 @@ class SettingsProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> changeSyncAtLogin(bool syncAtLogin) async {
+    _settings = _settings.copyWith(syncAtLogin: syncAtLogin);
+
+    await _settingsService.saveSettings(_settings);
+
+    notifyListeners();
+  }
+
+  Future<void> changeSyncPeriod(Duration every) async {
+    _settings = _settings.copyWith(periodicSync: every);
+
+    await _settingsService.saveSettings(_settings);
+
+    notifyListeners();
+  }
 }

@@ -11,10 +11,12 @@ import 'notifications.dart' as notify;
 
 class LoginForm extends StatefulWidget {
   final VoidCallback onLoggedInSuccessfully;
+  final VoidCallback onEnterOffline;
 
   const LoginForm({
     super.key,
     required this.onLoggedInSuccessfully,
+    required this.onEnterOffline,
   });
 
   @override
@@ -28,6 +30,7 @@ class _LoginFormState extends State<LoginForm> {
   String _host = "";
   bool _logginIn = false;
   bool _saveCredentials = false;
+  bool _wasLoggedIn = false;
 
   @override
   void initState() {
@@ -42,20 +45,30 @@ class _LoginFormState extends State<LoginForm> {
 
     var authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    if (authProvider.hasSavedCredentials) {
-      var credentials = authProvider.savedCredentials;
-
+    if (!authProvider.hasSavedCredentials) {
       setState(() {
-        _username = credentials.username;
-        _password = credentials.password;
+        _wasLoggedIn = authProvider.wasUserLoggedIn;
       });
-
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (context.mounted) {
-          _submit();
-        }
-      });
+      return;
     }
+
+    setState(() {
+      _logginIn = true;
+      _wasLoggedIn = authProvider.wasUserLoggedIn;
+    });
+
+    var credentials = authProvider.savedCredentials;
+
+    setState(() {
+      _username = credentials.username;
+      _password = credentials.password;
+    });
+
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (context.mounted) {
+        _submit();
+      }
+    });
   }
 
   Future _submit() async {
@@ -96,6 +109,10 @@ class _LoginFormState extends State<LoginForm> {
     setState(() {
       _logginIn = false;
     });
+  }
+
+  void _enterOffline() {
+    widget.onEnterOffline();
   }
 
   Widget _showProgressIndicator() {
@@ -209,7 +226,20 @@ class _LoginFormState extends State<LoginForm> {
               label: Text(AppLocalizations.of(context)!.enter),
               icon: const Icon(Icons.login_outlined),
             ),
-          )
+          ),
+          if (_wasLoggedIn && !_logginIn) ...[
+            const SizedBox(
+              height: 24,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _enterOffline,
+                label: Text(AppLocalizations.of(context)!.enterOffline),
+                icon: const Icon(Icons.cloud_off_outlined),
+              ),
+            )
+          ]
         ],
       ),
     );

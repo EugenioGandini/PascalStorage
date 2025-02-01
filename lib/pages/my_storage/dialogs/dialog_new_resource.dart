@@ -7,7 +7,7 @@ import '../../../providers/resource_provider.dart';
 
 class DialogNewResource extends StatefulWidget {
   final bool isFolder;
-  final RemoteFolder parentFolder;
+  final ResourceFolder parentFolder;
 
   const DialogNewResource({
     super.key,
@@ -34,14 +34,14 @@ class _DialogNewResourceState extends State<DialogNewResource> {
     bool success = false;
 
     if (widget.isFolder) {
-      RemoteFolder newRemoteFolder = RemoteFolder(
+      ResourceFolder newResourceFolder = ResourceFolder(
         path: widget.parentFolder.path,
         name: _name,
         size: 0,
         modified: DateTime.now(),
       );
 
-      success = await resProvider.createFolder(newRemoteFolder);
+      success = await resProvider.createFolder(newResourceFolder);
     }
 
     if (success) {
@@ -61,7 +61,7 @@ class _DialogNewResourceState extends State<DialogNewResource> {
               icon: const Icon(Icons.text_fields),
               labelText: AppLocalizations.of(context)!.newName,
             ),
-            textInputAction: TextInputAction.next,
+            textInputAction: TextInputAction.done,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return AppLocalizations.of(context)!.validatorEmptyName;
@@ -95,7 +95,7 @@ class _DialogNewResourceState extends State<DialogNewResource> {
 
 Future buildDialogNewResource(
   BuildContext context,
-  RemoteFolder parentFolder,
+  ResourceFolder parentFolder,
   bool isFolder,
 ) async {
   var createSuccessfully = await showDialog(

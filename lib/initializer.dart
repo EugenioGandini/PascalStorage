@@ -3,7 +3,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:window_manager/window_manager.dart';
 
-import '../utils/platform.dart';
+import 'services/impl/type_adapters/offline_file_type_adapter.dart';
+import 'services/impl/type_adapters/sync_type_adapter.dart';
+import 'utils/platform.dart';
 
 class Initializer {
   static Future _initializeLocale() async {
@@ -13,6 +15,8 @@ class Initializer {
 
   static Future _initializeHive() async {
     await Hive.initFlutter();
+    Hive.registerAdapter(OfflineFileTypeAdapter());
+    Hive.registerAdapter(SyncTypeAdapter());
   }
 
   static Future _initializeWindow() async {

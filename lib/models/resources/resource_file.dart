@@ -1,10 +1,10 @@
 import 'resource.dart';
 
-class RemoteFile extends Resource {
+class ResourceFile extends Resource {
   final String type;
   String? content;
 
-  RemoteFile({
+  ResourceFile({
     required super.path,
     required super.name,
     required super.size,
@@ -15,7 +15,7 @@ class RemoteFile extends Resource {
   });
 
   static fromJson(Map<String, Object?> json) {
-    return RemoteFile(
+    return ResourceFile(
       path: json['path'] as String,
       name: json['name'] as String,
       size: json['size'] as int,
@@ -25,14 +25,17 @@ class RemoteFile extends Resource {
     );
   }
 
-  RemoteFile copyWith({
+  ResourceFile copyWith({
+    String? path,
     bool selected = false,
+    DateTime? modified,
+    int? size,
   }) {
-    return RemoteFile(
-      path: path,
+    return ResourceFile(
+      path: path ?? this.path,
       name: name,
-      size: size,
-      modified: modified,
+      size: size ?? this.size,
+      modified: modified ?? this.modified,
       type: type,
       content: content,
       selected: selected,

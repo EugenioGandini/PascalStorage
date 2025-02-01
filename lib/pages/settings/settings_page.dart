@@ -34,6 +34,12 @@ class SettingsPage extends StatelessWidget {
             OpenFileUponDownload(
               openFile: settings.openFileUponDownload,
             ),
+            SyncLogin(
+              syncAtLogin: settings.syncAtLogin,
+            ),
+            PeriodicSync(
+              periodicSync: settings.periodicSync,
+            ),
             Host(
               host: settings.host,
             )

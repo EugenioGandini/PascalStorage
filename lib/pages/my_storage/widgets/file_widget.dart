@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../models/models.dart';
 import '../../../utils/files_utils.dart';
 
 /// Widget for displaying files
 class FileWidget extends StatelessWidget {
-  final RemoteFile file;
+  final String fileName;
+  final String fileExtension;
+  final DateTime? fileModified;
+  final int? fileSize;
 
   /// When the user tap on this file
   final VoidCallback? onTap;
@@ -19,22 +21,34 @@ class FileWidget extends StatelessWidget {
 
   const FileWidget({
     super.key,
-    required this.file,
+    required this.fileName,
+    this.fileExtension = '',
+    this.fileSize,
+    this.fileModified,
     this.onTap,
     this.onLongPress,
     this.trailing,
   });
 
   String get name {
-    if (file.name.length < 26) return file.name;
+    if (fileName.length < 26) return fileName;
 
-    return '${file.name.substring(0, 23)}...';
+    return '${fileName.substring(0, 23)}...';
   }
 
   @override
   Widget build(BuildContext context) {
+    var subtitle = '';
+
+    if (fileModified != null) {
+      subtitle += DateFormat.yMMMd().add_jm().format(fileModified!.toLocal());
+    }
+    if (fileSize != null) {
+      subtitle += " (${getFileSize(fileSize!)})";
+    }
+
     return Card(
-      color: getFileBackgroundColor(file),
+      color: getFileBackgroundColor(fileExtension),
       elevation: 10,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
@@ -45,20 +59,20 @@ class FileWidget extends StatelessWidget {
         onLongPress: onLongPress,
         child: ListTile(
           leading: Icon(
-            getFileIcon(file),
-            color: getFileForegroundColor(file),
+            getFileIcon(fileExtension),
+            color: getFileForegroundColor(fileExtension),
           ),
           title: Text(
             name,
             style: TextStyle(
-              color: getFileForegroundColor(file),
+              color: getFileForegroundColor(fileExtension),
             ),
           ),
           subtitle: Text(
-            "${DateFormat.yMMMd().add_jm().format(file.modified.toLocal())} (${getFileSize(file)})",
+            subtitle,
             style: TextStyle(
               fontSize: 12,
-              color: getFileForegroundColor(file),
+              color: getFileForegroundColor(fileExtension),
             ),
           ),
           trailing: trailing,

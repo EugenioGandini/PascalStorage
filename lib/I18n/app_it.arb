@@ -69,5 +69,31 @@
   "noContent": "Cartella vuota",
   "noContentHint": "Aggiungi dei file o crea delle sotto-cartelle",
   "behaviourChanged": "Comportamento cambiato",
-  "openFileUponDownload": "Apri i file scaricati automaticamente"
+  "openFileUponDownload": "Apri i file scaricati automaticamente",
+  "titleOfflinePage": "Risorse offline",
+  "settingsLabelOffline": "Risorse salvate offline",
+  "enterOffline": "Entra in modalità offline",
+  "userNotLoggedIn": "NON hai effettuato l'accesso",
+  "loginRequired": "accesso richiesto",
+  "noOfflineFilesSaved": "Nessun file salvato offline",
+  "noOfflineFileHint": "Puoi salvare qualunque file remoto per accedervi quando sei offline",
+  "syncTitle": "Sincronizzazione",
+  "syncActivate": "Attiva",
+  "syncDeactivate": "Disattiva",
+  "syncAtLogin": "Esegui sempre una sincronizzazione quando l'utente entra",
+  "periodicSync": "Sincronizza i file ogni {durationSyncMin} minuti e {durationSyncSec} secondi",
+  "@periodicSync": {
+    "placeholders": {
+      "durationSyncMin": {
+        "type": "String"
+      },
+      "durationSyncSec": {
+        "type": "String"
+      }
+    }
+  },
+  "frequencySeconds": "Frequenza in secondi",
+  "dialogTitleNewFrequency": "Cambia frequenza",
+  "frequencySyncUpdated": "Frequenza di sincronizzazione aggiornata",
+  "syncDisable": "Sincronizzazione disabilitata"
 }

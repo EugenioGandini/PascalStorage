@@ -8,6 +8,7 @@ class DrawerWidget extends StatelessWidget {
   final BuildContext context;
   final String route;
   final Function(String selectedRoute) onNavigationSelected;
+  final bool loggedIn;
 
   bool isCurrentPage(String routeName) {
     return routeName == route;
@@ -32,10 +33,17 @@ class DrawerWidget extends StatelessWidget {
     super.key,
     required this.route,
     required this.onNavigationSelected,
+    this.loggedIn = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    var myStorageTitlePage = AppLocalizations.of(context)!.settingsLabelRemote;
+
+    if (!loggedIn) {
+      myStorageTitlePage += ' - ${AppLocalizations.of(context)!.loginRequired}';
+    }
+
     return Drawer(
       backgroundColor: AppColors.lightBlue2,
       child: Column(
@@ -45,20 +53,39 @@ class DrawerWidget extends StatelessWidget {
             width: double.infinity,
             color: AppColors.blue,
             child: Center(
-              child: Text(
-                'Pascal Storage',
-                style: Theme.of(context).textTheme.headlineLarge,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Pascal Storage',
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
+                  if (!loggedIn)
+                    Text(
+                      AppLocalizations.of(context)!.userNotLoggedIn,
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                ],
               ),
             ),
           ),
           ListTile(
             leading: const Icon(Icons.cloud),
             title: Text(
-              AppLocalizations.of(context)!.settingsLabelRemote,
+              myStorageTitlePage,
               style: getTextTheme(MyStoragePage.routeName),
             ),
             tileColor: getBackgroundColor(MyStoragePage.routeName),
             onTap: () => onNavigationSelected(MyStoragePage.routeName),
+          ),
+          ListTile(
+            leading: const Icon(Icons.wifi_off_outlined),
+            title: Text(
+              AppLocalizations.of(context)!.settingsLabelOffline,
+              style: getTextTheme(OfflinePage.routeName),
+            ),
+            tileColor: getBackgroundColor(OfflinePage.routeName),
+            onTap: () => onNavigationSelected(OfflinePage.routeName),
           ),
           ListTile(
             leading: const Icon(Icons.settings),

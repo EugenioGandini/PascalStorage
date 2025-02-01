@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/remote_file.dart';
 import 'file_widget.dart';
 
 /// Widget for displaying files in selection mode
 class FileSelectionWidget extends StatelessWidget {
-  final RemoteFile file;
+  final String fileName;
+  final String fileExtension;
+  final DateTime? fileModified;
+  final int? fileSize;
 
   /// When the user tap on this file
   final VoidCallback? onTap;
@@ -14,7 +16,10 @@ class FileSelectionWidget extends StatelessWidget {
 
   const FileSelectionWidget({
     super.key,
-    required this.file,
+    required this.fileName,
+    this.fileExtension = '',
+    this.fileSize,
+    this.fileModified,
     this.onTap,
     this.isSelected = false,
   });
@@ -22,7 +27,10 @@ class FileSelectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FileWidget(
-      file: file,
+      fileName: fileName,
+      fileExtension: fileExtension,
+      fileModified: fileModified,
+      fileSize: fileSize,
       onTap: onTap,
       trailing: Transform.scale(
         scale: 1.5,

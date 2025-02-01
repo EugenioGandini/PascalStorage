@@ -1,3 +1,5 @@
+import 'dart:io';
+
 abstract class Resource {
   final String path;
   final String name;
@@ -15,6 +17,10 @@ abstract class Resource {
 
   String get parentPath {
     return path.substring(0, path.lastIndexOf('/'));
+  }
+
+  String get parentPathLocaleAware {
+    return path.substring(0, path.lastIndexOf(Platform.pathSeparator));
   }
 
   @override

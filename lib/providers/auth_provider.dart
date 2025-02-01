@@ -15,6 +15,7 @@ class AuthProvider with ChangeNotifier {
   bool _loggedIn = false;
   Token? _token;
   User? _savedCredentials;
+  bool _wasLoggedIn = false;
 
   final AuthService _authService = AuthServiceHttpImpl();
   final LocalStorageService _localStorageService =
@@ -40,6 +41,8 @@ class AuthProvider with ChangeNotifier {
     _logger.message('Decoding token...');
     _token!.decode();
 
+    _localStorageService.saveLoginSuccess();
+
     _loggedIn = true;
     notifyListeners();
 
@@ -52,6 +55,7 @@ class AuthProvider with ChangeNotifier {
     _savedCredentials = null;
     _token = null;
     _loggedIn = false;
+    _wasLoggedIn = false;
 
     notifyListeners();
   }
@@ -62,6 +66,7 @@ class AuthProvider with ChangeNotifier {
 
   Future loadSavedCredentials() async {
     _savedCredentials = await _localStorageService.getSavedCredentials();
+    _wasLoggedIn = await _localStorageService.wasLoggedInSuccessfully();
   }
 
   bool get isLoggedIn {
@@ -78,5 +83,9 @@ class AuthProvider with ChangeNotifier {
 
   User get savedCredentials {
     return _savedCredentials!;
+  }
+
+  bool get wasUserLoggedIn {
+    return _wasLoggedIn;
   }
 }

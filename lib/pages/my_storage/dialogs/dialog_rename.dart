@@ -24,12 +24,12 @@ class _DialogRenameState extends State<DialogRename> {
   bool _fullName = false;
 
   bool get isForAFile {
-    return widget.resource is RemoteFile;
+    return widget.resource is ResourceFile;
   }
 
-  RemoteFile? get remoteFile {
+  ResourceFile? get remoteFile {
     if (!isForAFile) return null;
-    return widget.resource as RemoteFile;
+    return widget.resource as ResourceFile;
   }
 
   @override
@@ -111,7 +111,7 @@ class _DialogRenameState extends State<DialogRename> {
               labelText: AppLocalizations.of(context)!.newName,
             ),
             controller: _newNameController,
-            textInputAction: TextInputAction.next,
+            textInputAction: TextInputAction.done,
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return AppLocalizations.of(context)!.validatorEmptyName;

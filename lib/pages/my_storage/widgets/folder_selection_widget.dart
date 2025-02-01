@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../models/models.dart';
 import 'folder_widget.dart';
 
 /// Widget for displaying folders in selection mode
 class FolderSelectionWidget extends StatelessWidget {
-  final RemoteFolder folder;
+  final String folderName;
+  final DateTime? folderModified;
 
   /// When the user tap on this folder
   final VoidCallback? onTap;
@@ -14,7 +14,8 @@ class FolderSelectionWidget extends StatelessWidget {
 
   const FolderSelectionWidget({
     super.key,
-    required this.folder,
+    required this.folderName,
+    this.folderModified,
     this.onTap,
     this.isSelected = false,
   });
@@ -22,7 +23,8 @@ class FolderSelectionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FolderWidget(
-      folder: folder,
+      folderName: folderName,
+      folderModified: folderModified,
       onTap: onTap,
       trailing: Transform.scale(
         scale: 1.5,

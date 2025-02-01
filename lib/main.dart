@@ -47,9 +47,9 @@ Future<void> main() async {
             resProvider!.updateSettings(settingsProvider.settings);
 
             if (authProvider.isLoggedIn) {
-              resProvider.updateToken(authProvider.token!);
+              resProvider.updateLogin(authProvider.token!);
             } else {
-              resProvider.removeToken();
+              resProvider.removeLogout();
             }
 
             return resProvider;
@@ -83,6 +83,7 @@ class FileBrowserApp extends StatelessWidget {
         LoginPage.routeName: (context) => const LoginPage(),
         MyStoragePage.routeName: (context) => const MyStoragePage(),
         SettingsPage.routeName: (context) => const SettingsPage(),
+        OfflinePage.routeName: (context) => const OfflinePage(),
       },
       initialRoute: LoginPage.routeName,
     );

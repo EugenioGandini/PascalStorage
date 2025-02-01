@@ -9,10 +9,10 @@ import '../../../models/models.dart';
 /// - rename remotly
 class FolderDetails extends StatelessWidget {
   // final void Function(String) onSaveFile;
-  final void Function(RemoteFolder) onDelete;
-  // final void Function(RemoteFile) onMove;
-  final void Function(RemoteFolder) onRename;
-  final RemoteFolder folder;
+  final void Function(ResourceFolder) onDelete;
+  // final void Function(ResourceFile) onMove;
+  final void Function(ResourceFolder) onRename;
+  final ResourceFolder folder;
 
   const FolderDetails({
     super.key,

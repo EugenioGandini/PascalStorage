@@ -32,9 +32,11 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<FolderContent?> openFolder(RemoteFolder folder) async {
+  Future<ResourceFolder?> openFolder(String path) async {
     try {
-      final url = Uri.parse("$_baseUrl${HttpApi.loadResource}${folder.path}");
+      var route = "${HttpApi.loadResource}$path";
+
+      final url = Uri.parse("$_baseUrl$route");
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Cookie': 'auth=$jwt',
@@ -47,19 +49,19 @@ class ResourceServiceHttpImpl extends ResourceService {
 
       var listItems = mapBody['items'] as List<dynamic>;
 
-      FolderContent content = FolderContent(currentFolder: folder);
+      ResourceFolder folder = ResourceFolder.fromJson(mapBody);
 
       for (var item in listItems) {
         bool isDirectory = item['isDir'] as bool;
 
         if (isDirectory) {
-          content.folders.add(RemoteFolder.fromJson(item));
+          folder.subfolders.add(ResourceFolder.fromJson(item));
         } else {
-          content.files.add(RemoteFile.fromJson(item));
+          folder.files.add(ResourceFile.fromJson(item));
         }
       }
 
-      return content;
+      return folder;
     } catch (error) {
       _logger.message("Failed to load folder content");
     }
@@ -68,7 +70,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Stream<int> downloadFile(RemoteFile file, String dirOutput) async* {
+  Stream<int> downloadFile(ResourceFile file, String dirOutput) async* {
     try {
       final url = Uri.parse(
           "$_baseUrl${HttpApi.downloadResource}${file.path}?auth=$jwt&inline=true");
@@ -189,7 +191,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<bool> deleteFile(RemoteFile file) async {
+  Future<bool> deleteFile(ResourceFile file) async {
     try {
       final url = Uri.parse("$_baseUrl${HttpApi.deleteResource}${file.path}");
       final response = await http.delete(url, headers: {
@@ -208,7 +210,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<bool> moveFile(RemoteFile file, String destinationPath) async {
+  Future<bool> moveFile(ResourceFile file, String destinationPath) async {
     try {
       final url =
           Uri.parse("$_baseUrl${HttpApi.moveResource}${file.path}?action=rename"
@@ -249,7 +251,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<bool> moveFolder(RemoteFolder folder, String destinationPath) async {
+  Future<bool> moveFolder(ResourceFolder folder, String destinationPath) async {
     try {
       final url =
           Uri.parse("$_baseUrl${HttpApi.moveFolder}${folder.path}?action=rename"
@@ -270,7 +272,7 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<bool> deleteFolder(RemoteFolder folder) async {
+  Future<bool> deleteFolder(ResourceFolder folder) async {
     try {
       final url = Uri.parse("$_baseUrl${HttpApi.deleteFolder}${folder.path}");
       final response = await http.delete(url, headers: {
