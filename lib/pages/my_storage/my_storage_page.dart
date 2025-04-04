@@ -1,17 +1,16 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import 'file_operations.dart';
+import 'folder_operations.dart';
+import 'general_operations.dart';
 
 import '../../models/models.dart';
 import '../../utils/utilities.dart';
-import '../../config/permissions.dart';
 import '../../providers/settings_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/resource_provider.dart';
@@ -20,8 +19,6 @@ import '../base_page.dart';
 
 import '../../widgets/widgets.dart';
 import 'widgets/widgets.dart';
-import 'dialogs/dialogs.dart';
-import 'notifications.dart' as notify;
 
 class MyStoragePage extends StatefulWidget {
   static const String routeName = '/myStorage';
@@ -34,6 +31,10 @@ class MyStoragePage extends StatefulWidget {
 
 class _MyStoragePageState extends State<MyStoragePage> {
   final Logger _logger = const Logger('MyStoragePage');
+
+  late FileOperations _fileOperations;
+  late FolderOperations _folderOperations;
+  late GeneralOperations _generalOperations;
 
   late Future _futureLoadFolder;
   late ResourceProvider _resProvider;
@@ -90,6 +91,27 @@ class _MyStoragePageState extends State<MyStoragePage> {
       _logger.message('Loading HOME folder');
     }
 
+    _fileOperations = FileOperations(
+      context: context,
+      resProvider: _resProvider,
+      logger: _logger,
+      onReloadContentNeeded: _forceReloadContent,
+    );
+
+    _folderOperations = FolderOperations(
+      context: context,
+      resProvider: _resProvider,
+      logger: _logger,
+      onReloadContentNeeded: _forceReloadContent,
+    );
+
+    _generalOperations = GeneralOperations(
+      context: context,
+      resProvider: _resProvider,
+      logger: _logger,
+      onReloadContentNeeded: _forceReloadContent,
+    );
+
     _init = true;
   }
 
@@ -135,17 +157,17 @@ class _MyStoragePageState extends State<MyStoragePage> {
               onSaveFile: (dir) async {
                 Navigator.of(context).pop();
 
-                await _saveFile([file], dir);
+                await _fileOperations.saveFile([file], dir);
 
                 if (!_settings.openFileUponDownload) return;
 
                 OpenFile.open(path.join(dir, file.name));
               },
               onMove: () => {}, //_selectNewFolderFile(file),
-              onRename: () => _selectNewName(file),
+              onRename: () => _generalOperations.selectNewName(file),
               onDelete: () {
                 Navigator.of(context).pop();
-                _deleteRemoteResource([file]);
+                _generalOperations.deleteRemoteResource([file]);
               },
             ),
           ),
@@ -171,10 +193,10 @@ class _MyStoragePageState extends State<MyStoragePage> {
               //   _saveFile(file, dir);
               // },
               // onMove: (file) => {}, //_selectNewFolderFile(file),
-              onRename: (folder) => _selectNewName(folder),
+              onRename: (folder) => _generalOperations.selectNewName(folder),
               onDelete: (folder) {
                 Navigator.of(context).pop();
-                _deleteRemoteResource([folder]);
+                _generalOperations.deleteRemoteResource([folder]);
               },
             ),
           ),
@@ -183,242 +205,10 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
-  Future _moveResource(Resource source, ResourceFolder target) async {
-    var success = await _resProvider.moveFile(source, target);
-
-    if (!success) return;
-
-    _forceReloadContent();
-
-    if (mounted) {
-      notify.showMoveResourceSuccess(context);
-    }
-  }
-
   void _updateExternalDragging(bool draggingIn) {
     setState(() {
       _draggingExternal = draggingIn;
     });
-  }
-
-  Future _selectNewName(Resource resource) async {
-    Navigator.of(context).pop();
-
-    bool renameSuccess =
-        await buildDialogRenameResource(context, resourceToBeRenamed: resource);
-
-    if (renameSuccess) {
-      if (mounted) {
-        notify.showRenameResourceSuccess(context);
-      }
-      _forceReloadContent();
-    }
-  }
-
-  Future _deleteRemoteResource(List<Resource> resources) async {
-    String message = resources[0].name;
-    int numResources = resources.length;
-
-    if (numResources > 1) {
-      int numFiles = resources.whereType<ResourceFile>().length;
-      int numFolders = resources.whereType<ResourceFolder>().length;
-
-      List<String> messageParts = [];
-      if (numFiles > 0) messageParts.add('$numFiles file');
-      if (numFolders > 0) messageParts.add('$numFolders cartelle');
-      message = messageParts.join('\n');
-    }
-
-    var hasConfirmed = await askConfirmation(
-      context,
-      AppLocalizations.of(context)!.dialogDeleteTitle,
-      '${AppLocalizations.of(context)!.dialogDeleteMessage}?',
-      titleHeading: const Icon(
-        Icons.delete_forever,
-        size: 32,
-        color: Colors.red,
-      ),
-      centerChild: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-    );
-
-    if (!hasConfirmed) return;
-
-    bool success = await _resProvider.deleteRemoteResource(resources);
-
-    if (success) {
-      if (mounted) {
-        notify.showDeleteResourceSuccess(
-          context,
-          resource: numResources == 1 ? resources[0] : null,
-        );
-      }
-      _forceReloadContent();
-    }
-  }
-
-  /////// FILE operations ///////
-
-  Future _saveFile(List<Resource> remoteResources, String path) async {
-    for (var resource in remoteResources) {
-      if (resource is! ResourceFile) continue;
-
-      _logger.message(
-          'Saving remote file ${resource.name} onto this device at path $path');
-
-      await for (final percentage
-          in _resProvider.downloadFile(resource, path)) {
-        _logger.message('Download $percentage %');
-
-        if (percentage == 100) {
-          _logger.message('Download completed succesfully!!!');
-
-          _resProvider.registerOfflineResource(resource, path);
-
-          notify.showDownloadSuccess(context);
-        }
-      }
-    }
-  }
-
-  Future _selectFileToBeUploaded() async {
-    if (!await hasStorageAccessPermission()) return;
-
-    _logger.message('Selecting file to upload');
-
-    var result = await FilePicker.platform.pickFiles(
-      withData: Platform.isWeb,
-      allowMultiple: true,
-      dialogTitle:
-          mounted ? AppLocalizations.of(context)!.selectFileToBeUploaded : '',
-    );
-
-    if (result == null) return;
-
-    for (var file in result.files) {
-      PlatformFile filePath = file;
-
-      late Uint8List buffer;
-      late String fileFullName;
-
-      if (Platform.isWeb) {
-        _logger.message(
-            'File selected ${filePath.name} ${filePath.bytes!.length} bytes');
-
-        fileFullName = filePath.name;
-        buffer = filePath.bytes!;
-      } else {
-        _logger.message('File selected ${filePath.path}');
-
-        var fileToUpload = File(filePath.path!);
-
-        fileFullName = path.basename(fileToUpload.path);
-        buffer = await fileToUpload.readAsBytes();
-      }
-
-      await _uploadFile(fileFullName, buffer);
-    }
-  }
-
-  void _draggedFiles(List<DropItem> filesDropped) async {
-    for (var fileDropped in filesDropped) {
-      var fileToUpload = File(fileDropped.path);
-      var fileFullName = path.basename(fileToUpload.path);
-
-      _logger.message('File dropped $fileFullName');
-
-      var buffer = await fileToUpload.readAsBytes();
-
-      await _uploadFile(fileFullName, buffer);
-    }
-  }
-
-  Future _uploadFile(String fileFullName, Uint8List buffer) async {
-    _logger.message(
-        'Uploading file $fileFullName to remote folder ${_remoteFolder.name}');
-
-    var override = _remoteFolder.containsFileWithName(fileFullName);
-
-    await for (var percentage in _resProvider.uploadFile(
-        fileFullName, buffer, _remoteFolder, override)) {
-      _logger.message('Uploading... $percentage %');
-
-      if (percentage == 100) {
-        _logger.message('Upload completed successfully !!!');
-
-        notify.showUploadSuccess(context);
-
-        _logger.message('Reloading folder content...');
-
-        _forceReloadContent();
-      }
-    }
-  }
-
-  Future _askSaveFile(List<Resource> resources) async {
-    String message = resources[0].name;
-    int numResources = resources.length;
-
-    if (numResources > 1) {
-      int numFiles = resources.whereType<ResourceFile>().length;
-      int numFolders = resources.whereType<ResourceFolder>().length;
-
-      List<String> messageParts = [];
-      if (numFiles > 0) messageParts.add('$numFiles file');
-      if (numFolders > 0) messageParts.add('$numFolders cartelle');
-      message = messageParts.join('\n');
-    }
-
-    var hasConfirmed = await askConfirmation(
-      context,
-      AppLocalizations.of(context)!.askDownloadTitle,
-      AppLocalizations.of(context)!.askDownloadMessage,
-      titleHeading: const Icon(
-        Icons.download,
-        size: 32,
-      ),
-      centerChild: Text(
-        message,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.headlineSmall,
-      ),
-    );
-
-    if (!hasConfirmed) return;
-
-    if (!context.mounted) return;
-    var customDestination = _settings.defaultFolderDownload;
-
-    String? outputFolder = customDestination.isNotEmpty
-        ? customDestination
-        : await getDownloadFolder();
-
-    if (outputFolder == null) return;
-
-    await _saveFile(resources, outputFolder);
-
-    if (numResources == 1 && _settings.openFileUponDownload) {
-      await OpenFile.open(
-        path.join(outputFolder, resources[0].name),
-      );
-    }
-  }
-
-  /////// FOLDER operations ///////
-
-  Future _crateNewResource() async {
-    bool newFolderSuccess =
-        await buildDialogNewResource(context, _remoteFolder, true);
-
-    if (newFolderSuccess) {
-      if (mounted) {
-        notify.showNewResourceCreatedSuccess(context);
-      }
-      _forceReloadContent();
-    }
   }
 
   /////// Actions ///////
@@ -495,10 +285,12 @@ class _MyStoragePageState extends State<MyStoragePage> {
         titleText: _title,
         onAdvancedActionPressed: _popupActionHandler,
         selectModeEnable: selectModeEnable,
-        onDelete: () => _deleteRemoteResource(_remoteFolder.selectedResources),
+        onDelete: () => _generalOperations
+            .deleteRemoteResource(_remoteFolder.selectedResources),
         onToggleCheckAll: _toggleCheckAll,
         onDownload: () async {
-          await _askSaveFile(_remoteFolder.selectedResources);
+          await _fileOperations.askSaveFile(
+              _remoteFolder.selectedResources, _settings);
           setState(() {
             _toggleSelectMode();
           });
@@ -508,7 +300,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
           ? const AppNavigator(currentRoute: MyStoragePage.routeName)
           : null,
       body: DropTarget(
-        onDragDone: (details) => _draggedFiles(details.files),
+        onDragDone: (details) =>
+            _fileOperations.draggedFiles(details.files, _remoteFolder),
         onDragEntered: (_) => _updateExternalDragging(true),
         onDragExited: (_) => _updateExternalDragging(false),
         enable: ModalRoute.of(context)!.isCurrent,
@@ -541,7 +334,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
                         if (selectModeEnable) {
                           _toggleResourceSelection(file);
                         } else {
-                          _askSaveFile([file]);
+                          _fileOperations.askSaveFile([file], _settings);
                         }
                       },
                       onFolderTap: (folder) {
@@ -555,7 +348,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
                           _openFileDetails(context, file),
                       onFolderLongPress: (folder) =>
                           _openFolderDetails(context, folder),
-                      onResourceMoved: _moveResource,
+                      onResourceMoved: _generalOperations.moveResource,
                       selectModeEnable: selectModeEnable,
                     );
                   }
@@ -566,37 +359,13 @@ class _MyStoragePageState extends State<MyStoragePage> {
                 },
               ),
             ),
-            if (_draggingExternal)
-              Container(
-                width: double.infinity,
-                height: double.infinity,
-                color: const Color.fromARGB(200, 50, 255, 187),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    spacing: 16,
-                    children: [
-                      const Icon(
-                        Icons.upload,
-                        size: 100,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Text(
-                          AppLocalizations.of(context)!.dropToUpload,
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              )
+            if (_draggingExternal) const DraggingExternalResources()
           ],
         ),
       ),
-      selectFileToBeUploaded: _selectFileToBeUploaded,
-      crateNewResource: _crateNewResource,
+      selectFileToBeUploaded: () =>
+          _fileOperations.selectFileToBeUploaded(_remoteFolder),
+      crateNewResource: () => _folderOperations.crateNewResource(_remoteFolder),
       toggleSelectMode: _toggleSelectMode,
     );
   }
