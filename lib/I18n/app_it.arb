@@ -48,6 +48,7 @@
   "dialogTitleNewFile": "Crea un nuovo file",
   "newResourceCreatedSuccess": "La nuova risorsa è stata creata con successo",
   "resourceMovedSuccess": "La risorsa è stata spostata con successo",
+  "dropToUpload": "Rilascia per caricare le risorse in questa cartella",
   "footerAuthor": "Creata da Eugenio Gandini",
   "footerAppVersion": "Versione App: {version} (Inverno 2024)",
   "@footerAppVersion": {

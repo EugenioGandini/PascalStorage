@@ -41,6 +41,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
   bool selectModeEnable = false;
   bool _init = false;
   bool _canShowDrawer = false;
+  bool _draggingExternal = false;
   String _title = '';
   late Settings _settings;
 
@@ -192,6 +193,12 @@ class _MyStoragePageState extends State<MyStoragePage> {
     if (mounted) {
       notify.showMoveResourceSuccess(context);
     }
+  }
+
+  void _updateExternalDragging(bool draggingIn) {
+    setState(() {
+      _draggingExternal = draggingIn;
+    });
   }
 
   Future _selectNewName(Resource resource) async {
@@ -502,57 +509,90 @@ class _MyStoragePageState extends State<MyStoragePage> {
           : null,
       body: DropTarget(
         onDragDone: (details) => _draggedFiles(details.files),
+        onDragEntered: (_) => _updateExternalDragging(true),
+        onDragExited: (_) => _updateExternalDragging(false),
         enable: ModalRoute.of(context)!.isCurrent,
-        child: RefreshIndicator(
-          onRefresh: () {
-            _forceReloadContent();
-            return _futureLoadFolder;
-          },
-          child: FutureBuilder(
-            future: _futureLoadFolder,
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                var loadedContent = snapshot.data as ResourceFolder?;
+        child: Stack(
+          children: [
+            RefreshIndicator(
+              onRefresh: () {
+                _forceReloadContent();
+                return _futureLoadFolder;
+              },
+              child: FutureBuilder(
+                future: _futureLoadFolder,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    var loadedContent = snapshot.data as ResourceFolder?;
 
-                if (loadedContent == null) {
-                  return const FailLoadContent();
-                }
-
-                _remoteFolder = loadedContent;
-
-                if (_remoteFolder.isEmpty) {
-                  return const EmptyContent();
-                }
-
-                return FolderContentWidget(
-                  folder: _remoteFolder,
-                  onFileTap: (file) {
-                    if (selectModeEnable) {
-                      _toggleResourceSelection(file);
-                    } else {
-                      _askSaveFile([file]);
+                    if (loadedContent == null) {
+                      return const FailLoadContent();
                     }
-                  },
-                  onFolderTap: (folder) {
-                    if (selectModeEnable) {
-                      _toggleFolderSelection(folder);
-                    } else {
-                      _openFolder(context, folder);
-                    }
-                  },
-                  onFileLongPress: (file) => _openFileDetails(context, file),
-                  onFolderLongPress: (folder) =>
-                      _openFolderDetails(context, folder),
-                  onResourceMoved: _moveResource,
-                  selectModeEnable: selectModeEnable,
-                );
-              }
 
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
+                    _remoteFolder = loadedContent;
+
+                    if (_remoteFolder.isEmpty) {
+                      return const EmptyContent();
+                    }
+
+                    return FolderContentWidget(
+                      folder: _remoteFolder,
+                      onFileTap: (file) {
+                        if (selectModeEnable) {
+                          _toggleResourceSelection(file);
+                        } else {
+                          _askSaveFile([file]);
+                        }
+                      },
+                      onFolderTap: (folder) {
+                        if (selectModeEnable) {
+                          _toggleFolderSelection(folder);
+                        } else {
+                          _openFolder(context, folder);
+                        }
+                      },
+                      onFileLongPress: (file) =>
+                          _openFileDetails(context, file),
+                      onFolderLongPress: (folder) =>
+                          _openFolderDetails(context, folder),
+                      onResourceMoved: _moveResource,
+                      selectModeEnable: selectModeEnable,
+                    );
+                  }
+
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ),
+            if (_draggingExternal)
+              Container(
+                width: double.infinity,
+                height: double.infinity,
+                color: const Color.fromARGB(200, 50, 255, 187),
+                child: Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 16,
+                    children: [
+                      const Icon(
+                        Icons.upload,
+                        size: 100,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Text(
+                          AppLocalizations.of(context)!.dropToUpload,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              )
+          ],
         ),
       ),
       selectFileToBeUploaded: _selectFileToBeUploaded,
