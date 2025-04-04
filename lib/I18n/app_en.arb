@@ -47,6 +47,7 @@
   "dialogTitleNewFolder": "Create a new folder",
   "dialogTitleNewFile": "Create a new file",
   "newResourceCreatedSuccess": "New resource created successfully",
+  "resourceMovedSuccess": "The resource has been moved successfully",
   "footerAuthor": "Created by Eugenio Gandini",
   "footerAppVersion": "App Version: {version} (Winter 2024)",
   "@footerAppVersion": {

@@ -47,6 +47,7 @@
   "dialogTitleNewFolder": "Crea una nuova cartella",
   "dialogTitleNewFile": "Crea un nuovo file",
   "newResourceCreatedSuccess": "La nuova risorsa è stata creata con successo",
+  "resourceMovedSuccess": "La risorsa è stata spostata con successo",
   "footerAuthor": "Creata da Eugenio Gandini",
   "footerAppVersion": "Versione App: {version} (Inverno 2024)",
   "@footerAppVersion": {
