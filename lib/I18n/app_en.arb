@@ -48,9 +48,10 @@
   "dialogTitleNewFile": "Create a new file",
   "newResourceCreatedSuccess": "New resource created successfully",
   "resourceMovedSuccess": "The resource has been moved successfully",
+  "resourceCannotBeMoved": "The resource cannot be moved to the specified destination",
   "dropToUpload": "Release to upload the resources in this folder",
   "footerAuthor": "Created by Eugenio Gandini",
-  "footerAppVersion": "App Version: {version} (Winter 2024)",
+  "footerAppVersion": "App Version: {version} (Spring 2025)",
   "@footerAppVersion": {
     "placeholders": {
       "version": {

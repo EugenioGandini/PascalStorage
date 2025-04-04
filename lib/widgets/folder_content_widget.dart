@@ -67,6 +67,7 @@ class FolderContentWidget extends StatelessWidget {
         ),
       );
     }
+
     if (data is ResourceFolder) {
       feedbackWidget = Container(
         padding: const EdgeInsets.all(8),
@@ -86,7 +87,8 @@ class FolderContentWidget extends StatelessWidget {
     }
     return LongPressDraggable(
       data: data,
-      dragAnchorStrategy: pointerDragAnchorStrategy,
+      dragAnchorStrategy: (draggable, context, position) =>
+          const Offset(40, 40),
       feedback: feedbackWidget,
       child: const Icon(Icons.grid_view),
     );
@@ -147,11 +149,6 @@ class FolderContentWidget extends StatelessWidget {
     var dataDropped = details.data;
 
     if (dataDropped is ResourceFolder) {
-      if (dataDropped == folder) {
-        _logger.message('Dropped folder on the same folder. Skipping.');
-        return;
-      }
-
       _logger.message('folder dropped ${dataDropped.name} in ${folder.name}');
 
       onResourceMoved!(dataDropped, folder);

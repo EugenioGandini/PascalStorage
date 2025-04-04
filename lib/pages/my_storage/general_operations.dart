@@ -85,6 +85,12 @@ class GeneralOperations {
   }
 
   Future moveResource(Resource source, ResourceFolder target) async {
+    if (source is ResourceFolder && source == target) {
+      logger.message('Dropped folder on the same folder. Skipping.');
+      notify.showFolderCannotBeMoved(context);
+      return;
+    }
+
     var success = await resProvider.moveFile(source, target);
 
     if (!success) return;

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 
-void showSnackbar(BuildContext context, Icon icon, String text) {
+void showSnackbar(
+  BuildContext context,
+  Icon icon,
+  String text, {
+  Color backgroundColor = Colors.green,
+}) {
   var snackbarError = SnackBar(
     content: Row(
       children: [
@@ -9,7 +14,7 @@ void showSnackbar(BuildContext context, Icon icon, String text) {
         Text(text),
       ],
     ),
-    backgroundColor: Colors.green,
+    backgroundColor: backgroundColor,
   );
 
   ScaffoldMessenger.of(context).clearSnackBars();

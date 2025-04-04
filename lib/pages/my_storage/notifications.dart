@@ -56,6 +56,15 @@ void showMoveResourceSuccess(BuildContext context) {
   );
 }
 
+void showFolderCannotBeMoved(BuildContext context) {
+  showSnackbar(
+    context,
+    const Icon(Icons.error, color: Colors.black),
+    backgroundColor: Colors.red,
+    AppLocalizations.of(context)!.resourceCannotBeMoved,
+  );
+}
+
 void showNewResourceCreatedSuccess(BuildContext context) {
   showSnackbar(
     context,
