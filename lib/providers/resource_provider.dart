@@ -168,10 +168,13 @@ class ResourceProvider with ChangeNotifier {
     await _syncService.syncResources();
   }
 
-  Future<bool> moveFile(ResourceFile file, String destinationPath) async {
-    _logger.message('moving remote file... ${file.path} to $destinationPath');
+  Future<bool> moveFile(
+      Resource resource, ResourceFolder destinationFolder) async {
+    _logger.message(
+        'moving remote resource... ${resource.path} to ${destinationFolder.path}');
 
-    return _resourceService.moveFile(file, destinationPath);
+    return await _resourceService.moveFile(
+        resource, '${destinationFolder.path}/${resource.name}');
   }
 
   Future<bool> renameResource(Resource resource, String newName) async {

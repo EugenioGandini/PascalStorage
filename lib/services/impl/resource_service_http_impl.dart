@@ -210,11 +210,12 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<bool> moveFile(ResourceFile file, String destinationPath) async {
+  Future<bool> moveFile(Resource resource, String destinationPath) async {
     try {
-      final url =
-          Uri.parse("$_baseUrl${HttpApi.moveResource}${file.path}?action=rename"
-              "&destination=$destinationPath&override=false&rename=false");
+      final url = Uri.parse(
+          "$_baseUrl${HttpApi.moveResource}${resource.path}?action=rename"
+          "&destination=$destinationPath&override=false&rename=false");
+
       final response = await http.patch(url, headers: {
         'Cookie': 'auth=$jwt',
         'X-Auth': jwt!,

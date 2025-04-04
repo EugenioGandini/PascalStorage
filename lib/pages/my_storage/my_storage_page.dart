@@ -182,6 +182,18 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
+  Future _moveResource(Resource source, ResourceFolder target) async {
+    var success = await _resProvider.moveFile(source, target);
+
+    if (!success) return;
+
+    _forceReloadContent();
+
+    if (mounted) {
+      notify.showMoveResourceSuccess(context);
+    }
+  }
+
   Future _selectNewName(Resource resource) async {
     Navigator.of(context).pop();
 
@@ -514,16 +526,6 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
                 return FolderContentWidget(
                   folder: _remoteFolder,
-                  onFolderTap: (folder) {
-                    if (selectModeEnable) {
-                      _toggleFolderSelection(folder);
-                    } else {
-                      _openFolder(context, folder);
-                    }
-                  },
-                  onFolderLongPress: (folder) =>
-                      _openFolderDetails(context, folder),
-                  onFileLongPress: (file) => _openFileDetails(context, file),
                   onFileTap: (file) {
                     if (selectModeEnable) {
                       _toggleResourceSelection(file);
@@ -531,6 +533,17 @@ class _MyStoragePageState extends State<MyStoragePage> {
                       _askSaveFile([file]);
                     }
                   },
+                  onFolderTap: (folder) {
+                    if (selectModeEnable) {
+                      _toggleFolderSelection(folder);
+                    } else {
+                      _openFolder(context, folder);
+                    }
+                  },
+                  onFileLongPress: (file) => _openFileDetails(context, file),
+                  onFolderLongPress: (folder) =>
+                      _openFolderDetails(context, folder),
+                  onResourceMoved: _moveResource,
                   selectModeEnable: selectModeEnable,
                 );
               }

@@ -48,6 +48,14 @@ void showRenameResourceSuccess(BuildContext context) {
   );
 }
 
+void showMoveResourceSuccess(BuildContext context) {
+  showSnackbar(
+    context,
+    const Icon(Icons.move_down, color: Colors.white),
+    AppLocalizations.of(context)!.resourceMovedSuccess,
+  );
+}
+
 void showNewResourceCreatedSuccess(BuildContext context) {
   showSnackbar(
     context,
