@@ -55,9 +55,9 @@ class ResourceServiceHttpImpl extends ResourceService {
         bool isDirectory = item['isDir'] as bool;
 
         if (isDirectory) {
-          folder.subfolders.add(ResourceFolder.fromJson(item));
+          folder.addSubfolder(ResourceFolder.fromJson(item));
         } else {
-          folder.files.add(ResourceFile.fromJson(item));
+          folder.addFiles(ResourceFile.fromJson(item));
         }
       }
 

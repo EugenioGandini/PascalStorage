@@ -2,8 +2,9 @@ import 'resource.dart';
 import 'resource_file.dart';
 
 class ResourceFolder extends Resource {
-  List<ResourceFolder> subfolders = [];
-  List<ResourceFile> files = [];
+  List<ResourceFolder> _subfolders = [];
+  List<ResourceFile> _files = [];
+  String? _filterKeyword;
 
   bool _selectModeEnable = false;
   bool _allSelected = false;
@@ -15,6 +16,24 @@ class ResourceFolder extends Resource {
     required super.modified,
     super.selected,
   });
+
+  List<ResourceFolder> get subfolders {
+    if (_filterKeyword == null) return _subfolders;
+
+    return _subfolders
+        .where((file) =>
+            file.name.toLowerCase().contains(_filterKeyword!.toLowerCase()))
+        .toList();
+  }
+
+  List<ResourceFile> get files {
+    if (_filterKeyword == null) return _files;
+
+    return _files
+        .where((file) =>
+            file.name.toLowerCase().contains(_filterKeyword!.toLowerCase()))
+        .toList();
+  }
 
   ResourceFolder.home()
       : super(
@@ -44,6 +63,14 @@ class ResourceFolder extends Resource {
       modified: modified,
       selected: selected ?? false,
     );
+  }
+
+  void addFiles(ResourceFile file) {
+    _files.add(file);
+  }
+
+  void addSubfolder(ResourceFolder folder) {
+    _subfolders.add(folder);
   }
 
   bool get isHome {
@@ -108,13 +135,13 @@ class ResourceFolder extends Resource {
 
   void toggleSelectMode() {
     if (_selectModeEnable) {
-      subfolders = subfolders.map((folder) {
+      _subfolders = _subfolders.map((folder) {
         if (!folder.selected) return folder;
 
         return folder.copyWith(selected: false);
       }).toList();
 
-      files = files.map((file) {
+      _files = _files.map((file) {
         if (!file.selected) return file;
 
         return file.copyWith(selected: false);
@@ -131,12 +158,16 @@ class ResourceFolder extends Resource {
       _allSelected = true;
     }
 
-    subfolders = subfolders.map((folder) {
+    _subfolders = _subfolders.map((folder) {
       return folder.copyWith(selected: _allSelected);
     }).toList();
 
-    files = files.map((file) {
+    _files = _files.map((file) {
       return file.copyWith(selected: _allSelected);
     }).toList();
+  }
+
+  void applyFilter(String? filter) {
+    _filterKeyword = filter;
   }
 }

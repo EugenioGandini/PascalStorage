@@ -2,23 +2,45 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MyStorageAppBar extends AppBar {
+  final BuildContext context;
   final String titleText;
   final bool selectModeEnable;
+  final bool searchModeEnable;
   final Function(String action) onAdvancedActionPressed;
   final VoidCallback onDelete;
   final VoidCallback onToggleCheckAll;
   final VoidCallback onDownload;
+  final Function(bool enable) onSearch;
+  final Function(String keyword) onFilterElements;
 
   MyStorageAppBar({
     super.key,
+    required this.context,
     required this.titleText,
     required this.onAdvancedActionPressed,
     required this.onDelete,
     required this.onToggleCheckAll,
     required this.onDownload,
+    required this.onSearch,
+    required this.onFilterElements,
     this.selectModeEnable = false,
+    this.searchModeEnable = false,
   }) : super(
-          title: Text(titleText),
+          title: searchModeEnable
+              ? Form(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      hintText:
+                          AppLocalizations.of(context)!.hintSearchIn(titleText),
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.cancel),
+                        onPressed: () => onSearch(false),
+                      ),
+                    ),
+                    onChanged: onFilterElements,
+                  ),
+                )
+              : Text(titleText),
           actions: selectModeEnable
               ? [
                   IconButton(
@@ -41,6 +63,13 @@ class MyStorageAppBar extends AppBar {
                   ),
                 ]
               : [
+                  if (!searchModeEnable)
+                    IconButton(
+                      onPressed: () => onSearch(true),
+                      icon: const Icon(
+                        Icons.search,
+                      ),
+                    ),
                   PopupMenuButton<String>(
                     onSelected: onAdvancedActionPressed,
                     itemBuilder: (context) {

@@ -98,5 +98,13 @@
   "frequencySeconds": "Frequenza in secondi",
   "dialogTitleNewFrequency": "Cambia frequenza",
   "frequencySyncUpdated": "Frequenza di sincronizzazione aggiornata",
-  "syncDisable": "Sincronizzazione disabilitata"
+  "syncDisable": "Sincronizzazione disabilitata",
+  "hintSearchIn": "Cerca in {title}",
+  "@hintSearchIn": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  }
 }

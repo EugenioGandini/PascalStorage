@@ -39,7 +39,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
   late Future _futureLoadFolder;
   late ResourceProvider _resProvider;
   late ResourceFolder _remoteFolder;
-  bool selectModeEnable = false;
+  bool _selectModeEnable = false;
+  bool _searchModeEnable = false;
   bool _init = false;
   bool _canShowDrawer = false;
   bool _draggingExternal = false;
@@ -136,7 +137,11 @@ class _MyStoragePageState extends State<MyStoragePage> {
   void _openFolder(BuildContext context, ResourceFolder folder) {
     _logger.message('User navigate to folder ${folder.name}');
 
-    Navigator.of(context).pushNamed(MyStoragePage.routeName, arguments: folder);
+    Navigator.of(context)
+        .pushNamed(MyStoragePage.routeName, arguments: folder)
+        .then((_) {
+      _changeSearchMode(false);
+    });
   }
 
   void _openFileDetails(BuildContext context, ResourceFile file) {
@@ -251,7 +256,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
   void _toggleSelectMode() {
     setState(() {
       _remoteFolder.toggleSelectMode();
-      selectModeEnable = _remoteFolder.isSelectModeActive;
+      _selectModeEnable = _remoteFolder.isSelectModeActive;
     });
   }
 
@@ -278,13 +283,33 @@ class _MyStoragePageState extends State<MyStoragePage> {
     });
   }
 
+  void _changeSearchMode(bool enable) {
+    setState(() {
+      _searchModeEnable = enable;
+
+      if (!enable) {
+        _remoteFolder.applyFilter(null);
+      }
+    });
+  }
+
+  void _filterElementsByKeyword(String keyword) {
+    setState(() {
+      _remoteFolder.applyFilter(keyword);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BasePage(
       appBar: MyStorageAppBar(
+        context: context,
         titleText: _title,
         onAdvancedActionPressed: _popupActionHandler,
-        selectModeEnable: selectModeEnable,
+        selectModeEnable: _selectModeEnable,
+        searchModeEnable: _searchModeEnable,
+        onSearch: _changeSearchMode,
+        onFilterElements: _filterElementsByKeyword,
         onDelete: () => _generalOperations
             .deleteRemoteResource(_remoteFolder.selectedResources),
         onToggleCheckAll: _toggleCheckAll,
@@ -331,14 +356,14 @@ class _MyStoragePageState extends State<MyStoragePage> {
                     return FolderContentWidget(
                       folder: _remoteFolder,
                       onFileTap: (file) {
-                        if (selectModeEnable) {
+                        if (_selectModeEnable) {
                           _toggleResourceSelection(file);
                         } else {
                           _fileOperations.askSaveFile([file], _settings);
                         }
                       },
                       onFolderTap: (folder) {
-                        if (selectModeEnable) {
+                        if (_selectModeEnable) {
                           _toggleFolderSelection(folder);
                         } else {
                           _openFolder(context, folder);
@@ -349,7 +374,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
                       onFolderLongPress: (folder) =>
                           _openFolderDetails(context, folder),
                       onResourceMoved: _generalOperations.moveResource,
-                      selectModeEnable: selectModeEnable,
+                      selectModeEnable: _selectModeEnable,
                     );
                   }
 
