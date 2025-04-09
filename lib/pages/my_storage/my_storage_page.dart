@@ -15,7 +15,7 @@ import '../../providers/settings_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/resource_provider.dart';
 import '../login/login_page.dart';
-import '../base_page.dart';
+import 'widgets/scaffold_page.dart';
 
 import '../../widgets/widgets.dart';
 import 'widgets/widgets.dart';
@@ -40,7 +40,10 @@ class _MyStoragePageState extends State<MyStoragePage> {
   late ResourceProvider _resProvider;
   late ResourceFolder _remoteFolder;
   bool _selectModeEnable = false;
+
   bool _searchModeEnable = false;
+  final FocusNode _searchInputFocusNode = FocusNode();
+
   bool _init = false;
   bool _canShowDrawer = false;
   bool _draggingExternal = false;
@@ -289,6 +292,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
       if (!enable) {
         _remoteFolder.applyFilter(null);
+      } else {
+        _searchInputFocusNode.requestFocus();
       }
     });
   }
@@ -301,13 +306,14 @@ class _MyStoragePageState extends State<MyStoragePage> {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
+    return ScaffoldPage(
       appBar: MyStorageAppBar(
         context: context,
         titleText: _title,
         onAdvancedActionPressed: _popupActionHandler,
         selectModeEnable: _selectModeEnable,
         searchModeEnable: _searchModeEnable,
+        focusNodeSearchInput: _searchInputFocusNode,
         onSearch: _changeSearchMode,
         onFilterElements: _filterElementsByKeyword,
         onDelete: () => _generalOperations

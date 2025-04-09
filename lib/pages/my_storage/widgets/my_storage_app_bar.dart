@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../../../config/colors.dart';
+
 class MyStorageAppBar extends AppBar {
   final BuildContext context;
+
   final String titleText;
+
   final bool selectModeEnable;
   final bool searchModeEnable;
+
   final Function(String action) onAdvancedActionPressed;
   final VoidCallback onDelete;
   final VoidCallback onToggleCheckAll;
@@ -13,9 +18,12 @@ class MyStorageAppBar extends AppBar {
   final Function(bool enable) onSearch;
   final Function(String keyword) onFilterElements;
 
+  final FocusNode focusNodeSearchInput;
+
   MyStorageAppBar({
     super.key,
     required this.context,
+    required this.focusNodeSearchInput,
     required this.titleText,
     required this.onAdvancedActionPressed,
     required this.onDelete,
@@ -29,11 +37,15 @@ class MyStorageAppBar extends AppBar {
           title: searchModeEnable
               ? Form(
                   child: TextFormField(
+                    focusNode: focusNodeSearchInput,
                     decoration: InputDecoration(
                       hintText:
                           AppLocalizations.of(context)!.hintSearchIn(titleText),
                       suffixIcon: IconButton(
-                        icon: const Icon(Icons.cancel),
+                        icon: const Icon(
+                          Icons.cancel,
+                          color: AppColors.deepBlue,
+                        ),
                         onPressed: () => onSearch(false),
                       ),
                     ),

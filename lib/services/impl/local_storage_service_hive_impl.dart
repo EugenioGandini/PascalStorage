@@ -250,7 +250,9 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
       throw Exception('Sync not found in box');
     }
 
-    sync.offlineFiles = await getOfflineFiles(idsOnly: sync.offlineFileIds);
+    var filesOfSync = await getOfflineFiles(idsOnly: sync.offlineFileIds);
+
+    sync.setOfflineFiles(filesOfSync);
 
     return sync;
   }

@@ -1,22 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import 'scaffold_page.dart';
 import '../../providers/resource_provider.dart';
 import '../../utils/logger.dart';
 import '../../models/models.dart';
 
-import '../base_page.dart';
 import '../../widgets/widgets.dart';
 import 'widgets/empty_offline_content.dart';
 
-class OfflinePage extends StatelessWidget {
-  final Logger _logger = const Logger('OfflinePage');
-
+class OfflinePage extends StatefulWidget {
   static const String routeName = '/offlinePage';
 
   const OfflinePage({super.key});
+
+  @override
+  State<OfflinePage> createState() => _OfflinePageState();
+}
+
+class _OfflinePageState extends State<OfflinePage> {
+  final Logger _logger = const Logger('OfflinePage');
+
+  late Future _futureLoadSync;
+  late Sync _sync;
+
+  bool _init = false;
+
+  bool _searchModeEnable = false;
+  final FocusNode _searchInputFocusNode = FocusNode();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_init) return;
+
+    var resProvider = Provider.of<ResourceProvider>(context, listen: false);
+
+    _futureLoadSync = resProvider.loadSync();
+
+    _init = true;
+  }
 
   void _openOfflineFile(OfflineFile file) {
     var filePath = file.localCopy.path;
@@ -72,23 +97,34 @@ class OfflinePage extends StatelessWidget {
     resProvider.syncFiles();
   }
 
+  void _changeSearchMode(bool enable) {
+    setState(() {
+      _searchModeEnable = enable;
+
+      if (!enable) {
+        _sync.applyFilter(null);
+      } else {
+        _searchInputFocusNode.requestFocus();
+      }
+    });
+  }
+
+  void _filterElementsByKeyword(String keyword) {
+    setState(() {
+      _sync.applyFilter(keyword);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var resProvider = Provider.of<ResourceProvider>(context);
-
-    return BasePage(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.titleOfflinePage),
-        actions: [
-          IconButton(
-            onPressed: () => _forceSync(context),
-            icon: const Icon(Icons.sync),
-          ),
-        ],
-      ),
-      drawer: const AppNavigator(currentRoute: OfflinePage.routeName),
-      body: FutureBuilder(
-        future: resProvider.loadSync(),
+    return ScaffoldPage(
+      onForceSync: () => _forceSync(context),
+      searchModeEnable: _searchModeEnable,
+      focusNodeSearchInput: _searchInputFocusNode,
+      onSearch: _changeSearchMode,
+      onFilterElements: _filterElementsByKeyword,
+      child: FutureBuilder(
+        future: _futureLoadSync,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(
@@ -101,16 +137,18 @@ class OfflinePage extends StatelessWidget {
             return const FailLoadContent();
           }
 
-          _logger.message('Loaded sync ${sync.name} - ID ${sync.id}');
+          _sync = sync;
 
-          var offlineFilesLoaded = sync.offlineFiles;
+          _logger.message('Loaded sync ${sync.name} - ID ${_sync.id}');
+
+          var offlineFilesLoaded = _sync.offlineFiles;
 
           if (offlineFilesLoaded.isEmpty) {
             return const EmptyOfflineContent();
           }
 
           return SyncContentWidget(
-            syncContent: sync,
+            syncContent: _sync,
             onFileTap: _openOfflineFile,
             onFileLongPress: (offlineCopy) =>
                 _openFileDetails(context, offlineCopy),

@@ -6,13 +6,25 @@ class Sync {
   final String name;
 
   final List<int> offlineFileIds;
-  List<OfflineFile> offlineFiles = [];
+  List<OfflineFile> _offlineFiles = [];
+
+  String? _filterKeyword;
 
   Sync({
     this.id = 0,
     this.name = '',
     required this.offlineFileIds,
   });
+
+  List<OfflineFile> get offlineFiles {
+    if (_filterKeyword == null) return _offlineFiles;
+
+    return _offlineFiles
+        .where((file) => file.localCopy.name
+            .toLowerCase()
+            .contains(_filterKeyword!.toLowerCase()))
+        .toList();
+  }
 
   Sync.defaultSync({
     this.offlineFileIds = const [],
@@ -34,5 +46,13 @@ class Sync {
       name: name,
       offlineFileIds: fileIds,
     );
+  }
+
+  void setOfflineFiles(List<OfflineFile> files) {
+    _offlineFiles = files;
+  }
+
+  void applyFilter(String? filter) {
+    _filterKeyword = filter;
   }
 }

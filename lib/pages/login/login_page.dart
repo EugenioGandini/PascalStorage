@@ -7,9 +7,9 @@ import '../../providers/settings_provider.dart';
 import '../../utils/logger.dart';
 
 import '../../config/colors.dart';
-import '../base_page.dart';
 import './login_form.dart';
 
+import '../page_background.dart';
 import '../my_storage/my_storage_page.dart';
 import '../offline/offline_page.dart';
 
@@ -40,38 +40,40 @@ class LoginPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BasePage(
-      body: Center(
-        child: Container(
-          width: 350,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: BorderRadius.circular(5),
-            boxShadow: const [
-              BoxShadow(
-                offset: Offset(10, 10),
-                blurRadius: 20,
-              )
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(
-                  bottom: 24,
+    return Scaffold(
+      body: PageBackground(
+        child: Center(
+          child: Container(
+            width: 350,
+            decoration: BoxDecoration(
+              color: AppColors.white,
+              borderRadius: BorderRadius.circular(5),
+              boxShadow: const [
+                BoxShadow(
+                  offset: Offset(10, 10),
+                  blurRadius: 20,
+                )
+              ],
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(
+                    bottom: 24,
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context)!.titleSignIn,
+                    style: Theme.of(context).textTheme.headlineLarge,
+                  ),
                 ),
-                child: Text(
-                  AppLocalizations.of(context)!.titleSignIn,
-                  style: Theme.of(context).textTheme.headlineLarge,
+                LoginForm(
+                  onLoggedInSuccessfully: () => _goToMyStorage(context),
+                  onEnterOffline: () => _goToOfflinePage(context),
                 ),
-              ),
-              LoginForm(
-                onLoggedInSuccessfully: () => _goToMyStorage(context),
-                onEnterOffline: () => _goToOfflinePage(context),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
