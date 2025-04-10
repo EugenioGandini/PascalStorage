@@ -58,7 +58,7 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
                     suffixIcon: IconButton(
                       icon: const Icon(
                         Icons.cancel,
-                        color: AppColors.deepBlue,
+                        color: Colors.black,
                       ),
                       onPressed: () => _onSearch(false),
                     ),

@@ -23,7 +23,7 @@ class _OfflinePageState extends State<OfflinePage> {
   final Logger _logger = const Logger('OfflinePage');
 
   late Future _futureLoadSync;
-  late Sync _sync;
+  Sync? _sync;
 
   bool _init = false;
 
@@ -94,11 +94,19 @@ class _OfflinePageState extends State<OfflinePage> {
     resProvider.syncFiles();
   }
 
+  void _filterElementsByKeyword(String? keyword) {
+    if (_sync == null) return;
+
+    setState(() {
+      _sync!.applyFilter(keyword);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
       onForceSync: () => _forceSync(context),
-      onFilterElements: _sync.applyFilter,
+      onFilterElements: _filterElementsByKeyword,
       body: FutureBuilder(
         future: _futureLoadSync,
         builder: (context, snapshot) {
@@ -115,16 +123,16 @@ class _OfflinePageState extends State<OfflinePage> {
 
           _sync = sync;
 
-          _logger.message('Loaded sync ${sync.name} - ID ${_sync.id}');
+          _logger.message('Loaded sync ${sync.name} - ID ${_sync!.id}');
 
-          var offlineFilesLoaded = _sync.offlineFiles;
+          var offlineFilesLoaded = _sync!.offlineFiles;
 
           if (offlineFilesLoaded.isEmpty) {
             return const EmptyOfflineContent();
           }
 
           return SyncContentWidget(
-            syncContent: _sync,
+            syncContent: _sync!,
             onFileTap: _openOfflineFile,
             onFileLongPress: (offlineCopy) =>
                 _openFileDetails(context, offlineCopy),

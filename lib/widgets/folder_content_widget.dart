@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../models/models.dart';
 
@@ -143,6 +144,18 @@ class FolderContentWidget extends StatelessWidget {
     );
   }
 
+  Widget _buildAnimatedStaggeredChild(
+      int indexElement, int columnUsed, Widget child) {
+    return AnimationConfiguration.staggeredGrid(
+      duration: const Duration(milliseconds: 750),
+      position: indexElement,
+      columnCount: columnUsed,
+      child: FadeInAnimation(
+        child: child,
+      ),
+    );
+  }
+
   void _handleDraggedEvent(DragTargetDetails details, ResourceFolder folder) {
     if (onResourceMoved == null) return;
 
@@ -177,57 +190,59 @@ class FolderContentWidget extends StatelessWidget {
           PointerDeviceKind.mouse,
         },
       ),
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: maxCrossAxisExtent,
-          childAspectRatio: aspectRatio,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
+      child: AnimationLimiter(
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxCrossAxisExtent,
+            childAspectRatio: aspectRatio,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+          ),
+          padding: const EdgeInsets.only(top: 8, bottom: 96, left: 8, right: 8),
+          itemBuilder: (context, index) {
+            var subfolders = folder.subfolders;
+
+            Widget elementGrid;
+
+            bool isSubfolder = index < subfolders.length;
+
+            if (isSubfolder) {
+              /// subfolder render widget
+
+              var subfolder = subfolders[index];
+
+              elementGrid = DragTarget(
+                  builder: (context, candidateData, rejectedData) {
+                    var widgetFolder = _buildFolderWidget(subfolder);
+
+                    if (candidateData.isNotEmpty) {
+                      return Opacity(
+                        opacity: .5,
+                        child: widgetFolder,
+                      );
+                    }
+
+                    return widgetFolder;
+                  },
+                  onWillAcceptWithDetails: (details) {
+                    return true;
+                  },
+                  onAcceptWithDetails: (dragDetails) =>
+                      _handleDraggedEvent(dragDetails, subfolder));
+            } else {
+              /// file render widget
+
+              int indexFile = index - subfolders.length;
+
+              var file = folder.files[indexFile];
+
+              elementGrid = InkWell(child: _buildFileWidget(file));
+            }
+
+            return _buildAnimatedStaggeredChild(index, columns, elementGrid);
+          },
+          itemCount: folder.subfolders.length + folder.files.length,
         ),
-        padding: const EdgeInsets.only(top: 8, bottom: 96, left: 8, right: 8),
-        itemBuilder: (context, index) {
-          var subfolders = folder.subfolders;
-
-          Widget elementGrid;
-
-          bool isSubfolder = index < subfolders.length;
-
-          if (isSubfolder) {
-            /// subfolder render widget
-
-            var subfolder = subfolders[index];
-
-            elementGrid = DragTarget(
-                builder: (context, candidateData, rejectedData) {
-                  var widgetFolder = _buildFolderWidget(subfolder);
-
-                  if (candidateData.isNotEmpty) {
-                    return Opacity(
-                      opacity: .5,
-                      child: widgetFolder,
-                    );
-                  }
-
-                  return widgetFolder;
-                },
-                onWillAcceptWithDetails: (details) {
-                  return true;
-                },
-                onAcceptWithDetails: (dragDetails) =>
-                    _handleDraggedEvent(dragDetails, subfolder));
-          } else {
-            /// file render widget
-
-            int indexFile = index - subfolders.length;
-
-            var file = folder.files[indexFile];
-
-            elementGrid = InkWell(child: _buildFileWidget(file));
-          }
-
-          return elementGrid;
-        },
-        itemCount: folder.subfolders.length + folder.files.length,
       ),
     );
   }

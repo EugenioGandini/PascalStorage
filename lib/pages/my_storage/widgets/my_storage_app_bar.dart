@@ -44,7 +44,7 @@ class MyStorageAppBar extends AppBar {
                       suffixIcon: IconButton(
                         icon: const Icon(
                           Icons.cancel,
-                          color: AppColors.deepBlue,
+                          color: Colors.black,
                         ),
                         onPressed: () => onSearch(false),
                       ),

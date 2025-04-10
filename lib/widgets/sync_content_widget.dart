@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import '../models/models.dart';
 
@@ -28,6 +29,18 @@ class SyncContentWidget extends StatelessWidget {
     this.selectModeEnable = false,
   });
 
+  Widget _buildAnimatedStaggeredChild(
+      int indexElement, int columnUsed, Widget child) {
+    return AnimationConfiguration.staggeredGrid(
+      duration: const Duration(milliseconds: 750),
+      position: indexElement,
+      columnCount: columnUsed,
+      child: FadeInAnimation(
+        child: child,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var width = MediaQuery.of(context).size.width;
@@ -45,45 +58,53 @@ class SyncContentWidget extends StatelessWidget {
           PointerDeviceKind.mouse,
         },
       ),
-      child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: maxCrossAxisExtent,
-          childAspectRatio: aspectRatio,
-          crossAxisSpacing: 8,
-          mainAxisSpacing: 8,
-        ),
-        padding: const EdgeInsets.only(top: 8, bottom: 96, left: 8, right: 8),
-        itemBuilder: (context, index) {
-          var file = syncContent.offlineFiles[index];
+      child: AnimationLimiter(
+        child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: maxCrossAxisExtent,
+            childAspectRatio: aspectRatio,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+          ),
+          padding: const EdgeInsets.only(top: 8, bottom: 96, left: 8, right: 8),
+          itemBuilder: (context, index) {
+            var file = syncContent.offlineFiles[index];
 
-          return InkWell(
-            child: selectModeEnable
-                ? FileSelectionWidget(
-                    fileName: file.localCopy.name,
-                    fileExtension: file.localCopy.extension,
-                    fileModified: file.localCopy.modified,
-                    fileSize: file.localCopy.size,
-                    onTap: onFileTap != null ? () => onFileTap!(file) : null,
-                  )
-                : FileWidget(
-                    fileName: file.localCopy.name,
-                    fileExtension: file.localCopy.extension,
-                    fileModified: file.localCopy.modified,
-                    fileSize: file.localCopy.size,
-                    onTap: onFileTap != null ? () => onFileTap!(file) : null,
-                    onLongPress: onFileLongPress != null
-                        ? () => onFileLongPress!(file)
-                        : null,
-                    trailing: file.synchronize
-                        ? const Icon(
-                            Icons.sync,
-                            size: 25,
-                          )
-                        : null,
-                  ),
-          );
-        },
-        itemCount: syncContent.offlineFiles.length,
+            return _buildAnimatedStaggeredChild(
+              index,
+              columns,
+              InkWell(
+                child: selectModeEnable
+                    ? FileSelectionWidget(
+                        fileName: file.localCopy.name,
+                        fileExtension: file.localCopy.extension,
+                        fileModified: file.localCopy.modified,
+                        fileSize: file.localCopy.size,
+                        onTap:
+                            onFileTap != null ? () => onFileTap!(file) : null,
+                      )
+                    : FileWidget(
+                        fileName: file.localCopy.name,
+                        fileExtension: file.localCopy.extension,
+                        fileModified: file.localCopy.modified,
+                        fileSize: file.localCopy.size,
+                        onTap:
+                            onFileTap != null ? () => onFileTap!(file) : null,
+                        onLongPress: onFileLongPress != null
+                            ? () => onFileLongPress!(file)
+                            : null,
+                        trailing: file.synchronize
+                            ? const Icon(
+                                Icons.sync,
+                                size: 25,
+                              )
+                            : null,
+                      ),
+              ),
+            );
+          },
+          itemCount: syncContent.offlineFiles.length,
+        ),
       ),
     );
   }
