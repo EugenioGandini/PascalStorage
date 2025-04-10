@@ -1,6 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import '../my_storage_page.dart';
+import './my_storage_app_bar.dart';
+
+import '../../../widgets/app_navigator.dart';
 import '../../page_background.dart';
 
 /// Base layout of all pages (except login)
@@ -8,32 +12,86 @@ import '../../page_background.dart';
 /// - gradient background
 /// - floating action button for opening other actions
 class ScaffoldPage extends StatefulWidget {
+  /// The body of the scaffold of the my storage page.
   final Widget body;
-  final AppBar? appBar;
-  final Widget? drawer;
 
+  /// Tell if the drawer must be visible or not
+  final bool showDrawer;
+
+  /// Tell if the user has activated multi select mode
+  final bool selectModeEnable;
+
+  ///
   final VoidCallback selectFileToBeUploaded;
+
+  /// Callback invoked when the user asks to create a new resource in the current folder.
   final VoidCallback crateNewResource;
+
+  /// Callback invoked when the user toggle enable/disable resource selection mode.
   final VoidCallback toggleSelectMode;
+
+  /// Callback invoked when the user select an advanced action from the appbar.
+  final Function(String) onAdvancedActionPressed;
+
+  /// Callback invoked when the user presses the delete button, in the appbar, for selected resources.
+  final VoidCallback onDelete;
+
+  /// Callback invoked when the user toggle check all resources.
+  final VoidCallback onToggleCheckAll;
+
+  /// Callback invoked when the user asks to download all selected resources.
+  final VoidCallback onDownload;
+
+  /// Callback invoked when the user filters the content by providing a keywork.
+  final Function(String?) onFilterElements;
+
+  /// The title of this page.
+  final String titleText;
 
   const ScaffoldPage({
     super.key,
     required this.body,
+    required this.titleText,
     required this.selectFileToBeUploaded,
     required this.crateNewResource,
     required this.toggleSelectMode,
-    this.appBar,
-    this.drawer,
+    required this.onAdvancedActionPressed,
+    required this.onDelete,
+    required this.onToggleCheckAll,
+    required this.onDownload,
+    required this.onFilterElements,
+    this.showDrawer = false,
+    this.selectModeEnable = false,
   });
 
   @override
   State<ScaffoldPage> createState() => _ScaffoldPageState();
 }
 
-class _ScaffoldPageState extends State<ScaffoldPage> {
+class _ScaffoldPageState extends State<ScaffoldPage> with RouteAware {
   bool _showFullMenu = false;
   double _rotationIcon = 180;
   double _rotationIconEnd = 180;
+  bool _searchModeEnable = false;
+
+  final FocusNode _focusNodeSearchInput = FocusNode();
+
+  void _onSearch(bool enable) {
+    setState(() {
+      _searchModeEnable = enable;
+
+      if (enable) {
+        _focusNodeSearchInput.requestFocus();
+      } else {
+        widget.onFilterElements(null);
+      }
+    });
+  }
+
+  @override
+  void didPopNext() {
+    _onSearch(false);
+  }
 
   Widget _buildMainMenuButton(BuildContext context) {
     return Padding(
@@ -108,8 +166,22 @@ class _ScaffoldPageState extends State<ScaffoldPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBar,
-      drawer: widget.drawer,
+      appBar: MyStorageAppBar(
+        context: context,
+        focusNodeSearchInput: _focusNodeSearchInput,
+        titleText: widget.titleText,
+        onAdvancedActionPressed: widget.onAdvancedActionPressed,
+        onDelete: widget.onDelete,
+        onToggleCheckAll: widget.onToggleCheckAll,
+        onDownload: widget.onDownload,
+        onSearch: _onSearch,
+        selectModeEnable: _searchModeEnable,
+        onFilterElements: widget.onFilterElements,
+        searchModeEnable: widget.selectModeEnable,
+      ),
+      drawer: widget.showDrawer
+          ? const AppNavigator(currentRoute: MyStoragePage.routeName)
+          : null,
       body: Stack(
         children: [
           PageBackground(

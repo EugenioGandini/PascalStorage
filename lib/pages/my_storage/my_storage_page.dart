@@ -41,9 +41,6 @@ class _MyStoragePageState extends State<MyStoragePage> {
   late ResourceFolder _remoteFolder;
   bool _selectModeEnable = false;
 
-  bool _searchModeEnable = false;
-  final FocusNode _searchInputFocusNode = FocusNode();
-
   bool _init = false;
   bool _canShowDrawer = false;
   bool _draggingExternal = false;
@@ -140,11 +137,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
   void _openFolder(BuildContext context, ResourceFolder folder) {
     _logger.message('User navigate to folder ${folder.name}');
 
-    Navigator.of(context)
-        .pushNamed(MyStoragePage.routeName, arguments: folder)
-        .then((_) {
-      _changeSearchMode(false);
-    });
+    Navigator.of(context).pushNamed(MyStoragePage.routeName, arguments: folder);
   }
 
   void _openFileDetails(BuildContext context, ResourceFile file) {
@@ -286,19 +279,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     });
   }
 
-  void _changeSearchMode(bool enable) {
-    setState(() {
-      _searchModeEnable = enable;
-
-      if (!enable) {
-        _remoteFolder.applyFilter(null);
-      } else {
-        _searchInputFocusNode.requestFocus();
-      }
-    });
-  }
-
-  void _filterElementsByKeyword(String keyword) {
+  void _filterElementsByKeyword(String? keyword) {
     setState(() {
       _remoteFolder.applyFilter(keyword);
     });
@@ -307,29 +288,21 @@ class _MyStoragePageState extends State<MyStoragePage> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
-      appBar: MyStorageAppBar(
-        context: context,
-        titleText: _title,
-        onAdvancedActionPressed: _popupActionHandler,
-        selectModeEnable: _selectModeEnable,
-        searchModeEnable: _searchModeEnable,
-        focusNodeSearchInput: _searchInputFocusNode,
-        onSearch: _changeSearchMode,
-        onFilterElements: _filterElementsByKeyword,
-        onDelete: () => _generalOperations
-            .deleteRemoteResource(_remoteFolder.selectedResources),
-        onToggleCheckAll: _toggleCheckAll,
-        onDownload: () async {
-          await _fileOperations.askSaveFile(
-              _remoteFolder.selectedResources, _settings);
-          setState(() {
-            _toggleSelectMode();
-          });
-        },
-      ),
-      drawer: _canShowDrawer
-          ? const AppNavigator(currentRoute: MyStoragePage.routeName)
-          : null,
+      titleText: _title,
+      onAdvancedActionPressed: _popupActionHandler,
+      selectModeEnable: _selectModeEnable,
+      onFilterElements: _filterElementsByKeyword,
+      onDelete: () => _generalOperations
+          .deleteRemoteResource(_remoteFolder.selectedResources),
+      onToggleCheckAll: _toggleCheckAll,
+      onDownload: () async {
+        await _fileOperations.askSaveFile(
+            _remoteFolder.selectedResources, _settings);
+        setState(() {
+          _toggleSelectMode();
+        });
+      },
+      showDrawer: _canShowDrawer,
       body: DropTarget(
         onDragDone: (details) =>
             _fileOperations.draggedFiles(details.files, _remoteFolder),

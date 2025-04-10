@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:open_file/open_file.dart';
 import 'package:provider/provider.dart';
+import 'package:open_file/open_file.dart';
 
 import 'scaffold_page.dart';
 import '../../providers/resource_provider.dart';
@@ -26,9 +26,6 @@ class _OfflinePageState extends State<OfflinePage> {
   late Sync _sync;
 
   bool _init = false;
-
-  bool _searchModeEnable = false;
-  final FocusNode _searchInputFocusNode = FocusNode();
 
   @override
   void didChangeDependencies() {
@@ -97,33 +94,12 @@ class _OfflinePageState extends State<OfflinePage> {
     resProvider.syncFiles();
   }
 
-  void _changeSearchMode(bool enable) {
-    setState(() {
-      _searchModeEnable = enable;
-
-      if (!enable) {
-        _sync.applyFilter(null);
-      } else {
-        _searchInputFocusNode.requestFocus();
-      }
-    });
-  }
-
-  void _filterElementsByKeyword(String keyword) {
-    setState(() {
-      _sync.applyFilter(keyword);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return ScaffoldPage(
       onForceSync: () => _forceSync(context),
-      searchModeEnable: _searchModeEnable,
-      focusNodeSearchInput: _searchInputFocusNode,
-      onSearch: _changeSearchMode,
-      onFilterElements: _filterElementsByKeyword,
-      child: FutureBuilder(
+      onFilterElements: _sync.applyFilter,
+      body: FutureBuilder(
         future: _futureLoadSync,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {

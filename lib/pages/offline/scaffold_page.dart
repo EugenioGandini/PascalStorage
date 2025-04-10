@@ -6,35 +6,51 @@ import '../../widgets/app_navigator.dart';
 import '../page_background.dart';
 import 'offline_page.dart';
 
-class ScaffoldPage extends StatelessWidget {
-  final Widget child;
+class ScaffoldPage extends StatefulWidget {
+  /// The body of the scaffold of the settings page.
+  final Widget body;
 
-  final bool searchModeEnable;
-
+  /// Callback invoked when the user ask forcely a sync with the remote.
   final VoidCallback onForceSync;
-  final Function(bool enable) onSearch;
-  final Function(String keyword) onFilterElements;
 
-  final FocusNode focusNodeSearchInput;
+  /// Callback invoked when the user is filtering elements by an entered keyword.
+  final Function(String? keyword) onFilterElements;
 
   const ScaffoldPage({
     super.key,
-    required this.child,
-    required this.focusNodeSearchInput,
-    this.searchModeEnable = false,
+    required this.body,
     required this.onForceSync,
-    required this.onSearch,
     required this.onFilterElements,
   });
+
+  @override
+  State<ScaffoldPage> createState() => _ScaffoldPageState();
+}
+
+class _ScaffoldPageState extends State<ScaffoldPage> {
+  final FocusNode _focusNodeSearchInput = FocusNode();
+  bool _searchModeEnable = false;
+
+  void _onSearch(bool enable) {
+    setState(() {
+      _searchModeEnable = enable;
+
+      if (enable) {
+        _focusNodeSearchInput.requestFocus();
+      } else {
+        widget.onFilterElements(null);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: searchModeEnable
+        title: _searchModeEnable
             ? Form(
                 child: TextFormField(
-                  focusNode: focusNodeSearchInput,
+                  focusNode: _focusNodeSearchInput,
                   decoration: InputDecoration(
                     hintText: AppLocalizations.of(context)!.hintSearchIn(
                       AppLocalizations.of(context)!.titleOfflinePage,
@@ -44,30 +60,30 @@ class ScaffoldPage extends StatelessWidget {
                         Icons.cancel,
                         color: AppColors.deepBlue,
                       ),
-                      onPressed: () => onSearch(false),
+                      onPressed: () => _onSearch(false),
                     ),
                   ),
-                  onChanged: onFilterElements,
+                  onChanged: widget.onFilterElements,
                 ),
               )
             : Text(AppLocalizations.of(context)!.titleOfflinePage),
         actions: [
-          if (!searchModeEnable) ...[
+          if (!_searchModeEnable) ...[
             IconButton(
-              onPressed: () => onSearch(true),
+              onPressed: () => _onSearch(true),
               icon: const Icon(
                 Icons.search,
               ),
             ),
             IconButton(
-              onPressed: onForceSync,
+              onPressed: widget.onForceSync,
               icon: const Icon(Icons.sync),
             ),
           ]
         ],
       ),
       drawer: const AppNavigator(currentRoute: OfflinePage.routeName),
-      body: PageBackground(child: child),
+      body: PageBackground(child: widget.body),
     );
   }
 }
