@@ -106,5 +106,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shareLabel": "Shares with others",
+  "titleShare": "Sharing"
 }

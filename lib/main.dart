@@ -84,6 +84,7 @@ class FileBrowserApp extends StatelessWidget {
         MyStoragePage.routeName: (context) => const MyStoragePage(),
         SettingsPage.routeName: (context) => const SettingsPage(),
         OfflinePage.routeName: (context) => const OfflinePage(),
+        SharePage.routeName: (context) => const SharePage(),
       },
       initialRoute: LoginPage.routeName,
     );

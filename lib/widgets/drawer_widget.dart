@@ -39,9 +39,11 @@ class DrawerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var myStorageTitlePage = AppLocalizations.of(context)!.settingsLabelRemote;
+    var shareTitlePage = AppLocalizations.of(context)!.shareLabel;
 
     if (!loggedIn) {
       myStorageTitlePage += ' - ${AppLocalizations.of(context)!.loginRequired}';
+      shareTitlePage += ' - ${AppLocalizations.of(context)!.loginRequired}';
     }
 
     return Drawer(
@@ -77,6 +79,15 @@ class DrawerWidget extends StatelessWidget {
             ),
             tileColor: getBackgroundColor(MyStoragePage.routeName),
             onTap: () => onNavigationSelected(MyStoragePage.routeName),
+          ),
+          ListTile(
+            leading: const Icon(Icons.share),
+            title: Text(
+              shareTitlePage,
+              style: getTextTheme(SharePage.routeName),
+            ),
+            tileColor: getBackgroundColor(SharePage.routeName),
+            onTap: () => onNavigationSelected(SharePage.routeName),
           ),
           ListTile(
             leading: const Icon(Icons.wifi_off_outlined),

@@ -106,5 +106,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "shareLabel": "Condivisioni con altri",
+  "titleShare": "Condivisioni"
 }

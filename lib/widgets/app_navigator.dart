@@ -19,11 +19,7 @@ class AppNavigator extends StatelessWidget {
       case MyStoragePage.routeName:
         if (currentRoute == MyStoragePage.routeName) break;
 
-        var authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-        bool isLoggedIn = authProvider.isLoggedIn;
-
-        if (!isLoggedIn) {
+        if (!_checkLoggedIn(context)) {
           Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
           break;
         }
@@ -38,9 +34,25 @@ class AppNavigator extends StatelessWidget {
         if (currentRoute == OfflinePage.routeName) break;
         Navigator.of(context).pushReplacementNamed(OfflinePage.routeName);
         break;
+      case SharePage.routeName:
+        if (currentRoute == SharePage.routeName) break;
+
+        if (!_checkLoggedIn(context)) {
+          Navigator.of(context).pushReplacementNamed(LoginPage.routeName);
+          break;
+        }
+
+        Navigator.of(context).pushReplacementNamed(SharePage.routeName);
+        break;
       default:
         return;
     }
+  }
+
+  bool _checkLoggedIn(BuildContext context) {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    return authProvider.isLoggedIn;
   }
 
   @override
