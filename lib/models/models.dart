@@ -9,3 +9,4 @@ export 'resources/offline_file.dart';
 export 'resources/sync/resource_file_sync.dart';
 export 'resources/sync/sync_action.dart';
 export 'resources/sync/sync.dart';
+export 'resources/share/share.dart';

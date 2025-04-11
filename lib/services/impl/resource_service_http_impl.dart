@@ -290,4 +290,98 @@ class ResourceServiceHttpImpl extends ResourceService {
 
     return false;
   }
+
+  @override
+  Future<List<Share>?> getAllShare() async {
+    try {
+      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}s");
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!
+      });
+
+      if (response.statusCode != 200) return null;
+
+      return _decodeShares(response.body);
+    } catch (error) {
+      _logger.message("Failed to load all the shares");
+    }
+
+    return null;
+  }
+
+  @override
+  Future<List<Share>?> getShareForResource(Resource resource) async {
+    try {
+      final url =
+          Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}");
+      final response = await http.get(url, headers: {
+        'Content-Type': 'application/json',
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!
+      });
+
+      if (response.statusCode != 200) return null;
+
+      return _decodeShares(response.body);
+    } catch (error) {
+      _logger.message("Failed to load the shares for this resource");
+    }
+
+    return null;
+  }
+
+  List<Share> _decodeShares(String body) {
+    var listShared = jsonDecode(body) as List<dynamic>;
+
+    List<Share> shares = [];
+
+    for (var shareJson in listShared) {
+      shares.add(Share.fromJson(shareJson));
+    }
+
+    return shares;
+  }
+
+  @override
+  Future<Share?> createNewShareForResource(Resource resource) async {
+    try {
+      final url =
+          Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}");
+      final responsePost = await http.post(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (responsePost.statusCode != 200) return null;
+
+      var newShare = jsonDecode(responsePost.body) as Map<String, dynamic>;
+
+      return Share.fromJson(newShare);
+    } catch (error) {
+      _logger.message("Failed to create the new share for the resource $error");
+    }
+
+    return null;
+  }
+
+  @override
+  Future<bool> deleteShare(Share sharing) async {
+    try {
+      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}${sharing.hash}");
+      final response = await http.delete(url, headers: {
+        'Cookie': 'auth=$jwt',
+        'X-Auth': jwt!,
+      });
+
+      if (response.statusCode != 200) return false;
+
+      return true;
+    } catch (error) {
+      _logger.message("Failed to delete the share $error");
+    }
+
+    return false;
+  }
 }

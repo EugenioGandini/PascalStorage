@@ -199,4 +199,25 @@ class ResourceProvider with ChangeNotifier {
 
     return _resourceService.createFolder(folder.name, folder.path);
   }
+
+  Future<List<Share>?> getShares({Resource? resource}) async {
+    if (resource != null) {
+      _logger.message('loading shares for resource... ${resource.name}');
+      return await _resourceService.getShareForResource(resource);
+    }
+
+    _logger.message('loading all the shares...');
+    return await _resourceService.getAllShare();
+  }
+
+  Future<Share?> createNewShare(Resource forResource) async {
+    _logger.message('Creating a new share for resource ${forResource.name}');
+    return await _resourceService.createNewShareForResource(forResource);
+  }
+
+  Future<bool> deleteShare(Share share) async {
+    _logger.message(
+        'Deleting share hash ${share.hash} for resource ${share.path}');
+    return await _resourceService.deleteShare(share);
+  }
 }

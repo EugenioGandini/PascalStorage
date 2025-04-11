@@ -9,4 +9,5 @@ class HttpApi {
   static const deleteFolder = '/api/resources/';
   static const downloadResource = '/api/raw';
   static const uploadResource = '/api/tus';
+  static const shareResource = '/api/share';
 }

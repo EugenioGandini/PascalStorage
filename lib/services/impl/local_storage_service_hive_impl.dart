@@ -226,7 +226,9 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
     try {
       if (await file.exists()) await file.delete();
       await offlineFileBox.delete(offlineFile.id);
-    } catch (error) {}
+    } catch (ignored) {
+      /// skip error
+    }
   }
 
   @override
