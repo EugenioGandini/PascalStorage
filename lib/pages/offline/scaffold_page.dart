@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../config/colors.dart';
 import '../../widgets/app_navigator.dart';
 import '../page_background.dart';
 import 'offline_page.dart';
