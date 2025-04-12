@@ -115,6 +115,7 @@ class _OfflinePageState extends State<OfflinePage> {
               child: CircularProgressIndicator(),
             );
           }
+
           var sync = snapshot.data;
 
           if (sync == null) {
