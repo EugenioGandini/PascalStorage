@@ -175,9 +175,9 @@ class _ScaffoldPageState extends State<ScaffoldPage> with RouteAware {
         onToggleCheckAll: widget.onToggleCheckAll,
         onDownload: widget.onDownload,
         onSearch: _onSearch,
-        selectModeEnable: _searchModeEnable,
+        selectModeEnable: widget.selectModeEnable,
         onFilterElements: widget.onFilterElements,
-        searchModeEnable: widget.selectModeEnable,
+        searchModeEnable: _searchModeEnable,
       ),
       drawer: widget.showDrawer
           ? const AppNavigator(currentRoute: MyStoragePage.routeName)
