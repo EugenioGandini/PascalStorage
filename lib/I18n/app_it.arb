@@ -108,5 +108,15 @@
     }
   },
   "shareLabel": "Condivisioni con altri",
-  "titleShare": "Condivisioni"
+  "titleShare": "Condivisioni",
+  "expiresAt": "Scade il {expireDate}",
+  "@expiresAt": {
+    "placeholders": {
+      "expireDate": {
+        "type": "String"
+      }
+    }
+  },
+  "noShares": "Nessuna condivisione attiva",
+  "hintShareResources": "Condividi delle risorse con altri per poterle gestire qui"
 }

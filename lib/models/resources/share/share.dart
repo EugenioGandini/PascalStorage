@@ -9,6 +9,18 @@ class Share {
     required this.expire,
   });
 
+  String get name {
+    return path.split('/').where((level) => level.isNotEmpty).last;
+  }
+
+  String get extension {
+    return name.split('.').last;
+  }
+
+  bool get isFolder {
+    return !name.contains('.');
+  }
+
   static fromJson(Map<String, dynamic> jsonMap) {
     return Share(
       path: jsonMap['path'],

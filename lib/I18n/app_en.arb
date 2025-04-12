@@ -108,5 +108,15 @@
     }
   },
   "shareLabel": "Shares with others",
-  "titleShare": "Sharing"
+  "titleShare": "Sharing",
+  "expiresAt": "Expires at {expireDate}",
+  "@expiresAt": {
+    "placeholders": {
+      "expireDate": {
+        "type": "String"
+      }
+    }
+  },
+  "noShares": "No active shares",
+  "hintShareResources": "Share some resources with others to manage them here"
 }
