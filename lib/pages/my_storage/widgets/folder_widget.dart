@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../config/colors.dart';
+
 /// Widget for displaying folders
 class FolderWidget extends StatelessWidget {
   final String folderName;
@@ -23,6 +25,12 @@ class FolderWidget extends StatelessWidget {
     this.trailing,
   });
 
+  Color _getSplashColor() {
+    var color = AppColors.deepBlue;
+
+    return color.withAlpha(120);
+  }
+
   @override
   Widget build(BuildContext context) {
     var subtitle = folderModified != null
@@ -37,6 +45,8 @@ class FolderWidget extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
+        splashColor: _getSplashColor(),
+        borderRadius: BorderRadius.circular(12),
         child: ListTile(
           leading: const Icon(Icons.folder),
           title: Text(folderName),

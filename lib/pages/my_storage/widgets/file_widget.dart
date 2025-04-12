@@ -36,6 +36,12 @@ class FileWidget extends StatelessWidget {
     return '${fileName.substring(0, 23)}...';
   }
 
+  Color _getSplashColor() {
+    var color = getFileForegroundColor(fileExtension);
+
+    return color.withAlpha(120);
+  }
+
   @override
   Widget build(BuildContext context) {
     var subtitle = '';
@@ -57,6 +63,8 @@ class FileWidget extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
+        splashColor: _getSplashColor(),
+        borderRadius: BorderRadius.circular(12),
         child: ListTile(
           leading: Icon(
             getFileIcon(fileExtension),
