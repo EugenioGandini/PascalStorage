@@ -47,6 +47,8 @@ class _MyStoragePageState extends State<MyStoragePage> {
   String _title = '';
   late Settings _settings;
 
+  List<Share>? _sharesActiveResource;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -140,8 +142,12 @@ class _MyStoragePageState extends State<MyStoragePage> {
     Navigator.of(context).pushNamed(MyStoragePage.routeName, arguments: folder);
   }
 
-  void _openFileDetails(BuildContext context, ResourceFile file) {
+  Future _openFileDetails(BuildContext context, ResourceFile file) async {
     _logger.message('User opened file ${file.name}');
+
+    _sharesActiveResource = await _resProvider.getShares(resource: file);
+
+    if (!mounted) return;
 
     showModalBottomSheet(
       context: context,
@@ -155,6 +161,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
               fileExtension: file.extension,
               fileModified: file.modified,
               fileSize: file.size,
+              activeShares: _sharesActiveResource?.length ?? 0,
               onSaveFile: (dir) async {
                 Navigator.of(context).pop();
 
@@ -170,6 +177,9 @@ class _MyStoragePageState extends State<MyStoragePage> {
                 Navigator.of(context).pop();
                 _generalOperations.deleteRemoteResource([file]);
               },
+              onShare: () => _generalOperations.shareResource(file),
+              onRemoveShare: () =>
+                  _generalOperations.removeShare(file, _sharesActiveResource!),
             ),
           ),
         );
@@ -177,8 +187,12 @@ class _MyStoragePageState extends State<MyStoragePage> {
     );
   }
 
-  void _openFolderDetails(BuildContext context, ResourceFolder folder) {
+  Future _openFolderDetails(BuildContext context, ResourceFolder folder) async {
     _logger.message('User ask for details on folder ${folder.name}');
+
+    _sharesActiveResource = await _resProvider.getShares(resource: folder);
+
+    if (!mounted) return;
 
     showModalBottomSheet(
       context: context,
@@ -189,6 +203,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
             width: double.infinity,
             child: FolderDetails(
               folder: folder,
+              activeShares: _sharesActiveResource?.length ?? 0,
               // onSaveFile: (dir) {
               //   Navigator.of(context).pop();
               //   _saveFile(file, dir);
@@ -199,6 +214,9 @@ class _MyStoragePageState extends State<MyStoragePage> {
                 Navigator.of(context).pop();
                 _generalOperations.deleteRemoteResource([folder]);
               },
+              onShare: () => _generalOperations.shareResource(folder),
+              onRemoveShare: () => _generalOperations.removeShare(
+                  folder, _sharesActiveResource!),
             ),
           ),
         );

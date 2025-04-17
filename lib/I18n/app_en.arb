@@ -118,5 +118,21 @@
     }
   },
   "noShares": "No active shares",
-  "hintShareResources": "Share some resources with others to manage them here"
+  "hintShareResources": "Share some resources with others to manage them here",
+  "shareTitle": "Sharing",
+  "share": "Share",
+  "removeShare": "Remove share ({quantity})",
+  "@removeShare": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogTitleShareResourceFile": "File share",
+  "dialogTitleShareResourceFolder": "Folder share",
+  "newShareCreatedForResource": "Resource shared successfully",
+  "shareRemovedForResource": "Share removed",
+  "dialogTitleShareActiveFolder": "Active shares on the folder",
+  "dialogTitleShareActiveFile": "Active shares on the file"
 }

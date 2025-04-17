@@ -118,5 +118,21 @@
     }
   },
   "noShares": "Nessuna condivisione attiva",
-  "hintShareResources": "Condividi delle risorse con altri per poterle gestire qui"
+  "hintShareResources": "Condividi delle risorse con altri per poterle gestire qui",
+  "shareTitle": "Condivisione",
+  "share": "Condividi",
+  "removeShare": "Rimuovi condivisione ({quantity})",
+  "@removeShare": {
+    "placeholders": {
+      "quantity": {
+        "type": "int"
+      }
+    }
+  },
+  "dialogTitleShareResourceFile": "Condivisione del file",
+  "dialogTitleShareResourceFolder": "Condivisione della cartella",
+  "newShareCreatedForResource": "Risorsa condivisa con successo",
+  "shareRemovedForResource": "Condivisione rimossa",
+  "dialogTitleShareActiveFolder": "Condivisioni attive sulla cartella",
+  "dialogTitleShareActiveFile": "Condivisioni attive sul file"
 }

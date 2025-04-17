@@ -14,6 +14,7 @@ abstract class ResourceService {
   Future<bool> deleteFolder(ResourceFolder folder);
   Future<List<Share>?> getAllShare();
   Future<List<Share>?> getShareForResource(Resource resource);
-  Future<Share?> createNewShareForResource(Resource resource);
+  Future<Share?> createNewShareForResource(
+      Resource resource, ShareConfiguration configuration);
   Future<bool> deleteShare(Share sharing);
 }

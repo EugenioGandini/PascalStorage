@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "cc.eugenioing.pascalstorage" "\0"
-            VALUE "FileDescription", "pascalstorage" "\0"
+            VALUE "FileDescription", "Pascal Storage for Windows" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "pascalstorage" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 cc.eugenioing.pascalstorage. All rights reserved." "\0"
-            VALUE "OriginalFilename", "pascalstorage.exe" "\0"
-            VALUE "ProductName", "pascalstorage" "\0"
+            VALUE "InternalName", "Pascal Storage" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 Eugenio Gandini. All rights reserved." "\0"
+            VALUE "OriginalFilename", "Pascal Storage.exe" "\0"
+            VALUE "ProductName", "Pascal Storage" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

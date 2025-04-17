@@ -210,9 +210,11 @@ class ResourceProvider with ChangeNotifier {
     return await _resourceService.getAllShare();
   }
 
-  Future<Share?> createNewShare(Resource forResource) async {
+  Future<Share?> createNewShare(
+      Resource forResource, ShareConfiguration configuration) async {
     _logger.message('Creating a new share for resource ${forResource.name}');
-    return await _resourceService.createNewShareForResource(forResource);
+    return await _resourceService.createNewShareForResource(
+        forResource, configuration);
   }
 
   Future<bool> deleteShare(Share share) async {

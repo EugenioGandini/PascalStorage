@@ -68,7 +68,23 @@ void showFolderCannotBeMoved(BuildContext context) {
 void showNewResourceCreatedSuccess(BuildContext context) {
   showSnackbar(
     context,
-    const Icon(Icons.text_fields, color: Colors.white),
+    const Icon(Icons.check, color: Colors.white),
     AppLocalizations.of(context)!.newResourceCreatedSuccess,
+  );
+}
+
+void showShareResourceSuccess(BuildContext context) {
+  showSnackbar(
+    context,
+    const Icon(Icons.share, color: Colors.white),
+    AppLocalizations.of(context)!.newShareCreatedForResource,
+  );
+}
+
+void showShareResourceRemoved(BuildContext context) {
+  showSnackbar(
+    context,
+    const Icon(Icons.share, color: Colors.white),
+    AppLocalizations.of(context)!.shareRemovedForResource,
   );
 }

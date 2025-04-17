@@ -101,4 +101,29 @@ class GeneralOperations {
 
     onReloadContentNeeded();
   }
+
+  Future shareResource(Resource resouceToShare) async {
+    Navigator.of(context).pop();
+
+    bool shareSuccess = await buildDialogNewShare(context, resouceToShare);
+
+    if (!shareSuccess) return;
+
+    if (context.mounted) {
+      notify.showShareResourceSuccess(context);
+    }
+  }
+
+  Future removeShare(Resource resource, List<Share> activeShares) async {
+    Navigator.of(context).pop();
+
+    bool shareRemoved =
+        await buildDialogRemoveShare(context, resource, activeShares);
+
+    if (!shareRemoved) return;
+
+    if (context.mounted) {
+      notify.showShareResourceRemoved(context);
+    }
+  }
 }

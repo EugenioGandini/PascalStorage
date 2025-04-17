@@ -345,14 +345,20 @@ class ResourceServiceHttpImpl extends ResourceService {
   }
 
   @override
-  Future<Share?> createNewShareForResource(Resource resource) async {
+  Future<Share?> createNewShareForResource(
+      Resource resource, ShareConfiguration configuration) async {
     try {
-      final url =
-          Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}");
-      final responsePost = await http.post(url, headers: {
-        'Cookie': 'auth=$jwt',
-        'X-Auth': jwt!,
-      });
+      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}?" +
+          "expires=${configuration.quantity}&unit=${configuration.timeUnit}");
+
+      final responsePost = await http.post(
+        url,
+        headers: {
+          'Cookie': 'auth=$jwt',
+          'X-Auth': jwt!,
+        },
+        body: jsonEncode(configuration.toJson()),
+      );
 
       if (responsePost.statusCode != 200) return null;
 

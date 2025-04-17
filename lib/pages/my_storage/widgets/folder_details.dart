@@ -8,19 +8,27 @@ import '../../../models/models.dart';
 /// - delete remotly
 /// - rename remotly
 class FolderDetails extends StatelessWidget {
-  // final void Function(String) onSaveFile;
-  final void Function(ResourceFolder) onDelete;
-  // final void Function(ResourceFile) onMove;
-  final void Function(ResourceFolder) onRename;
+  final int activeShares;
   final ResourceFolder folder;
+
+  /// final void Function(String) onSaveFile;
+  final void Function(ResourceFolder) onDelete;
+
+  /// final void Function(ResourceFile) onMove;
+  final void Function(ResourceFolder) onRename;
+  final VoidCallback? onShare;
+  final VoidCallback? onRemoveShare;
 
   const FolderDetails({
     super.key,
     required this.folder,
+    this.activeShares = 0,
     // required this.onSaveFile,
     required this.onDelete,
     // required this.onMove,
     required this.onRename,
+    required this.onShare,
+    required this.onRemoveShare,
   });
 
   List<Widget> _buildSubArea(
@@ -39,6 +47,10 @@ class FolderDetails extends StatelessWidget {
         children: children,
       ),
     ];
+  }
+
+  Widget _buildSeparatorAction() {
+    return const SizedBox(width: 16);
   }
 
   @override
@@ -83,6 +95,24 @@ class FolderDetails extends StatelessWidget {
                 onPressed: () => onRename(folder),
                 child: Text(AppLocalizations.of(context)!.renameInto),
               ),
+            ],
+          ),
+          ..._buildSubArea(
+            context,
+            AppLocalizations.of(context)!.shareTitle,
+            [
+              ElevatedButton(
+                onPressed: () => onShare!(),
+                child: Text(AppLocalizations.of(context)!.share),
+              ),
+              if (activeShares > 0) ...[
+                _buildSeparatorAction(),
+                ElevatedButton(
+                  onPressed: () => onRemoveShare!(),
+                  child: Text(
+                      AppLocalizations.of(context)!.removeShare(activeShares)),
+                ),
+              ]
             ],
           ),
           ..._buildSubArea(

@@ -20,12 +20,15 @@ class FileDetails extends StatelessWidget {
   final String fileExtension;
   final DateTime? fileModified;
   final int? fileSize;
+  final int activeShares;
 
   final void Function(String)? onSaveFile;
   final VoidCallback? onDelete;
   final VoidCallback? onMove;
   final VoidCallback? onRename;
   final VoidCallback? toggleSync;
+  final VoidCallback? onShare;
+  final VoidCallback? onRemoveShare;
   final bool isSynchronized;
 
   const FileDetails({
@@ -39,7 +42,10 @@ class FileDetails extends StatelessWidget {
     this.onMove,
     this.onRename,
     this.toggleSync,
+    this.onShare,
+    this.onRemoveShare,
     this.isSynchronized = false,
+    this.activeShares = 0,
   });
 
   void _selectFolder() async {
@@ -90,9 +96,7 @@ class FileDetails extends StatelessWidget {
   }
 
   Widget _buildSeparatorAction() {
-    return const SizedBox(
-      width: 16,
-    );
+    return const SizedBox(width: 16);
   }
 
   @override
@@ -180,6 +184,25 @@ class FileDetails extends StatelessWidget {
                   onPressed: () => onRename!(),
                   child: Text(AppLocalizations.of(context)!.renameInto),
                 ),
+              ],
+            ),
+          if (onShare != null && onRemoveShare != null)
+            ..._buildSubArea(
+              context,
+              AppLocalizations.of(context)!.shareTitle,
+              [
+                ElevatedButton(
+                  onPressed: () => onShare!(),
+                  child: Text(AppLocalizations.of(context)!.share),
+                ),
+                if (activeShares > 0) ...[
+                  _buildSeparatorAction(),
+                  ElevatedButton(
+                    onPressed: () => onRemoveShare!(),
+                    child: Text(AppLocalizations.of(context)!
+                        .removeShare(activeShares)),
+                  ),
+                ]
               ],
             ),
           if (onDelete != null)
