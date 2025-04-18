@@ -14,11 +14,13 @@ class GeneralOperations {
   final Logger logger;
   final BuildContext context;
   final ResourceProvider resProvider;
+  final Settings settings;
   final VoidCallback onReloadContentNeeded;
 
   GeneralOperations({
     required this.context,
     required this.resProvider,
+    required this.settings,
     required this.logger,
     required this.onReloadContentNeeded,
   });
@@ -105,13 +107,21 @@ class GeneralOperations {
   Future shareResource(Resource resouceToShare) async {
     Navigator.of(context).pop();
 
-    bool shareSuccess = await buildDialogNewShare(context, resouceToShare);
+    Share? createdShare = await buildDialogNewShare(context, resouceToShare);
 
-    if (!shareSuccess) return;
+    if (createdShare == null) return;
 
     if (context.mounted) {
       notify.showShareResourceSuccess(context);
     }
+
+    var host = settings.host;
+
+    await buildDialogUri(
+      context,
+      title: 'Condivisione creata',
+      uri: '$host/share/${createdShare.hash}',
+    );
   }
 
   Future removeShare(Resource resource, List<Share> activeShares) async {

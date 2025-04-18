@@ -111,6 +111,7 @@ class _MyStoragePageState extends State<MyStoragePage> {
     _generalOperations = GeneralOperations(
       context: context,
       resProvider: _resProvider,
+      settings: _settings,
       logger: _logger,
       onReloadContentNeeded: _forceReloadContent,
     );

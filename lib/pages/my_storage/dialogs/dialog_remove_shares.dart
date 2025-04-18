@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:pascalstorage/config/colors.dart';
+
+import '../../../providers/resource_provider.dart';
 
 import '../../../models/models.dart';
 
@@ -31,39 +34,68 @@ class _DialogRemoveSharesState extends State<DialogRemoveShares> {
     });
   }
 
+  Future _submitRemoveShares() async {
+    var navigator = Navigator.of(context);
+
+    var resourceProvider =
+        Provider.of<ResourceProvider>(context, listen: false);
+
+    await Future.forEach(_sharesSelected, (share) async {
+      return await resourceProvider.deleteShare(share);
+    });
+
+    navigator.pop(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ...widget.shares.map((share) {
-          var selected = _sharesSelected.contains(share);
+        Flexible(
+          fit: FlexFit.loose,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              spacing: 10,
+              children: [
+                ...widget.shares.map((share) {
+                  var selected = _sharesSelected.contains(share);
 
-          return CheckboxListTile(
-            tileColor: AppColors.lightBlue2,
-            title: Text('Expires: ${share.expire.toString()}'),
-            subtitle: Text('Hash: ${share.hash}'),
-            value: selected,
-            onChanged: (bool? checked) {
-              if (checked == null) return;
+                  var expiration =
+                      DateFormat.yMMMd().add_jm().format(share.expire);
 
-              if (checked) {
-                _addShareToRemove(share);
-              } else {
-                _removeShareToRemove(share);
-              }
-            },
-          );
-        }),
+                  return CheckboxListTile(
+                    secondary: const Icon(Icons.share),
+                    title: Text(
+                        AppLocalizations.of(context)!.expiresAt(expiration)),
+                    subtitle: Text('Hash ${share.hash}'),
+                    value: selected,
+                    onChanged: (bool? checked) {
+                      if (checked == null) return;
+
+                      if (checked) {
+                        _addShareToRemove(share);
+                      } else {
+                        _removeShareToRemove(share);
+                      }
+                    },
+                  );
+                }),
+              ],
+            ),
+          ),
+        ),
         const Divider(
           height: 36,
         ),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton(
-            onPressed: () {},
-            child: Text(AppLocalizations.of(context)!
-                .removeShare(_sharesSelected.length)),
+            onPressed: _submitRemoveShares,
+            child: Text(
+              AppLocalizations.of(context)!.removeShare(_sharesSelected.length),
+            ),
           ),
         ),
       ],
@@ -78,7 +110,7 @@ Future buildDialogRemoveShare(
 ) async {
   var isFolder = resource is ResourceFolder;
 
-  var createSuccessfully = await showDialog(
+  var removedShares = await showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -113,7 +145,7 @@ Future buildDialogRemoveShare(
     },
   );
 
-  if (createSuccessfully is bool && createSuccessfully) {
+  if (removedShares is bool && removedShares) {
     return true;
   }
   return false;

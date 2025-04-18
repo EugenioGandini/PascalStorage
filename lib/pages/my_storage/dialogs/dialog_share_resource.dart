@@ -40,7 +40,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
     );
 
     if (newShare != null) {
-      navigator.pop(true);
+      navigator.pop(newShare);
     }
   }
 
@@ -324,13 +324,13 @@ class _DialogShareResourceState extends State<DialogShareResource> {
   }
 }
 
-Future buildDialogNewShare(
+Future<Share?> buildDialogNewShare(
   BuildContext context,
   Resource resourceToShare,
 ) async {
   var isFolder = resourceToShare is ResourceFolder;
 
-  var createSuccessfully = await showDialog(
+  var createdShare = await showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
@@ -367,8 +367,5 @@ Future buildDialogNewShare(
     },
   );
 
-  if (createSuccessfully is bool && createSuccessfully) {
-    return true;
-  }
-  return false;
+  return createdShare;
 }
