@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:pascalstorage/config/colors.dart';
 
 import '../../../models/models.dart';
 
@@ -16,9 +17,57 @@ class DialogRemoveShares extends StatefulWidget {
 }
 
 class _DialogRemoveSharesState extends State<DialogRemoveShares> {
+  final List<Share> _sharesSelected = [];
+
+  void _addShareToRemove(Share share) {
+    setState(() {
+      _sharesSelected.add(share);
+    });
+  }
+
+  void _removeShareToRemove(Share share) {
+    setState(() {
+      _sharesSelected.remove(share);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...widget.shares.map((share) {
+          var selected = _sharesSelected.contains(share);
+
+          return CheckboxListTile(
+            tileColor: AppColors.lightBlue2,
+            title: Text('Expires: ${share.expire.toString()}'),
+            subtitle: Text('Hash: ${share.hash}'),
+            value: selected,
+            onChanged: (bool? checked) {
+              if (checked == null) return;
+
+              if (checked) {
+                _addShareToRemove(share);
+              } else {
+                _removeShareToRemove(share);
+              }
+            },
+          );
+        }),
+        const Divider(
+          height: 36,
+        ),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () {},
+            child: Text(AppLocalizations.of(context)!
+                .removeShare(_sharesSelected.length)),
+          ),
+        ),
+      ],
+    );
   }
 }
 

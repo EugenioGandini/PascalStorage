@@ -4,8 +4,11 @@ import '../services/base/local_storage_service.dart';
 import '../services/impl/local_storage_service_hive_impl.dart';
 
 import '../../models/models.dart';
+import '../../utils/logger.dart';
 
 class SettingsProvider with ChangeNotifier {
+  static const Logger _logger = Logger("SettingsProvider");
+
   Settings _settings = const Settings();
   final LocalStorageService _settingsService = LocalStorageServiceHiveImpl();
 
@@ -14,6 +17,8 @@ class SettingsProvider with ChangeNotifier {
   }
 
   Future<void> loadSavedSettings() async {
+    _logger.message('Loading settings');
+
     _settings = await _settingsService.loadSettings();
   }
 
@@ -21,6 +26,8 @@ class SettingsProvider with ChangeNotifier {
     _settings = _settings.copyWith(host: newHost);
 
     await _settingsService.saveSettings(_settings);
+
+    _logger.message('Settings [HOST] saved');
 
     notifyListeners();
 
@@ -32,6 +39,8 @@ class SettingsProvider with ChangeNotifier {
 
     await _settingsService.saveSettings(_settings);
 
+    _logger.message('Settings [DOWNLOAD FOLDER] saved');
+
     notifyListeners();
   }
 
@@ -39,6 +48,8 @@ class SettingsProvider with ChangeNotifier {
     _settings = _settings.copyWith(openFileUponDownload: openFileUponDownload);
 
     await _settingsService.saveSettings(_settings);
+
+    _logger.message('Settings [OPEN FILE UPON DOWNLOAD] saved');
 
     notifyListeners();
   }
@@ -48,6 +59,8 @@ class SettingsProvider with ChangeNotifier {
 
     await _settingsService.saveSettings(_settings);
 
+    _logger.message('Settings [SYNC AT LOGIN] saved');
+
     notifyListeners();
   }
 
@@ -55,6 +68,8 @@ class SettingsProvider with ChangeNotifier {
     _settings = _settings.copyWith(periodicSync: every);
 
     await _settingsService.saveSettings(_settings);
+
+    _logger.message('Settings [SYNC PERIOD] saved');
 
     notifyListeners();
   }

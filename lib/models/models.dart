@@ -11,3 +11,4 @@ export 'resources/sync/sync_action.dart';
 export 'resources/sync/sync.dart';
 export 'resources/share/share.dart';
 export 'resources/share/share_configuration.dart';
+export 'resources/share/time_unit.dart';
