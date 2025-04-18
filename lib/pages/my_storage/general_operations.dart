@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../models/models.dart';
 import '../../utils/logger.dart';
 import '../../providers/resource_provider.dart';
+import '../../widgets/widgets.dart';
 
 import 'dialogs/dialogs.dart';
 import 'notifications.dart' as notify;

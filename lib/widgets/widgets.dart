@@ -6,3 +6,4 @@ export 'sync_content_widget.dart';
 export 'footer.dart';
 export 'navigation_rails.dart';
 export 'file_details.dart';
+export 'dialogs/dialog_show_uri.dart';

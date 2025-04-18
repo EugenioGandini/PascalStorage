@@ -4,7 +4,7 @@ import 'package:pretty_qr_code/pretty_qr_code.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import '../../../config/colors.dart';
+import '../../config/colors.dart';
 
 class UriViewer extends StatelessWidget {
   final String uri;

@@ -12,8 +12,6 @@ import '../page_background.dart';
 import 'widgets/no_shares.dart';
 import 'widgets/list_share.dart';
 
-import '../my_storage/dialogs/dialog_show_uri.dart';
-
 class SharePage extends StatefulWidget {
   static const String routeName = '/sharePage';
 

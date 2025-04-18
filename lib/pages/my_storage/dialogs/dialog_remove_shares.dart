@@ -47,6 +47,28 @@ class _DialogRemoveSharesState extends State<DialogRemoveShares> {
     navigator.pop(true);
   }
 
+  Widget _buildTileShare(Share share) {
+    var selected = _sharesSelected.contains(share);
+
+    var expiration = DateFormat.yMMMd().add_jm().format(share.expire);
+
+    return CheckboxListTile(
+      secondary: const Icon(Icons.share),
+      title: Text(AppLocalizations.of(context)!.expiresAt(expiration)),
+      subtitle: Text('Hash ${share.hash}'),
+      value: selected,
+      onChanged: (bool? checked) {
+        if (checked == null) return;
+
+        if (checked) {
+          _addShareToRemove(share);
+        } else {
+          _removeShareToRemove(share);
+        }
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -60,27 +82,7 @@ class _DialogRemoveSharesState extends State<DialogRemoveShares> {
               spacing: 10,
               children: [
                 ...widget.shares.map((share) {
-                  var selected = _sharesSelected.contains(share);
-
-                  var expiration =
-                      DateFormat.yMMMd().add_jm().format(share.expire);
-
-                  return CheckboxListTile(
-                    secondary: const Icon(Icons.share),
-                    title: Text(
-                        AppLocalizations.of(context)!.expiresAt(expiration)),
-                    subtitle: Text('Hash ${share.hash}'),
-                    value: selected,
-                    onChanged: (bool? checked) {
-                      if (checked == null) return;
-
-                      if (checked) {
-                        _addShareToRemove(share);
-                      } else {
-                        _removeShareToRemove(share);
-                      }
-                    },
-                  );
+                  return _buildTileShare(share);
                 }),
               ],
             ),

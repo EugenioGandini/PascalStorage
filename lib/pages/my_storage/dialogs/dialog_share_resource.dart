@@ -96,13 +96,189 @@ class _DialogShareResourceState extends State<DialogShareResource> {
     super.dispose();
   }
 
+  List<Widget> _buildQuickOptionButtons() {
+    var preSelectedButtonTextStyle = Theme.of(context)
+        .textTheme
+        .bodyLarge!
+        .copyWith(color: AppColors.deepBlue, fontWeight: FontWeight.bold);
+
+    return [
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(5, TimeUnit.minutes),
+        child: Text(
+          '5 ${AppLocalizations.of(context)!.minutes}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(30, TimeUnit.minutes),
+        child: Text(
+          '30 ${AppLocalizations.of(context)!.minutes}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(1, TimeUnit.hours),
+        child: Text(
+          '1 ${AppLocalizations.of(context)!.hour}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(12, TimeUnit.hours),
+        child: Text(
+          '12 ${AppLocalizations.of(context)!.hours}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(1, TimeUnit.days),
+        child: Text(
+          '1 ${AppLocalizations.of(context)!.days}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(7, TimeUnit.days),
+        child: Text(
+          '1 ${AppLocalizations.of(context)!.week}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(1, TimeUnit.months),
+        child: Text(
+          '1 ${AppLocalizations.of(context)!.month}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(2, TimeUnit.months),
+        child: Text(
+          '2 ${AppLocalizations.of(context)!.months}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(6, TimeUnit.months),
+        child: Text(
+          '6 ${AppLocalizations.of(context)!.months}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+      ElevatedButton(
+        onPressed: () => _setPreconfiguredTime(1, TimeUnit.years),
+        child: Text(
+          '1 ${AppLocalizations.of(context)!.year}',
+          style: preSelectedButtonTextStyle,
+        ),
+      ),
+    ];
+  }
+
+  Widget _buildManualConfiguration() {
+    return Container(
+      width: 440,
+      padding: const EdgeInsets.only(bottom: 16),
+      child: Row(
+        spacing: 8,
+        children: [
+          Expanded(
+            child: TextFormField(
+              controller: _controllerQuantity,
+              decoration: InputDecoration(
+                icon: const Icon(Icons.timelapse_rounded),
+                labelText: AppLocalizations.of(context)!.quantityTime,
+              ),
+              textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.number,
+              validator: _validateQuantity,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              onChanged: (quantity) {
+                if (_validateQuantity(quantity) != null) return;
+
+                _updateQuantity(int.parse(quantity));
+              },
+            ),
+          ),
+          SizedBox(
+            width: 120,
+            child: DropdownButtonFormField(
+              items: [
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.seconds,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.second
+                      : AppLocalizations.of(context)!.seconds),
+                ),
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.minutes,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.minute
+                      : AppLocalizations.of(context)!.minutes),
+                ),
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.hours,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.hour
+                      : AppLocalizations.of(context)!.hours),
+                ),
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.days,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.day
+                      : AppLocalizations.of(context)!.days),
+                ),
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.months,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.month
+                      : AppLocalizations.of(context)!.months),
+                ),
+                DropdownMenuItem<TimeUnit>(
+                  value: TimeUnit.years,
+                  child: Text(_configuration.quantity == 1
+                      ? AppLocalizations.of(context)!.year
+                      : AppLocalizations.of(context)!.years),
+                ),
+              ],
+              value: _configuration.timeUnit,
+              onChanged: _updateTimeUnit,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPasswordInput() {
+    return TextFormField(
+      decoration: InputDecoration(
+        icon: const Icon(Icons.password_rounded),
+        labelText: AppLocalizations.of(context)!.passwordInput,
+      ),
+      textInputAction: TextInputAction.done,
+      keyboardType: TextInputType.text,
+      validator: (password) {
+        if (password != null &&
+            password.isNotEmpty &&
+            password.trim().length < 4) {
+          return AppLocalizations.of(context)!.passwordInputError;
+        }
+
+        return null;
+      },
+      onSaved: _addPassword,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var preSelectedButtonTextStyle =
-        Theme.of(context).textTheme.bodyLarge!.copyWith(
-              color: AppColors.deepBlue,
-              fontWeight: FontWeight.bold,
-            );
+    var widgetManualConfiguration = _buildManualConfiguration();
+
+    var widgetOptionalPassword = _buildPasswordInput();
+
+    var quickOptionButtons = _buildQuickOptionButtons();
 
     return Form(
       key: _formKey,
@@ -115,98 +291,8 @@ class _DialogShareResourceState extends State<DialogShareResource> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
-                    width: 440,
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: Row(
-                      spacing: 8,
-                      children: [
-                        Expanded(
-                          child: TextFormField(
-                            controller: _controllerQuantity,
-                            decoration: InputDecoration(
-                              icon: const Icon(Icons.timelapse_rounded),
-                              labelText:
-                                  AppLocalizations.of(context)!.quantityTime,
-                            ),
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.number,
-                            validator: _validateQuantity,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            onChanged: (quantity) {
-                              if (_validateQuantity(quantity) != null) return;
-
-                              _updateQuantity(int.parse(quantity));
-                            },
-                          ),
-                        ),
-                        SizedBox(
-                          width: 120,
-                          child: DropdownButtonFormField(
-                            items: [
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.seconds,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.second
-                                    : AppLocalizations.of(context)!.seconds),
-                              ),
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.minutes,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.minute
-                                    : AppLocalizations.of(context)!.minutes),
-                              ),
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.hours,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.hour
-                                    : AppLocalizations.of(context)!.hours),
-                              ),
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.days,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.day
-                                    : AppLocalizations.of(context)!.days),
-                              ),
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.months,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.month
-                                    : AppLocalizations.of(context)!.months),
-                              ),
-                              DropdownMenuItem<TimeUnit>(
-                                value: TimeUnit.years,
-                                child: Text(_configuration.quantity == 1
-                                    ? AppLocalizations.of(context)!.year
-                                    : AppLocalizations.of(context)!.years),
-                              ),
-                            ],
-                            value: _configuration.timeUnit,
-                            onChanged: _updateTimeUnit,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      icon: const Icon(Icons.password),
-                      labelText: AppLocalizations.of(context)!.passwordInput,
-                    ),
-                    textInputAction: TextInputAction.done,
-                    keyboardType: TextInputType.number,
-                    validator: (password) {
-                      if (password != null &&
-                          password.isNotEmpty &&
-                          password.trim().length < 4) {
-                        return AppLocalizations.of(context)!.passwordInputError;
-                      }
-
-                      return null;
-                    },
-                    onSaved: _addPassword,
-                  ),
+                  widgetManualConfiguration,
+                  widgetOptionalPassword,
                   SizedBox(
                     height: 340,
                     width: 400,
@@ -220,88 +306,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
                       ),
                       primary: false,
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      children: [
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(5, TimeUnit.minutes),
-                          child: Text(
-                            '5 ${AppLocalizations.of(context)!.minutes}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(30, TimeUnit.minutes),
-                          child: Text(
-                            '30 ${AppLocalizations.of(context)!.minutes}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(1, TimeUnit.hours),
-                          child: Text(
-                            '1 ${AppLocalizations.of(context)!.hour}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(12, TimeUnit.hours),
-                          child: Text(
-                            '12 ${AppLocalizations.of(context)!.hours}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(1, TimeUnit.days),
-                          child: Text(
-                            '1 ${AppLocalizations.of(context)!.days}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(7, TimeUnit.days),
-                          child: Text(
-                            '1 ${AppLocalizations.of(context)!.week}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(1, TimeUnit.months),
-                          child: Text(
-                            '1 ${AppLocalizations.of(context)!.month}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(2, TimeUnit.months),
-                          child: Text(
-                            '2 ${AppLocalizations.of(context)!.months}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(6, TimeUnit.months),
-                          child: Text(
-                            '6 ${AppLocalizations.of(context)!.months}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              _setPreconfiguredTime(1, TimeUnit.years),
-                          child: Text(
-                            '1 ${AppLocalizations.of(context)!.year}',
-                            style: preSelectedButtonTextStyle,
-                          ),
-                        ),
-                      ],
+                      children: quickOptionButtons,
                     ),
                   ),
                 ],
