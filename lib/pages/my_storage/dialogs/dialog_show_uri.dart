@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../../config/colors.dart';
@@ -10,36 +11,116 @@ class UriViewer extends StatelessWidget {
 
   const UriViewer({super.key, required this.uri});
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      spacing: 16,
-      children: [
-        PrettyQrView.data(
-          data: uri,
-          decoration: const PrettyQrDecoration(
-            image: PrettyQrDecorationImage(
-              image: AssetImage('assets/icon/icon-small.png'),
-            ),
-            quietZone: PrettyQrQuietZone.zero,
+  Widget _buildPrettyQrCode(QrImage qrImage) {
+    return SizedBox(
+      width: 300,
+      height: 300,
+      child: PrettyQrView(
+        qrImage: qrImage,
+        decoration: const PrettyQrDecoration(
+          image: PrettyQrDecorationImage(
+            image: AssetImage('assets/icon/icon-full.png'),
+          ),
+          quietZone: PrettyQrQuietZone.zero,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButtonAction(BuildContext context, IconData icon, String text,
+      VoidCallback onPressed) {
+    return SizedBox(
+      width: 300,
+      child: OutlinedButton.icon(
+        icon: Icon(icon, size: 32),
+        style: const ButtonStyle(
+          padding: WidgetStatePropertyAll(
+            EdgeInsets.symmetric(vertical: 16, horizontal: 24),
           ),
         ),
-        OutlinedButton.icon(
-          icon: const Icon(Icons.copy, size: 32),
-          style: const ButtonStyle(
-            padding: WidgetStatePropertyAll(
-              EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+        label: Text(
+          text,
+          style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                color: AppColors.deepBlue,
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        onPressed: onPressed,
+      ),
+    );
+  }
+
+  Future _exportQrImage(QrImage qrImage) async {
+    var bufferImage = await qrImage.toImageAsBytes(size: 512);
+
+    if (bufferImage == null) return;
+
+    Share.shareXFiles([
+      XFile.fromData(
+        bufferImage.buffer.asUint8List(),
+        mimeType: 'image/png',
+      )
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var width = MediaQuery.of(context).size.width;
+
+    var mobileLayout = width < 600;
+
+    var qrImage = QrImage(
+      QrCode.fromData(data: uri, errorCorrectLevel: QrErrorCorrectLevel.M),
+    );
+
+    var widgetQrCode = _buildPrettyQrCode(qrImage);
+
+    var widgetButtons = [
+      _buildButtonAction(
+          context,
+          Icons.copy,
+          AppLocalizations.of(context)!.copyToClipboard,
+          () => Clipboard.setData(ClipboardData(text: uri))),
+      _buildButtonAction(
+        context,
+        Icons.send_sharp,
+        AppLocalizations.of(context)!.share,
+        () => Share.share(uri),
+      ),
+      _buildButtonAction(
+        context,
+        Icons.qr_code,
+        AppLocalizations.of(context)!.forwardQrCode,
+        () => _exportQrImage(qrImage),
+      ),
+    ];
+
+    if (mobileLayout) {
+      return SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 16),
+              child: widgetQrCode,
             ),
-          ),
-          label: Text(
-            AppLocalizations.of(context)!.copyToClipboard,
-            style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                  color: AppColors.deepBlue,
-                  fontWeight: FontWeight.bold,
-                ),
-          ),
-          onPressed: () => Clipboard.setData(ClipboardData(text: uri)),
+            ...widgetButtons,
+          ],
+        ),
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      spacing: 32,
+      children: [
+        Flexible(fit: FlexFit.loose, child: widgetQrCode),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 32,
+          children: widgetButtons,
         ),
       ],
     );

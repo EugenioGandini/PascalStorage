@@ -58,7 +58,7 @@ class _SharePageState extends State<SharePage> {
 
     buildDialogUri(
       context,
-      title: AppLocalizations.of(context)!.uriShareCreatedTitle,
+      title: AppLocalizations.of(context)!.uriShareTitle,
       uri: '$host/share/${share.hash}',
     );
   }

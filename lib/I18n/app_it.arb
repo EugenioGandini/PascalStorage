@@ -154,5 +154,7 @@
   "passwordInput": "Password (optionale)",
   "passwordInputError": "Si prega di utilizzare una password più lunga (4 caratteri minimo)",
   "uriShareCreatedTitle": "Condivisione creata",
-  "copyToClipboard": "Copia negli appunti"
+  "copyToClipboard": "Copia negli appunti",
+  "uriShareTitle": "Collegamento della condivisione",
+  "forwardQrCode": "Inoltra il codice QR"
 }

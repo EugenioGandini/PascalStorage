@@ -154,5 +154,7 @@
   "passwordInput": "Password (optional)",
   "passwordInputError": "Please use a longer password (4 chars min)",
   "uriShareCreatedTitle": "Sharing created",
-  "copyToClipboard": "Copy to the clipboard"
+  "copyToClipboard": "Copy to the clipboard",
+  "uriShareTitle": "Sharing link",
+  "forwardQrCode": "Forward the QR code"
 }
