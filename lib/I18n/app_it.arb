@@ -152,5 +152,7 @@
   "year": "anno",
   "years": "anni",
   "passwordInput": "Password (optionale)",
-  "passwordInputError": "Si prega di utilizzare una password più lunga (4 caratteri minimo)"
+  "passwordInputError": "Si prega di utilizzare una password più lunga (4 caratteri minimo)",
+  "uriShareCreatedTitle": "Condivisione creata",
+  "copyToClipboard": "Copia negli appunti"
 }

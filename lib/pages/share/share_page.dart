@@ -5,11 +5,14 @@ import 'package:provider/provider.dart';
 import '../../utils/logger.dart';
 import '../../models/models.dart';
 import '../../providers/resource_provider.dart';
+import '../../providers/settings_provider.dart';
 
 import '../../widgets/widgets.dart';
 import '../page_background.dart';
 import 'widgets/no_shares.dart';
 import 'widgets/list_share.dart';
+
+import '../my_storage/dialogs/dialog_show_uri.dart';
 
 class SharePage extends StatefulWidget {
   static const String routeName = '/sharePage';
@@ -24,6 +27,7 @@ class _SharePageState extends State<SharePage> {
   final Logger _logger = const Logger('SharePage');
 
   late ResourceProvider _resProvider;
+  late Settings _settings;
   late Future _futureLoadShare;
 
   bool _init = false;
@@ -35,6 +39,7 @@ class _SharePageState extends State<SharePage> {
     if (_init) return;
 
     _resProvider = Provider.of<ResourceProvider>(context, listen: false);
+    _settings = Provider.of<SettingsProvider>(context, listen: false).settings;
 
     _futureLoadShare = _resProvider.getShares();
 
@@ -46,6 +51,16 @@ class _SharePageState extends State<SharePage> {
     setState(() {
       _futureLoadShare = _resProvider.getShares();
     });
+  }
+
+  void _showUrlShare(Share share) {
+    var host = _settings.host;
+
+    buildDialogUri(
+      context,
+      title: AppLocalizations.of(context)!.uriShareCreatedTitle,
+      uri: '$host/share/${share.hash}',
+    );
   }
 
   @override
@@ -84,7 +99,7 @@ class _SharePageState extends State<SharePage> {
 
               return ListShare(
                 shares: shares,
-                onTap: (share) => {},
+                onTap: _showUrlShare,
               );
             },
           ),

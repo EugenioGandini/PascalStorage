@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pascalstorage/config/colors.dart';
 import 'package:pretty_qr_code/pretty_qr_code.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
+import '../../../config/colors.dart';
 
 class UriViewer extends StatelessWidget {
   final String uri;
@@ -24,25 +26,20 @@ class UriViewer extends StatelessWidget {
           ),
         ),
         OutlinedButton.icon(
-          onPressed: () {
-            Clipboard.setData(ClipboardData(text: uri));
-          },
+          icon: const Icon(Icons.copy, size: 32),
           style: const ButtonStyle(
             padding: WidgetStatePropertyAll(
               EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             ),
           ),
           label: Text(
-            'Copia negli appunti',
+            AppLocalizations.of(context)!.copyToClipboard,
             style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                   color: AppColors.deepBlue,
                   fontWeight: FontWeight.bold,
                 ),
           ),
-          icon: const Icon(
-            Icons.copy,
-            size: 32,
-          ),
+          onPressed: () => Clipboard.setData(ClipboardData(text: uri)),
         ),
       ],
     );

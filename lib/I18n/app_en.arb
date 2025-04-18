@@ -152,5 +152,7 @@
   "year": "year",
   "years": "years",
   "passwordInput": "Password (optional)",
-  "passwordInputError": "Please use a longer password (4 chars min)"
+  "passwordInputError": "Please use a longer password (4 chars min)",
+  "uriShareCreatedTitle": "Sharing created",
+  "copyToClipboard": "Copy to the clipboard"
 }

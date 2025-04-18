@@ -113,15 +113,15 @@ class GeneralOperations {
 
     if (context.mounted) {
       notify.showShareResourceSuccess(context);
+
+      var host = settings.host;
+
+      await buildDialogUri(
+        context,
+        title: AppLocalizations.of(context)!.uriShareCreatedTitle,
+        uri: '$host/share/${createdShare.hash}',
+      );
     }
-
-    var host = settings.host;
-
-    await buildDialogUri(
-      context,
-      title: 'Condivisione creata',
-      uri: '$host/share/${createdShare.hash}',
-    );
   }
 
   Future removeShare(Resource resource, List<Share> activeShares) async {
