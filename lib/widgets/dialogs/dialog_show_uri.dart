@@ -11,18 +11,36 @@ class UriViewer extends StatelessWidget {
 
   const UriViewer({super.key, required this.uri});
 
+  PrettyQrDecoration _getQrDecoration({bool isExporting = false}) {
+    return PrettyQrDecoration(
+      image: const PrettyQrDecorationImage(
+        image: AssetImage('assets/icon/icon-full.png'),
+      ),
+      quietZone:
+          isExporting ? PrettyQrQuietZone.standart : PrettyQrQuietZone.zero,
+      shape: const PrettyQrSmoothSymbol(
+        color: PrettyQrBrush.gradient(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [
+              AppColors.deepBlue,
+              Colors.purple,
+            ],
+          ),
+        ),
+      ),
+      background: isExporting ? Colors.white : null,
+    );
+  }
+
   Widget _buildPrettyQrCode(QrImage qrImage) {
     return SizedBox(
       width: 300,
       height: 300,
       child: PrettyQrView(
         qrImage: qrImage,
-        decoration: const PrettyQrDecoration(
-          image: PrettyQrDecorationImage(
-            image: AssetImage('assets/icon/icon-full.png'),
-          ),
-          quietZone: PrettyQrQuietZone.zero,
-        ),
+        decoration: _getQrDecoration(),
       ),
     );
   }
@@ -51,7 +69,10 @@ class UriViewer extends StatelessWidget {
   }
 
   Future _exportQrImage(QrImage qrImage) async {
-    var bufferImage = await qrImage.toImageAsBytes(size: 512);
+    var bufferImage = await qrImage.toImageAsBytes(
+      size: 512,
+      decoration: _getQrDecoration(isExporting: true),
+    );
 
     if (bufferImage == null) return;
 
@@ -101,10 +122,8 @@ class UriViewer extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           spacing: 16,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 16),
-              child: widgetQrCode,
-            ),
+            widgetQrCode,
+            const SizedBox(height: 4),
             ...widgetButtons,
           ],
         ),

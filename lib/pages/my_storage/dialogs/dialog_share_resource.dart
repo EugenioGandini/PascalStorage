@@ -134,7 +134,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
       ElevatedButton(
         onPressed: () => _setPreconfiguredTime(1, TimeUnit.days),
         child: Text(
-          '1 ${AppLocalizations.of(context)!.days}',
+          '1 ${AppLocalizations.of(context)!.day}',
           style: preSelectedButtonTextStyle,
         ),
       ),
