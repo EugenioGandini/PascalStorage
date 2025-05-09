@@ -73,4 +73,14 @@ class SettingsProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> deleteOfflineResourceAtLogout(bool remove) async {
+    _settings = _settings.copyWith(deleteOfflineResourceAtLogout: remove);
+
+    await _settingsService.saveSettings(_settings);
+
+    _logger.message('Settings [REMOVE OFFLINE RESOURCE AT LOGOUT] saved');
+
+    notifyListeners();
+  }
 }

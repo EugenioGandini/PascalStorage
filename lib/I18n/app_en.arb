@@ -156,5 +156,6 @@
   "uriShareCreatedTitle": "Sharing created",
   "copyToClipboard": "Copy to the clipboard",
   "uriShareTitle": "Sharing link",
-  "forwardQrCode": "Forward the QR code"
+  "forwardQrCode": "Forward the QR code",
+  "removeOfflineFilesAtLogout": "Removes offline available files at logout"
 }

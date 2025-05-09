@@ -20,6 +20,7 @@ class ResourceProvider with ChangeNotifier {
   final LocalStorageService _localService = LocalStorageServiceHiveImpl();
   late SyncService _syncService;
 
+  bool _deleteOfflineResourceAtLogout = false;
   Timer? _periodicSync;
   Duration _runSyncEvery = Duration.zero;
 
@@ -49,6 +50,8 @@ class ResourceProvider with ChangeNotifier {
     if (_runSyncEvery != newSettings.periodicSync) {
       _runSyncEvery = newSettings.periodicSync;
     }
+
+    _deleteOfflineResourceAtLogout = newSettings.deleteOfflineResourceAtLogout;
   }
 
   void updateLogin(Token token) {
@@ -70,9 +73,16 @@ class ResourceProvider with ChangeNotifier {
     }
   }
 
-  void removeLogout() {
+  Future removeLogout() async {
     if (_resourceService is ResourceServiceHttpImpl) {
       _resourceService.updateToken(null);
+    }
+
+    if (_deleteOfflineResourceAtLogout) {
+      var defaultSync = await _localService.getSync();
+      for (var offlineFile in defaultSync.offlineFiles) {
+        await _localService.removeOfflineFile(offlineFile);
+      }
     }
 
     _periodicSync?.cancel();

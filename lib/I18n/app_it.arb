@@ -156,5 +156,6 @@
   "uriShareCreatedTitle": "Condivisione creata",
   "copyToClipboard": "Copia negli appunti",
   "uriShareTitle": "Collegamento della condivisione",
-  "forwardQrCode": "Inoltra il codice QR"
+  "forwardQrCode": "Inoltra il codice QR",
+  "removeOfflineFilesAtLogout": "Rimuovi i file disponibili offline al logout"
 }

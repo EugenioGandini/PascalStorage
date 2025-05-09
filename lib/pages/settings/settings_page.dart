@@ -25,26 +25,31 @@ class SettingsPage extends StatelessWidget {
       ),
       drawer: const AppNavigator(currentRoute: SettingsPage.routeName),
       body: PageBackground(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              DefaultStoragePath(
-                defaultDownloadFolder: settings.defaultFolderDownload,
-              ),
-              OpenFileUponDownload(
-                openFile: settings.openFileUponDownload,
-              ),
-              SyncLogin(
-                syncAtLogin: settings.syncAtLogin,
-              ),
-              PeriodicSync(
-                periodicSync: settings.periodicSync,
-              ),
-              Host(
-                host: settings.host,
-              )
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                DefaultStoragePath(
+                  defaultDownloadFolder: settings.defaultFolderDownload,
+                ),
+                DeleteOfflineFilesLogout(
+                  deleteFileAtLogout: settings.deleteOfflineResourceAtLogout,
+                ),
+                OpenFileUponDownload(
+                  openFile: settings.openFileUponDownload,
+                ),
+                SyncLogin(
+                  syncAtLogin: settings.syncAtLogin,
+                ),
+                PeriodicSync(
+                  periodicSync: settings.periodicSync,
+                ),
+                Host(
+                  host: settings.host,
+                ),
+              ],
+            ),
           ),
         ),
       ),
