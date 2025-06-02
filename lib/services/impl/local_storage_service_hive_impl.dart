@@ -221,10 +221,12 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
 
     var localCopy = offlineFile.localCopy;
 
-    var file = File(path.join(localCopy.path, localCopy.name));
+    var file = File(localCopy.path);
 
     try {
-      if (await file.exists()) await file.delete();
+      if (await file.exists()) {
+        await file.delete();
+      }
       await offlineFileBox.delete(offlineFile.id);
     } catch (ignored) {
       /// skip error

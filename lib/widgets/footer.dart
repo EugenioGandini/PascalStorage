@@ -40,7 +40,7 @@ class _FooterState extends State<Footer> {
           ),
         if (_info != null)
           Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Text(
               AppLocalizations.of(context)!.footerAppVersion(_info!.version),
             ),

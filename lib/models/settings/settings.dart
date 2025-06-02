@@ -4,6 +4,7 @@ class Settings {
   final bool openFileUponDownload;
   final Duration periodicSync;
   final bool syncAtLogin;
+  final bool deleteOfflineResourceAtLogout;
 
   const Settings({
     this.host = '',
@@ -11,6 +12,7 @@ class Settings {
     this.openFileUponDownload = true,
     this.syncAtLogin = true,
     this.periodicSync = const Duration(minutes: 1),
+    this.deleteOfflineResourceAtLogout = false,
   });
 
   Settings copyWith({
@@ -19,6 +21,7 @@ class Settings {
     bool? openFileUponDownload,
     bool? syncAtLogin,
     Duration? periodicSync,
+    bool? deleteOfflineResourceAtLogout,
   }) {
     return Settings(
       host: host ?? this.host,
@@ -27,6 +30,8 @@ class Settings {
       openFileUponDownload: openFileUponDownload ?? this.openFileUponDownload,
       syncAtLogin: syncAtLogin ?? this.syncAtLogin,
       periodicSync: periodicSync ?? this.periodicSync,
+      deleteOfflineResourceAtLogout:
+          deleteOfflineResourceAtLogout ?? this.deleteOfflineResourceAtLogout,
     );
   }
 }

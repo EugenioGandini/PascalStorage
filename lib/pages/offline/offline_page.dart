@@ -69,6 +69,10 @@ class _OfflinePageState extends State<OfflinePage> {
                 Navigator.of(context).pop();
 
                 resProvider.deleteOfflineFiles([file]);
+
+                setState(() {
+                  _futureLoadSync = resProvider.loadSync();
+                });
               },
               isSynchronized: file.synchronize,
               toggleSync: () {

@@ -3,3 +3,4 @@ export 'host.dart';
 export 'open_file_upon_download.dart';
 export 'sync_login.dart';
 export 'periodic_sync.dart';
+export 'delete_offline_files_logout.dart';
