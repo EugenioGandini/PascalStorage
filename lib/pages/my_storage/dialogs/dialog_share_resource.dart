@@ -107,6 +107,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
         onPressed: () => _setPreconfiguredTime(5, TimeUnit.minutes),
         child: Text(
           '5 ${AppLocalizations.of(context)!.minutes}',
+          overflow: TextOverflow.ellipsis,
           style: preSelectedButtonTextStyle,
         ),
       ),
@@ -114,6 +115,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
         onPressed: () => _setPreconfiguredTime(30, TimeUnit.minutes),
         child: Text(
           '30 ${AppLocalizations.of(context)!.minutes}',
+          overflow: TextOverflow.ellipsis,
           style: preSelectedButtonTextStyle,
         ),
       ),
@@ -142,6 +144,7 @@ class _DialogShareResourceState extends State<DialogShareResource> {
         onPressed: () => _setPreconfiguredTime(7, TimeUnit.days),
         child: Text(
           '1 ${AppLocalizations.of(context)!.week}',
+          overflow: TextOverflow.ellipsis,
           style: preSelectedButtonTextStyle,
         ),
       ),
