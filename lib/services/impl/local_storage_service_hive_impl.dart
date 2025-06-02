@@ -87,6 +87,8 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
     String? openFileStr = settingsBox.get('openFileUponDownload');
     String? syncAtLoginStr = settingsBox.get('syncAtLogin');
     String? periodicSyncStr = settingsBox.get('periodicSync');
+    String? deleteOfflineResourceAtLogoutStr =
+        settingsBox.get('deleteOfflineResourceAtLogout');
 
     bool? openFileUponDownload;
     if (openFileStr != null) {
@@ -103,12 +105,19 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
       periodicSync = Duration(seconds: int.parse(periodicSyncStr));
     }
 
+    bool? deleteOfflineResourceAtLogout;
+    if (deleteOfflineResourceAtLogoutStr != null) {
+      deleteOfflineResourceAtLogout =
+          bool.parse(deleteOfflineResourceAtLogoutStr);
+    }
+
     return Settings(
       host: savedHost ?? '',
       defaultFolderDownload: defaultFolderDownload ?? '',
       openFileUponDownload: openFileUponDownload ?? true,
       syncAtLogin: syncAtLogin ?? true,
       periodicSync: periodicSync ?? Duration.zero,
+      deleteOfflineResourceAtLogout: deleteOfflineResourceAtLogout ?? false,
     );
   }
 
@@ -124,6 +133,8 @@ class LocalStorageServiceHiveImpl extends LocalStorageService {
     await settingsBox.put('syncAtLogin', settings.syncAtLogin.toString());
     await settingsBox.put(
         'periodicSync', settings.periodicSync.inSeconds.toString());
+    await settingsBox.put('deleteOfflineResourceAtLogout',
+        settings.deleteOfflineResourceAtLogout.toString());
   }
 
   @override
