@@ -348,7 +348,10 @@ class ResourceServiceHttpImpl extends ResourceService {
   Future<Share?> createNewShareForResource(
       Resource resource, ShareConfiguration configuration) async {
     try {
-      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}?" +
+      final path =
+          resource is ResourceFile ? resource.path : '${resource.path}/';
+
+      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}$path?" +
           "expires=${configuration.quantity}&unit=${configuration.timeUnit}");
 
       final responsePost = await http.post(
