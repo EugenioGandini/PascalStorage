@@ -314,8 +314,10 @@ class ResourceServiceHttpImpl extends ResourceService {
   @override
   Future<List<Share>?> getShareForResource(Resource resource) async {
     try {
-      final url =
-          Uri.parse("$_baseUrl${HttpApi.shareResource}${resource.path}");
+      final path =
+          resource is ResourceFile ? resource.path : '${resource.path}/';
+
+      final url = Uri.parse("$_baseUrl${HttpApi.shareResource}$path");
       final response = await http.get(url, headers: {
         'Content-Type': 'application/json',
         'Cookie': 'auth=$jwt',
